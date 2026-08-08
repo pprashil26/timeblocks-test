@@ -165,14 +165,17 @@
     .task-context-btn { border: 1px solid var(--line); background: var(--page); color: var(--muted); border-radius: 999px; padding: 3px 9px; cursor: pointer; }
     .task-context-btn.active { color: var(--ink); background: var(--selected); border-color: var(--entry-border); font-weight: 650; }
     .task-list { display: grid; gap: 5px; }
-    .task-row { display: grid; grid-template-columns: auto 1fr auto auto; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 5px 8px; }
-    .task-row.no-move { grid-template-columns: auto 1fr auto; }
+    .task-row { display: grid; grid-template-columns: auto auto 1fr auto auto; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 5px 8px; }
+    .task-row.highlighted { border-color: #cdbf80; background: #fff8df; box-shadow: inset 3px 0 0 rgba(122, 106, 42, .32); }
+    .task-row.no-move { grid-template-columns: auto auto 1fr auto; }
     .task-row.done .task-text { color: var(--muted); text-decoration: line-through; }
     .task-checkbox { width: 16px; height: 16px; accent-color: var(--entry-border); }
     .task-text { border: 0 !important; background: transparent !important; min-height: 25px !important; height: auto; padding: 2px 0 !important; resize: none; overflow: hidden; line-height: 1.35; }
+    .task-highlight { color: var(--muted); }
+    .task-highlight.active { color: var(--pin); font-weight: 700; background: rgba(247, 231, 189, .42); }
     .task-delete { color: var(--danger); }
     .task-move { color: var(--muted); font-size: var(--font-sm); padding: 1px 0; }
-    .task-move-menu { display: none; grid-column: 2 / -1; gap: 4px; padding-top: 2px; }
+    .task-move-menu { display: none; grid-column: 3 / -1; gap: 4px; padding-top: 2px; }
     .task-move-menu.open { display: flex; flex-wrap: wrap; }
     .task-move-option { border: 1px solid var(--line); background: var(--page); color: var(--muted); border-radius: 999px; padding: 2px 8px; cursor: pointer; font-size: var(--font-xs); }
     .task-move-option:hover { background: var(--soft); color: var(--ink); }
@@ -472,6 +475,15 @@
       padding: var(--space-2) var(--space-3);
       border-radius: 11px;
     }
+    .task-row.highlighted {
+      border-color: #c9b96e;
+      background: #fff8df;
+      box-shadow: inset 3px 0 0 rgba(122, 106, 42, .42), 0 2px 10px rgba(122, 106, 42, .05);
+    }
+    .task-row.highlighted .task-text {
+      color: #604f17;
+      font-weight: 650;
+    }
     .task-text {
       color: var(--ink);
     }
@@ -543,8 +555,11 @@
         gap: var(--space-2);
       }
       .task-row {
-        grid-template-columns: auto 1fr auto auto;
+        grid-template-columns: auto auto 1fr auto auto;
         min-height: 38px;
+      }
+      .task-row.no-move {
+        grid-template-columns: auto auto 1fr auto;
       }
       .task-move-menu {
         grid-column: 1 / -1;
@@ -892,10 +907,27 @@
             return empty;
         }
         function normalizeTask(task) {
-            return { id: task.id || createId("task"), text: task.text || "", done: Boolean(task.done) };
+            return { id: task.id || createId("task"), text: task.text || "", done: Boolean(task.done), highlighted: Boolean(task.highlighted) };
         }
-        function saveTasks() { localStorage.setItem(TASKS_KEY, JSON.stringify(globalTasks)); }
-        function activeTasks() { return globalTasks[activeTaskContext] || []; }
+        function orderTasks(taskList) {
+            const list = (taskList || []).map(task => {
+                if (!task.id)
+                    task.id = createId("task");
+                if (typeof task.text !== "string")
+                    task.text = "";
+                task.done = Boolean(task.done);
+                task.highlighted = Boolean(task.highlighted);
+                return task;
+            });
+            return list.filter(task => task.highlighted).concat(list.filter(task => !task.highlighted));
+        }
+        function saveTasks() {
+            TASK_CONTEXTS.forEach(context => {
+                globalTasks[context] = orderTasks(globalTasks[context] || []);
+            });
+            localStorage.setItem(TASKS_KEY, JSON.stringify(globalTasks));
+        }
+        function activeTasks() { return orderTasks(globalTasks[activeTaskContext] || []); }
         function setActiveTaskContext(context) {
             if (!TASK_CONTEXTS.includes(context))
                 return;
@@ -953,7 +985,17 @@
             if (index === -1)
                 return;
             const [task] = sourceTasks.splice(index, 1);
+            globalTasks[activeTaskContext] = sourceTasks;
             globalTasks[targetContext].unshift(task);
+            saveTasks();
+            renderGlobalTasks();
+        }
+        function toggleTaskHighlight(taskId) {
+            const task = activeTasks().find(item => item.id === taskId);
+            if (!task)
+                return;
+            task.highlighted = !task.highlighted;
+            globalTasks[activeTaskContext] = orderTasks(activeTasks());
             saveTasks();
             renderGlobalTasks();
         }
@@ -964,10 +1006,17 @@
                 const row = document.createElement("div");
                 row.className = "task-row";
                 row.classList.toggle("done", task.done);
+                row.classList.toggle("highlighted", task.highlighted);
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
                 checkbox.className = "task-checkbox";
                 checkbox.checked = task.done;
+                const highlight = document.createElement("button");
+                highlight.type = "button";
+                highlight.className = "plain-btn icon-btn task-highlight";
+                highlight.textContent = task.highlighted ? "★" : "☆";
+                highlight.title = task.highlighted ? "Remove task highlight" : "Highlight task";
+                highlight.classList.toggle("active", task.highlighted);
                 const text = document.createElement("textarea");
                 text.className = "task-text";
                 text.rows = 1;
@@ -1002,6 +1051,7 @@
                     saveTasks();
                     renderGlobalTasks();
                 });
+                highlight.addEventListener("click", () => toggleTaskHighlight(task.id));
                 text.addEventListener("input", () => {
                     task.text = text.value;
                     autoGrowTaskText(text);
@@ -1026,8 +1076,8 @@
                     saveTasks();
                     renderGlobalTasks();
                 });
-                if (canMoveTask) row.append(checkbox, text, move, del, moveMenu);
-                else row.append(checkbox, text, del);
+                if (canMoveTask) row.append(checkbox, highlight, text, move, del, moveMenu);
+                else row.append(checkbox, highlight, text, del);
                 globalTaskList.appendChild(row);
             });
         }
@@ -1035,13 +1085,15 @@
             const text = globalTaskInput.value.trim();
             if (!text)
                 return;
-            globalTasks[activeTaskContext].push({ id: createId("task"), text, done: false });
+            globalTasks[activeTaskContext].push({ id: createId("task"), text, done: false, highlighted: false });
             globalTaskInput.value = "";
             saveTasks();
             renderGlobalTasks();
         }
         function sortTasks() {
-            globalTasks[activeTaskContext].sort((a, b) => {
+            globalTasks[activeTaskContext] = orderTasks(activeTasks()).sort((a, b) => {
+                if (a.highlighted !== b.highlighted)
+                    return a.highlighted ? -1 : 1;
                 if (a.done !== b.done)
                     return a.done ? 1 : -1;
                 return (a.text || "").localeCompare(b.text || "", undefined, { sensitivity: "base" });
