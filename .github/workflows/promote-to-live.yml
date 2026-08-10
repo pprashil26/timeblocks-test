@@ -14,7 +14,7 @@ jobs:
       - name: Checkout live repo
         uses: actions/checkout@v4
         with:
-          repository: pprashil26.github.io/timeblocks
+          repository: pprashil26/timeblocks
           token: ${{ secrets.LIVE_REPO_TOKEN }}
           path: live-repo
 
