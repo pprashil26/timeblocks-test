@@ -30,6 +30,11 @@
       --font-title: 18px;
     }
     * { box-sizing: border-box; }
+
+    /* Safety: honour hidden attributes even when component display rules are defined later */
+    [hidden] {
+      display: none !important;
+    }
     body {
       margin: 0;
       min-height: 100vh;
@@ -487,9 +492,62 @@
         grid-column: 1 / -1;
         padding-left: 24px;
       }
+
+      body.notes-focus-active:not(.global-search-active) .shell {
+        max-width: 100%;
+      }
+      body.notes-focus-active #notesList {
+        grid-template-columns: 1fr;
+      }
+      body.notes-focus-active .note-body {
+        min-height: 132px;
+        height: 132px;
+        max-height: 132px;
+      }
+
     }
 
 
+
+
+
+    /* Notes focus mode: widen notes and hide planner/sidebar */
+    body.notes-focus-active:not(.global-search-active) .shell {
+      display: block;
+      max-width: 980px;
+    }
+    body.notes-focus-active .sidebar,
+    body.notes-focus-active .app {
+      display: none;
+    }
+    body.notes-focus-active .notes-sidebar {
+      width: 100%;
+      max-width: 980px;
+      box-shadow: var(--shadow);
+    }
+    body.notes-focus-active .notes-sidebar.collapsed {
+      width: 100%;
+    }
+    body.notes-focus-active .notes-sidebar.collapsed .notes-title,
+    body.notes-focus-active .notes-sidebar.collapsed .notes-wrap {
+      display: block;
+    }
+    body.notes-focus-active .notes-head {
+      border-bottom-color: rgba(231, 223, 212, .95);
+    }
+    body.notes-focus-active #notesList {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-3);
+    }
+    body.notes-focus-active .note-card {
+      margin-bottom: 0;
+    }
+    body.notes-focus-active .note-body {
+      min-height: 132px;
+      height: 132px;
+      max-height: 132px;
+    }
 
     /* Notes toolbar icon polish */
     .notes-actions {
@@ -663,7 +721,7 @@
   </div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true">
-    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use Notes for details, links, and reminders.</li><li>Use Tasks for a simple global checklist by context.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Compact to show more notes.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are global and grouped by Inbox, Home, Work, and Projects.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></section>
+    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use Notes for details, links, and reminders.</li><li>Use Tasks for a simple global checklist by context.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Compact to show more notes.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are global and grouped by Inbox, Home, Work, Projects, and Today.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></section>
   </div>
 
   <script>
