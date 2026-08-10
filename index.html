@@ -1229,7 +1229,10 @@
                 text.value = task.text;
                 text.placeholder = "Task";
                 setTimeout(() => autoGrowTaskText(text), 0);
-                const canMoveTask = activeTaskContext === "Inbox";
+                const canMoveTask = activeTaskContext === "Inbox" || ["Home", "Work", "Projects"].includes(activeTaskContext);
+                const moveTargets = activeTaskContext === "Inbox"
+                    ? TASK_CONTEXTS.filter(context => context !== activeTaskContext)
+                    : canMoveTask ? ["Today"] : [];
                 row.classList.toggle("no-move", !canMoveTask);
                 const move = document.createElement("button");
                 move.type = "button";
@@ -1244,7 +1247,7 @@
                 const moveMenu = document.createElement("div");
                 moveMenu.className = "task-move-menu";
                 moveMenu.hidden = !canMoveTask;
-                TASK_CONTEXTS.filter(context => context !== activeTaskContext).forEach(context => {
+                moveTargets.forEach(context => {
                     const option = document.createElement("button");
                     option.type = "button";
                     option.className = "task-move-option";
