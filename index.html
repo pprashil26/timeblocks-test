@@ -651,12 +651,15 @@
 
 
 
-    /* Recycle bin notes: always show preview and actions, even in compact notes mode */
+    /* Recycle bin notes: support preview and compact modes */
+    .notes-sidebar.bin-open #compactNotesBtn {
+      display: inline-flex;
+    }
     .notes-sidebar.notes-compact .trash-note-card .note-tools-row {
       display: flex;
     }
     .notes-sidebar.notes-compact .trash-note-card .note-body {
-      display: block;
+      display: none;
     }
     .trash-note-card .note-body {
       min-height: 82px;
@@ -665,12 +668,14 @@
       color: var(--muted);
       cursor: default;
     }
+    .trash-note-card .trash-expand-btn,
+    .trash-note-card .restore-note-btn,
+    .trash-note-card .delete-note-btn {
+      font-weight: 700;
+      min-width: 28px;
+    }
     .trash-note-card .restore-note-btn {
       color: #516f64;
-      font-weight: 700;
-    }
-    .trash-note-card .trash-expand-btn {
-      font-weight: 700;
     }
 
   </style>
@@ -1596,12 +1601,12 @@
             const restoreButton = document.createElement("button");
             restoreButton.className = "icon-btn restore-note-btn";
             restoreButton.type = "button";
-            restoreButton.textContent = "Restore";
+            restoreButton.textContent = "↩";
             restoreButton.title = "Restore note";
             const deleteForeverButton = document.createElement("button");
             deleteForeverButton.className = "icon-btn delete-note-btn";
             deleteForeverButton.type = "button";
-            deleteForeverButton.textContent = "Delete forever";
+            deleteForeverButton.textContent = "✕";
             deleteForeverButton.title = "Permanently delete note";
             const body = document.createElement("textarea");
             body.className = "note-body";
