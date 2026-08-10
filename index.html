@@ -599,6 +599,56 @@
       align-self: start;
     }
 
+
+
+    /* Notes toolbar icon polish */
+    .notes-actions {
+      justify-content: flex-end;
+      gap: 5px;
+    }
+    .notes-toolbar-icon {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      padding: 0;
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1;
+      text-decoration: none !important;
+    }
+    #notesFocusBtn.active,
+    #compactNotesBtn.active,
+    #notesBinBtn.active {
+      color: var(--ink);
+      background: var(--soft);
+      font-weight: 700;
+    }
+    #addNoteBtn.notes-toolbar-icon {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .notes-sidebar.bin-open #notesFocusBtn,
+    .notes-sidebar.bin-open #compactNotesBtn,
+    .notes-sidebar.bin-open #sortNotesBtn,
+    .notes-sidebar.bin-open #moveAllNotesBtn,
+    .notes-sidebar.bin-open #notesBinBtn,
+    .notes-sidebar.bin-open #addNoteBtn {
+      display: none;
+    }
+    .notes-sidebar.bin-open .bin-back-btn {
+      display: inline-flex;
+    }
+    @media (max-width: 759px) {
+      .notes-actions {
+        gap: 4px;
+      }
+      .notes-toolbar-icon {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -654,7 +704,7 @@
             <button class="plain-btn nav-day-btn" id="nextDayBtn" type="button">›</button>
           </div>
         </div>
-        <div class="toolbar"><div class="hint">A lightweight GTD-inspired daily planner</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="tasksBtn" type="button">Tasks</button><button class="plain-btn" id="addTaskInboxBtn" type="button">+ Task</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
+        <div class="toolbar"><div class="hint">A lightweight GTD-inspired daily planner</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="addTaskInboxBtn" type="button">+ Tasks</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to 6 PM"></section>
@@ -668,7 +718,7 @@
         <div class="mobile-notes-date" id="mobileNotesDate">Notes for selected date</div>
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
-        <div class="notes-top"><div class="notes-actions"><button class="plain-btn" id="notesFocusBtn" type="button">Notes focus</button><button class="plain-btn compact-btn" id="compactNotesBtn" type="button">Compact</button><button class="plain-btn bin-back-btn" id="notesBinBackBtn" type="button">Back to notes</button><button class="plain-btn add-note-icon-btn" id="addNoteBtn" type="button">+</button><span class="notes-more-wrap"><button class="plain-btn more-btn" id="notesMoreBtn" type="button">⋯</button><span class="notes-more-menu" id="notesMoreMenu"><button class="plain-btn" id="sortNotesBtn" type="button">Sort notes A-Z</button><button class="plain-btn move-all-btn" id="moveAllNotesBtn" type="button">Move all notes</button><button class="plain-btn bin-btn" id="notesBinBtn" type="button">Recycle Bin</button></span></span></div></div>
+        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn icon-btn notes-toolbar-icon compact-btn" id="compactNotesBtn" type="button" title="Hide note previews">▤</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
     </aside>
@@ -709,7 +759,7 @@
         const TASK_CONTEXT_KEY = "timeblocks:taskContext";
         const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
         const NOTE_FOCUS_KEY = "timeblocks:notesFocusView";
-        const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects"];
+        const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects", "Today"];
         const el = id => document.getElementById(id);
         const globalSearchInput = el("globalSearchInput");
         const globalSearchClear = el("globalSearchClear");
@@ -734,7 +784,6 @@
         const selectedDateText = el("selectedDateText");
         const clearBtn = el("clearBtn");
         const focusViewBtn = el("focusViewBtn");
-        const tasksBtn = el("tasksBtn");
         const addTaskInboxBtn = el("addTaskInboxBtn");
         const todayBtn = el("todayBtn");
         const prevDayBtn = el("prevDayBtn");
@@ -1299,7 +1348,7 @@
         function applyNotesCompact() {
             notesSidebar.classList.toggle("notes-compact", notesCompact);
             compactNotesBtn.classList.toggle("active", notesCompact);
-            compactNotesBtn.textContent = notesCompact ? "Preview" : "Compact";
+            compactNotesBtn.textContent = notesCompact ? "▦" : "▤";
             compactNotesBtn.title = notesCompact ? "Show note previews" : "Hide note previews";
         }
 
@@ -1307,7 +1356,7 @@
             document.body.classList.toggle("notes-focus-active", notesFocusView);
             notesSidebar.classList.toggle("notes-focus-grid", notesFocusView);
             notesFocusBtn.classList.toggle("active", notesFocusView);
-            notesFocusBtn.textContent = notesFocusView ? "Exit notes focus" : "Notes focus";
+            notesFocusBtn.textContent = notesFocusView ? "↩" : "⛶";
             notesFocusBtn.title = notesFocusView ? "Return to normal planner view" : "Focus on notes in a wider grid view";
             if (notesFocusView) {
                 setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
@@ -1327,7 +1376,8 @@
             notesSearchBtn.classList.toggle("active", notesSearchOpen || Boolean(notesSearchQuery));
             notesBinBtn.classList.toggle("active", notesBinOpen);
             notesMoreBtn.classList.toggle("active", notesMoreMenu.classList.contains("open") || notesBinOpen);
-            notesBinBtn.textContent = notesBinOpen ? "Back to notes" : "Recycle Bin";
+            notesBinBtn.textContent = "♻";
+            notesBinBtn.title = notesBinOpen ? "Recycle Bin is open" : "Recycle Bin";
         }
         function openSearch() { closeNotesMoreMenu(); notesBinOpen = false; notesSearchOpen = true; updateSearchUi(); setTimeout(() => notesSearchInput.focus(), 0); }
         function clearSearch() { notesSearchOpen = false; notesSearchQuery = ""; notesSearchInput.value = ""; updateSearchUi(); renderNotes(); }
@@ -2026,7 +2076,6 @@
             expandedTitle.focus();
             expandedTitle.select();
         });
-        tasksBtn.addEventListener("click", openTasks);
         addTaskInboxBtn.addEventListener("click", openTasksInboxShortcut);
         sortTasksBtn.addEventListener("click", sortTasks);
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
