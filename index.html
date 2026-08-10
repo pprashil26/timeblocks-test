@@ -165,17 +165,14 @@
     .task-context-btn { border: 1px solid var(--line); background: var(--page); color: var(--muted); border-radius: 999px; padding: 3px 9px; cursor: pointer; }
     .task-context-btn.active { color: var(--ink); background: var(--selected); border-color: var(--entry-border); font-weight: 650; }
     .task-list { display: grid; gap: 5px; }
-    .task-row { display: grid; grid-template-columns: auto auto 1fr auto auto; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 5px 8px; }
-    .task-row.highlighted { border-color: #cdbf80; background: #fff8df; box-shadow: inset 3px 0 0 rgba(122, 106, 42, .32); }
-    .task-row.no-move { grid-template-columns: auto auto 1fr auto; }
+    .task-row { display: grid; grid-template-columns: auto 1fr auto auto; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 5px 8px; }
+    .task-row.no-move { grid-template-columns: auto 1fr auto; }
     .task-row.done .task-text { color: var(--muted); text-decoration: line-through; }
     .task-checkbox { width: 16px; height: 16px; accent-color: var(--entry-border); }
     .task-text { border: 0 !important; background: transparent !important; min-height: 25px !important; height: auto; padding: 2px 0 !important; resize: none; overflow: hidden; line-height: 1.35; }
-    .task-highlight { color: var(--muted); }
-    .task-highlight.active { color: var(--pin); font-weight: 700; background: rgba(247, 231, 189, .42); }
     .task-delete { color: var(--danger); }
     .task-move { color: var(--muted); font-size: var(--font-sm); padding: 1px 0; }
-    .task-move-menu { display: none; grid-column: 3 / -1; gap: 4px; padding-top: 2px; }
+    .task-move-menu { display: none; grid-column: 2 / -1; gap: 4px; padding-top: 2px; }
     .task-move-menu.open { display: flex; flex-wrap: wrap; }
     .task-move-option { border: 1px solid var(--line); background: var(--page); color: var(--muted); border-radius: 999px; padding: 2px 8px; cursor: pointer; font-size: var(--font-xs); }
     .task-move-option:hover { background: var(--soft); color: var(--ink); }
@@ -190,47 +187,6 @@
     .help-body h3 { margin: 0 0 7px; font-size: var(--font-md); }
     .help-body ol, .help-body ul { margin: 0 0 12px 18px; padding: 0; }
     .help-note { color: var(--muted); font-size: var(--font-sm); border-top: 1px solid var(--line); padding-top: 10px; }
-
-    body.notes-focus-active:not(.global-search-active) .shell {
-      display: block;
-      max-width: 980px;
-    }
-    body.notes-focus-active .sidebar,
-    body.notes-focus-active .app {
-      display: none;
-    }
-    body.notes-focus-active .notes-sidebar {
-      width: 100%;
-      max-width: 980px;
-    }
-    body.notes-focus-active .notes-sidebar.collapsed {
-      width: 100%;
-    }
-    body.notes-focus-active .notes-sidebar.collapsed .notes-title,
-    body.notes-focus-active .notes-sidebar.collapsed .notes-wrap {
-      display: block;
-    }
-    body.notes-focus-active #notesList {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 8px;
-    }
-    body.notes-focus-active .note-card {
-      margin-bottom: 0;
-    }
-    body.notes-focus-active .note-body {
-      min-height: 132px;
-      height: 132px;
-      max-height: 132px;
-    }
-    #notesFocusBtn.active {
-      color: var(--ink);
-      font-weight: 700;
-    }
-    .notes-actions #notesFocusBtn {
-      min-height: 29px;
-      padding: 2px 6px;
-    }
     @media (max-width: 759px) {
       body { padding: 8px 6px; }
       .mobile-home { background: var(--page); border: 1px solid var(--line); border-radius: var(--radius-panel); box-shadow: var(--shadow); padding: 10px; margin-bottom: 8px; }
@@ -404,16 +360,6 @@
     .notes-more-menu .plain-btn {
       min-height: 29px;
     }
-    body.notes-focus-active #notesList {
-      gap: var(--space-3);
-    }
-    body.notes-focus-active .notes-sidebar {
-      box-shadow: var(--shadow);
-    }
-    body.notes-focus-active .notes-head {
-      border-bottom-color: rgba(231, 223, 212, .95);
-    }
-
     .note-card {
       margin-bottom: var(--space-3);
       border-radius: 13px;
@@ -475,15 +421,6 @@
       padding: var(--space-2) var(--space-3);
       border-radius: 11px;
     }
-    .task-row.highlighted {
-      border-color: #c9b96e;
-      background: #fff8df;
-      box-shadow: inset 3px 0 0 rgba(122, 106, 42, .42), 0 2px 10px rgba(122, 106, 42, .05);
-    }
-    .task-row.highlighted .task-text {
-      color: #604f17;
-      font-weight: 650;
-    }
     .task-text {
       color: var(--ink);
     }
@@ -539,64 +476,17 @@
       .slot {
         min-height: 34px;
       }
-      body.notes-focus-active:not(.global-search-active) .shell {
-        max-width: 100%;
-      }
-      body.notes-focus-active #notesList {
-        grid-template-columns: 1fr;
-      }
-      body.notes-focus-active .note-body {
-        min-height: 132px;
-        height: 132px;
-        max-height: 132px;
-      }
-
       .notes-actions {
         gap: var(--space-2);
       }
       .task-row {
-        grid-template-columns: auto auto 1fr auto auto;
+        grid-template-columns: auto 1fr auto auto;
         min-height: 38px;
-      }
-      .task-row.no-move {
-        grid-template-columns: auto auto 1fr auto;
       }
       .task-move-menu {
         grid-column: 1 / -1;
         padding-left: 24px;
       }
-    }
-
-
-
-    /* Task row alignment polish: align checkbox, highlight star, title, and actions cleanly */
-    .task-row {
-      align-items: start;
-    }
-    .task-checkbox {
-      margin-top: 6px;
-      flex: 0 0 auto;
-    }
-    .task-highlight {
-      width: 24px;
-      height: 24px;
-      min-width: 24px;
-      align-self: start;
-      margin-top: 2px;
-      line-height: 1;
-    }
-    .task-text {
-      min-height: 28px !important;
-      padding-top: 4px !important;
-      padding-bottom: 2px !important;
-    }
-    .task-move,
-    .task-delete {
-      align-self: start;
-      margin-top: 2px;
-    }
-    .task-move-menu {
-      align-self: start;
     }
 
 
@@ -651,32 +541,25 @@
 
 
 
+    /* Expanded note compact toolbar, A5 view and menu */
+    .expanded-more-wrap { position: relative; display: inline-flex; }
+    .expanded-more-menu { display: none; position: absolute; top: 34px; right: 0; min-width: 132px; padding: 6px; background: var(--page); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 14px 34px rgba(70,55,35,.14); z-index: 40; }
+    .expanded-more-menu.open { display: grid; gap: 3px; }
+    .expanded-more-menu .plain-btn { width: 100%; text-align: left; justify-content: flex-start; padding: 6px 8px; }
+    #expandedA5Btn.active { color: var(--ink); background: var(--soft); font-weight: 800; }
+    #noteModal.a5-note-page .expanded-note { width: min(560px, 96vw); max-height: 94vh; }
+    #noteModal.a5-note-page .expanded-body { width: min(420px, calc(100% - 32px)); height: min(595px, 68vh); min-height: min(595px, 68vh); margin: 14px auto 16px; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 12px 28px rgba(70,55,35,.12); padding: 18px 22px; background-color: #fffdf8; }
+    #noteModal.a5-note-page .expanded-links { width: min(420px, calc(100% - 32px)); margin: 0 auto 14px; }
+
     /* Recycle bin notes: support preview and compact modes */
-    .notes-sidebar.bin-open #compactNotesBtn {
-      display: inline-flex;
-    }
-    .notes-sidebar.notes-compact .trash-note-card .note-tools-row {
-      display: flex;
-    }
-    .notes-sidebar.notes-compact .trash-note-card .note-body {
-      display: none;
-    }
-    .trash-note-card .note-body {
-      min-height: 82px;
-      height: 82px;
-      max-height: 82px;
-      color: var(--muted);
-      cursor: default;
-    }
+    .notes-sidebar.bin-open #compactNotesBtn { display: inline-flex; }
+    .notes-sidebar.notes-compact .trash-note-card .note-tools-row { display: flex; }
+    .notes-sidebar.notes-compact .trash-note-card .note-body { display: none; }
+    .trash-note-card .note-body { min-height: 82px; height: 82px; max-height: 82px; color: var(--muted); cursor: default; }
     .trash-note-card .trash-expand-btn,
     .trash-note-card .restore-note-btn,
-    .trash-note-card .delete-note-btn {
-      font-weight: 700;
-      min-width: 28px;
-    }
-    .trash-note-card .restore-note-btn {
-      color: #516f64;
-    }
+    .trash-note-card .delete-note-btn { font-weight: 700; min-width: 28px; }
+    .trash-note-card .restore-note-btn { color: #516f64; }
 
   </style>
 </head>
@@ -756,7 +639,7 @@
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
-      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button">☆</button><button class="icon-btn" id="expandedMoveBtn" type="button">⇄</button><button class="icon-btn" id="expandedFontBtn" type="button" title="Use larger note font">Aa</button><button class="icon-btn" id="expandedCopyBtn" type="button">⎘</button><button class="icon-btn delete-note-btn" id="expandedDeleteBtn" type="button">×</button></div>
+      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="icon-btn" id="expandedA5Btn" type="button" title="Toggle A5 page view">A5</button><button class="icon-btn" id="expandedLineBtn" type="button" title="Insert horizontal line">─</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedFontBtn" type="button">Larger font</button><button class="plain-btn" id="expandedCopyBtn" type="button">Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move note</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete note</button></span></span></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
         <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span><button class="plain-btn" id="sortTasksBtn" type="button">Sort</button><span> · </span><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button></span></div>
@@ -779,6 +662,7 @@
   <script>
 
 
+
     (function () {
         const START_DATE = new Date(2026, 6, 1);
         const END_DATE = new Date(2027, 11, 31);
@@ -787,6 +671,7 @@
         const TASKS_KEY = "timeblocks:globalTasks";
         const TASK_CONTEXT_KEY = "timeblocks:taskContext";
         const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
+        const NOTE_A5_KEY = "timeblocks:expandedNoteA5";
         const NOTE_FOCUS_KEY = "timeblocks:notesFocusView";
         const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects", "Today"];
         const el = id => document.getElementById(id);
@@ -843,6 +728,10 @@
         const expandedLinks = el("expandedLinks");
         const expandedNoteTools = el("expandedNoteTools");
         const expandedPinBtn = el("expandedPinBtn");
+        const expandedA5Btn = el("expandedA5Btn");
+        const expandedLineBtn = el("expandedLineBtn");
+        const expandedMoreBtn = el("expandedMoreBtn");
+        const expandedMoreMenu = el("expandedMoreMenu");
         const expandedMoveBtn = el("expandedMoveBtn");
         const expandedCopyBtn = el("expandedCopyBtn");
         const expandedFontBtn = el("expandedFontBtn");
@@ -883,6 +772,7 @@
         if (!TASK_CONTEXTS.includes(activeTaskContext))
             activeTaskContext = "Inbox";
         let expandedNoteLargeFont = localStorage.getItem(NOTE_FONT_KEY) === "true";
+        let expandedNoteA5 = localStorage.getItem(NOTE_A5_KEY) === "true";
         function pad(value) { return String(value).padStart(2, "0"); }
         function toKey(date) { return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`; }
         function dateStorageKey(key) { return `timeblocks:${key}`; }
@@ -1059,15 +949,30 @@
         }
 
 
+        function closeExpandedMoreMenu() { expandedMoreMenu.classList.remove("open"); }
+        function toggleExpandedMoreMenu() { expandedMoreMenu.classList.toggle("open"); }
         function applyExpandedNoteFont() {
             noteModal.classList.toggle("large-note-font", expandedNoteLargeFont);
             expandedFontBtn.classList.toggle("active", expandedNoteLargeFont);
-            expandedFontBtn.title = expandedNoteLargeFont ? "Use normal note font" : "Use larger note font";
+            expandedFontBtn.textContent = expandedNoteLargeFont ? "Standard font" : "Larger font";
+            expandedFontBtn.title = expandedNoteLargeFont ? "Use standard note font" : "Use larger note font";
         }
         function toggleExpandedNoteFont() {
             expandedNoteLargeFont = !expandedNoteLargeFont;
             localStorage.setItem(NOTE_FONT_KEY, String(expandedNoteLargeFont));
             applyExpandedNoteFont();
+            closeExpandedMoreMenu();
+        }
+        function applyExpandedNoteA5() {
+            noteModal.classList.toggle("a5-note-page", expandedNoteA5);
+            expandedA5Btn.classList.toggle("active", expandedNoteA5);
+            expandedA5Btn.title = expandedNoteA5 ? "Exit A5 page view" : "Show note as A5 page";
+        }
+        function toggleExpandedNoteA5() {
+            expandedNoteA5 = !expandedNoteA5;
+            localStorage.setItem(NOTE_A5_KEY, String(expandedNoteA5));
+            applyExpandedNoteA5();
+            setTimeout(() => expandedBody.focus(), 0);
         }
         function sortNotesByTitle() {
             const active = notes.filter(note => !note.deleted);
@@ -1651,6 +1556,8 @@
             expandedTitle.readOnly = false;
             expandedLinks.hidden = true;
             expandedNoteTools.hidden = false;
+            closeExpandedMoreMenu();
+            applyExpandedNoteA5();
             globalTasksPanel.hidden = true;
             globalTasksPanel.classList.remove("open");
             globalTaskInput.value = "";
@@ -1664,6 +1571,7 @@
             expandedPinBtn.textContent = note.pinned ? "★" : "☆";
             expandedPinBtn.title = note.pinned ? "Unpin note" : "Pin note";
             expandedPinBtn.classList.toggle("pinned", Boolean(note.pinned));
+            applyExpandedNoteA5();
         }
         function togglePin(id) {
             const note = findNoteById(id);
@@ -1732,6 +1640,7 @@
             save();
         }
         function closeExpandedEditor() {
+            closeExpandedMoreMenu();
             resetExpandedEditorView();
             expandedTitle.readOnly = false;
             noteModal.classList.remove("open");
@@ -1740,14 +1649,34 @@
             expandedLinks.hidden = true;
             expandedNoteId = null;
         }
+        function insertExpandedHorizontalLine() {
+            if (!expandedNoteId || expandedBody.readOnly || expandedBody.hidden)
+                return;
+            const note = findNoteById(expandedNoteId);
+            if (!note || note.deleted)
+                return;
+            const line = "────────────";
+            const start = expandedBody.selectionStart ?? expandedBody.value.length;
+            const end = expandedBody.selectionEnd ?? expandedBody.value.length;
+            const before = expandedBody.value.slice(0, start);
+            const after = expandedBody.value.slice(end);
+            const prefix = before && !before.endsWith("\n") ? "\n" : "";
+            const suffix = after && !after.startsWith("\n") ? "\n" : "";
+            const insertion = `${prefix}${line}${suffix}`;
+            expandedBody.value = before + insertion + after;
+            const cursor = before.length + insertion.length;
+            expandedBody.setSelectionRange(cursor, cursor);
+            syncExpandedToCard();
+            expandedBody.focus();
+        }
         function copyExpandedNote() {
             const title = expandedTitle.value.trim();
             const body = expandedBody.value.trim();
             const text = title && body ? `${title}\n\n${body}` : title || body;
             if (!text)
                 return;
-            const resetIcon = () => setTimeout(() => { expandedCopyBtn.textContent = "⎘"; expandedCopyBtn.classList.remove("copy-feedback"); }, 900);
-            const markCopied = () => { expandedCopyBtn.textContent = "✓"; expandedCopyBtn.classList.add("copy-feedback"); resetIcon(); };
+            const resetIcon = () => setTimeout(() => { expandedCopyBtn.textContent = "Copy note"; expandedCopyBtn.classList.remove("copy-feedback"); }, 900);
+            const markCopied = () => { expandedCopyBtn.textContent = "Copied ✓"; expandedCopyBtn.classList.add("copy-feedback"); closeExpandedMoreMenu(); resetIcon(); };
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).then(markCopied).catch(() => fallbackCopy(text, markCopied));
             }
@@ -2131,12 +2060,19 @@
         expandedBody.addEventListener("input", syncExpandedToCard);
         expandedPinBtn.addEventListener("click", () => { if (expandedNoteId)
             togglePin(expandedNoteId); });
-        expandedMoveBtn.addEventListener("click", () => { if (expandedNoteId)
-            openMoveNote(expandedNoteId); });
+        expandedA5Btn.addEventListener("click", toggleExpandedNoteA5);
+        expandedLineBtn.addEventListener("click", insertExpandedHorizontalLine);
+        expandedMoreBtn.addEventListener("click", event => { event.stopPropagation(); toggleExpandedMoreMenu(); });
+        expandedMoveBtn.addEventListener("click", () => { if (expandedNoteId) {
+            closeExpandedMoreMenu();
+            openMoveNote(expandedNoteId);
+        } });
         expandedCopyBtn.addEventListener("click", copyExpandedNote);
         expandedFontBtn.addEventListener("click", toggleExpandedNoteFont);
-        expandedDeleteBtn.addEventListener("click", () => { if (expandedNoteId)
-            deleteNoteById(expandedNoteId); });
+        expandedDeleteBtn.addEventListener("click", () => { if (expandedNoteId) {
+            closeExpandedMoreMenu();
+            deleteNoteById(expandedNoteId);
+        } });
         closeExpandedNote.addEventListener("click", closeExpandedEditor);
         noteModal.addEventListener("click", event => { if (event.target === noteModal)
             closeExpandedEditor(); });
@@ -2206,6 +2142,7 @@
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
         setInterval(highlightCurrentTimeBlock, 60000);
     })();
+  
   
   
   </script>
