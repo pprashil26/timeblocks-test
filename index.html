@@ -649,6 +649,30 @@
       }
     }
 
+
+
+    /* Recycle bin notes: always show preview and actions, even in compact notes mode */
+    .notes-sidebar.notes-compact .trash-note-card .note-tools-row {
+      display: flex;
+    }
+    .notes-sidebar.notes-compact .trash-note-card .note-body {
+      display: block;
+    }
+    .trash-note-card .note-body {
+      min-height: 82px;
+      height: 82px;
+      max-height: 82px;
+      color: var(--muted);
+      cursor: default;
+    }
+    .trash-note-card .restore-note-btn {
+      color: #516f64;
+      font-weight: 700;
+    }
+    .trash-note-card .trash-expand-btn {
+      font-weight: 700;
+    }
+
   </style>
 </head>
 <body>
@@ -1564,22 +1588,30 @@
             title.readOnly = true;
             const toolsRow = document.createElement("div");
             toolsRow.className = "note-tools-row";
+            const expandButton = document.createElement("button");
+            expandButton.className = "icon-btn trash-expand-btn";
+            expandButton.type = "button";
+            expandButton.textContent = "⤢";
+            expandButton.title = "Preview deleted note";
             const restoreButton = document.createElement("button");
-            restoreButton.className = "icon-btn";
+            restoreButton.className = "icon-btn restore-note-btn";
             restoreButton.type = "button";
             restoreButton.textContent = "Restore";
+            restoreButton.title = "Restore note";
             const deleteForeverButton = document.createElement("button");
             deleteForeverButton.className = "icon-btn delete-note-btn";
             deleteForeverButton.type = "button";
             deleteForeverButton.textContent = "Delete forever";
+            deleteForeverButton.title = "Permanently delete note";
             const body = document.createElement("textarea");
             body.className = "note-body";
             body.value = note.body || "";
             body.readOnly = true;
+            expandButton.addEventListener("click", () => openExpandedNote(note.id));
             restoreButton.addEventListener("click", () => restoreNoteById(note.id));
             deleteForeverButton.addEventListener("click", () => permanentlyDeleteNoteById(note.id));
             titleArea.appendChild(title);
-            toolsRow.append(restoreButton, deleteForeverButton);
+            toolsRow.append(expandButton, restoreButton, deleteForeverButton);
             card.append(titleArea, toolsRow, body);
             return card;
         }
@@ -1610,6 +1642,8 @@
         }
         function resetExpandedEditorView() {
             expandedBody.hidden = false;
+            expandedBody.readOnly = false;
+            expandedTitle.readOnly = false;
             expandedLinks.hidden = true;
             expandedNoteTools.hidden = false;
             globalTasksPanel.hidden = true;
@@ -1642,15 +1676,19 @@
                 return;
             resetExpandedEditorView();
             expandedNoteId = id;
+            const isDeletedPreview = Boolean(note.deleted);
             expandedTitle.value = note.title || "Untitled";
-            expandedTitle.readOnly = false;
+            expandedTitle.readOnly = isDeletedPreview;
             expandedBody.value = note.body || "";
+            expandedBody.readOnly = isDeletedPreview;
+            expandedNoteTools.hidden = isDeletedPreview;
             renderLinks(expandedLinks, expandedBody.value);
-            updateExpandedToolbar();
+            if (!isDeletedPreview)
+                updateExpandedToolbar();
             applyExpandedNoteFont();
             noteModal.classList.add("open");
             noteModal.setAttribute("aria-hidden", "false");
-            setTimeout(() => expandedBody.focus(), 0);
+            setTimeout(() => isDeletedPreview ? closeExpandedNote.focus() : expandedBody.focus(), 0);
         }
         function openTasksInboxShortcut() {
             openTasks();
