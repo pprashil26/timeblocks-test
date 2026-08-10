@@ -541,15 +541,15 @@
 
 
 
-    /* Expanded note compact toolbar, A5 view and menu */
+    /* Expanded note compact toolbar, Wide view and menu */
     .expanded-more-wrap { position: relative; display: inline-flex; }
     .expanded-more-menu { display: none; position: absolute; top: 34px; right: 0; min-width: 132px; padding: 6px; background: var(--page); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 14px 34px rgba(70,55,35,.14); z-index: 40; }
     .expanded-more-menu.open { display: grid; gap: 3px; }
     .expanded-more-menu .plain-btn { width: 100%; text-align: left; justify-content: flex-start; padding: 6px 8px; }
-    #expandedA5Btn.active { color: var(--ink); background: var(--soft); font-weight: 800; }
-    #noteModal.a5-note-page .expanded-note { width: min(560px, 96vw); max-height: 94vh; }
-    #noteModal.a5-note-page .expanded-body { width: min(420px, calc(100% - 32px)); height: min(595px, 68vh); min-height: min(595px, 68vh); margin: 14px auto 16px; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 12px 28px rgba(70,55,35,.12); padding: 18px 22px; background-color: #fffdf8; }
-    #noteModal.a5-note-page .expanded-links { width: min(420px, calc(100% - 32px)); margin: 0 auto 14px; }
+    #expandedWideBtn.active { color: var(--ink); background: var(--soft); font-weight: 800; }
+    #noteModal.wide-note-page .expanded-note { width: min(860px, 96vw); max-height: 94vh; }
+    #noteModal.wide-note-page .expanded-body { width: min(760px, calc(100% - 32px)); height: min(595px, 68vh); min-height: min(595px, 68vh); margin: 14px auto 16px; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 12px 28px rgba(70,55,35,.12); padding: 18px 22px; background-color: #fffdf8; }
+    #noteModal.wide-note-page .expanded-links { width: min(760px, calc(100% - 32px)); margin: 0 auto 14px; }
 
     /* Recycle bin notes: support preview and compact modes */
     .notes-sidebar.bin-open #compactNotesBtn { display: inline-flex; }
@@ -560,6 +560,13 @@
     .trash-note-card .restore-note-btn,
     .trash-note-card .delete-note-btn { font-weight: 700; min-width: 28px; }
     .trash-note-card .restore-note-btn { color: #516f64; }
+
+
+    @media (max-width: 759px) {
+      #noteModal.wide-note-page .expanded-note { width: 100%; }
+      #noteModal.wide-note-page .expanded-body,
+      #noteModal.wide-note-page .expanded-links { width: calc(100% - 20px); }
+    }
 
   </style>
 </head>
@@ -639,7 +646,7 @@
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
-      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="icon-btn" id="expandedA5Btn" type="button" title="Toggle A5 page view">A5</button><button class="icon-btn" id="expandedLineBtn" type="button" title="Insert horizontal line">─</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedFontBtn" type="button">Larger font</button><button class="plain-btn" id="expandedCopyBtn" type="button">Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move note</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete note</button></span></span></div>
+      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="icon-btn" id="expandedWideBtn" type="button" title="Toggle wide note view">↔</button><button class="icon-btn" id="expandedLineBtn" type="button" title="Insert horizontal line">─</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedFontBtn" type="button">Larger font</button><button class="plain-btn" id="expandedCopyBtn" type="button">Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move note</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete note</button></span></span></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
         <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span><button class="plain-btn" id="sortTasksBtn" type="button">Sort</button><span> · </span><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button></span></div>
@@ -671,7 +678,7 @@
         const TASKS_KEY = "timeblocks:globalTasks";
         const TASK_CONTEXT_KEY = "timeblocks:taskContext";
         const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
-        const NOTE_A5_KEY = "timeblocks:expandedNoteA5";
+        const NOTE_WIDE_KEY = "timeblocks:expandedNoteWide";
         const NOTE_FOCUS_KEY = "timeblocks:notesFocusView";
         const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects", "Today"];
         const el = id => document.getElementById(id);
@@ -728,7 +735,7 @@
         const expandedLinks = el("expandedLinks");
         const expandedNoteTools = el("expandedNoteTools");
         const expandedPinBtn = el("expandedPinBtn");
-        const expandedA5Btn = el("expandedA5Btn");
+        const expandedWideBtn = el("expandedWideBtn");
         const expandedLineBtn = el("expandedLineBtn");
         const expandedMoreBtn = el("expandedMoreBtn");
         const expandedMoreMenu = el("expandedMoreMenu");
@@ -772,7 +779,7 @@
         if (!TASK_CONTEXTS.includes(activeTaskContext))
             activeTaskContext = "Inbox";
         let expandedNoteLargeFont = localStorage.getItem(NOTE_FONT_KEY) === "true";
-        let expandedNoteA5 = localStorage.getItem(NOTE_A5_KEY) === "true";
+        let expandedNoteWide = localStorage.getItem(NOTE_WIDE_KEY) === "true";
         function pad(value) { return String(value).padStart(2, "0"); }
         function toKey(date) { return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`; }
         function dateStorageKey(key) { return `timeblocks:${key}`; }
@@ -963,15 +970,15 @@
             applyExpandedNoteFont();
             closeExpandedMoreMenu();
         }
-        function applyExpandedNoteA5() {
-            noteModal.classList.toggle("a5-note-page", expandedNoteA5);
-            expandedA5Btn.classList.toggle("active", expandedNoteA5);
-            expandedA5Btn.title = expandedNoteA5 ? "Exit A5 page view" : "Show note as A5 page";
+        function applyExpandedNoteWide() {
+            noteModal.classList.toggle("wide-note-page", expandedNoteWide);
+            expandedWideBtn.classList.toggle("active", expandedNoteWide);
+            expandedWideBtn.title = expandedNoteWide ? "Exit wide note view" : "Use wide note view";
         }
-        function toggleExpandedNoteA5() {
-            expandedNoteA5 = !expandedNoteA5;
-            localStorage.setItem(NOTE_A5_KEY, String(expandedNoteA5));
-            applyExpandedNoteA5();
+        function toggleExpandedNoteWide() {
+            expandedNoteWide = !expandedNoteWide;
+            localStorage.setItem(NOTE_WIDE_KEY, String(expandedNoteWide));
+            applyExpandedNoteWide();
             setTimeout(() => expandedBody.focus(), 0);
         }
         function sortNotesByTitle() {
@@ -1557,7 +1564,7 @@
             expandedLinks.hidden = true;
             expandedNoteTools.hidden = false;
             closeExpandedMoreMenu();
-            applyExpandedNoteA5();
+            applyExpandedNoteWide();
             globalTasksPanel.hidden = true;
             globalTasksPanel.classList.remove("open");
             globalTaskInput.value = "";
@@ -1571,7 +1578,7 @@
             expandedPinBtn.textContent = note.pinned ? "★" : "☆";
             expandedPinBtn.title = note.pinned ? "Unpin note" : "Pin note";
             expandedPinBtn.classList.toggle("pinned", Boolean(note.pinned));
-            applyExpandedNoteA5();
+            applyExpandedNoteWide();
         }
         function togglePin(id) {
             const note = findNoteById(id);
@@ -2060,7 +2067,7 @@
         expandedBody.addEventListener("input", syncExpandedToCard);
         expandedPinBtn.addEventListener("click", () => { if (expandedNoteId)
             togglePin(expandedNoteId); });
-        expandedA5Btn.addEventListener("click", toggleExpandedNoteA5);
+        expandedWideBtn.addEventListener("click", toggleExpandedNoteWide);
         expandedLineBtn.addEventListener("click", insertExpandedHorizontalLine);
         expandedMoreBtn.addEventListener("click", event => { event.stopPropagation(); toggleExpandedMoreMenu(); });
         expandedMoveBtn.addEventListener("click", () => { if (expandedNoteId) {
