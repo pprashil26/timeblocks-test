@@ -567,6 +567,38 @@
       }
     }
 
+
+
+    /* Task row alignment polish: align checkbox, highlight star, title, and actions cleanly */
+    .task-row {
+      align-items: start;
+    }
+    .task-checkbox {
+      margin-top: 6px;
+      flex: 0 0 auto;
+    }
+    .task-highlight {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      align-self: start;
+      margin-top: 2px;
+      line-height: 1;
+    }
+    .task-text {
+      min-height: 28px !important;
+      padding-top: 4px !important;
+      padding-bottom: 2px !important;
+    }
+    .task-move,
+    .task-delete {
+      align-self: start;
+      margin-top: 2px;
+    }
+    .task-move-menu {
+      align-self: start;
+    }
+
   </style>
 </head>
 <body>
