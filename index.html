@@ -800,6 +800,33 @@
         opacity: .82;
       }
     }
+  
+    /* Calendar highlight colour refinement */
+    .day-btn.has-data {
+      background: #e4f0e7;
+      border-color: #bdd4c5;
+      color: #425c50;
+      font-weight: 650;
+    }
+    .day-btn.today {
+      background: #f5d98f;
+      border-color: #c8a947;
+      color: #5c4a18;
+      font-weight: 700;
+    }
+    .day-btn.selected {
+      background: #c9ded2;
+      border-color: #8fb3a1;
+      color: #2f493e;
+      font-weight: 700;
+      box-shadow: inset 0 0 0 1px rgba(84, 124, 105, .10);
+    }
+    .day-btn.today.selected {
+      background: #c9ded2;
+      border-color: #8fb3a1;
+      color: #2f493e;
+      box-shadow: 0 0 0 2px rgba(200, 169, 71, .38), inset 0 0 0 1px rgba(84, 124, 105, .10);
+    }
   </style>
 </head>
 <body>
