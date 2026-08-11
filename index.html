@@ -117,7 +117,8 @@
     .quote-line { display: grid; grid-template-columns: 68px 1fr; align-items: center; gap: 8px; }
     .quote-label { color: var(--muted); font-size: var(--font-xs); font-weight: 500; text-align: right; }
     #quoteInput { height: 28px; font-style: italic; }
-    footer { padding: 6px 12px; border-top: 1px solid var(--line); background: var(--panel); display: flex; justify-content: center; }
+    footer { padding: 6px 12px; border-top: 1px solid var(--line); background: var(--panel); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+    .last-import-status { color: var(--muted); font-size: 10px; line-height: 1.25; text-align: center; }
     .notes-wrap { padding: 8px; }
     .mobile-notes-date { display: none; color: var(--muted); font-size: 11.5px; margin-bottom: 8px; }
     .notes-search-row { display: none; grid-template-columns: 1fr auto; gap: 6px; margin-bottom: 8px; }
@@ -830,6 +831,7 @@
         <button class="plain-btn backup-btn mobile-import-btn" type="button">Import</button><span>·</span>
         <button class="plain-btn backup-btn help-btn" type="button">Help</button>
       </span>
+      <div class="last-import-status" data-last-import-status>Last import: Never</div>
     </div>
   </section>
 
@@ -859,7 +861,7 @@
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to midnight"></section>
       <section class="quote-block" aria-label="Favourite quote or reminder"><div class="quote-line"><label class="quote-label" for="quoteInput">Quote</label><input id="quoteInput" type="text" placeholder="Favourite quote, mantra or reminder..." autocomplete="off" /></div></section>
-      <footer><span class="footer-actions"><span>Saved locally on this device</span><span>·</span><button class="plain-btn backup-btn" id="exportBackupBtn" type="button">Export</button><span>·</span><button class="plain-btn backup-btn" id="importBackupBtn" type="button">Import</button><span>·</span><button class="plain-btn backup-btn help-btn" type="button">Help</button><input accept=".txt,text/plain,application/json" hidden id="importBackupInput" type="file" /></span></footer>
+      <footer><span class="footer-actions"><span>Saved locally on this device</span><span>·</span><button class="plain-btn backup-btn" id="exportBackupBtn" type="button">Export</button><span>·</span><button class="plain-btn backup-btn" id="importBackupBtn" type="button">Import</button><span>·</span><button class="plain-btn backup-btn help-btn" type="button">Help</button><input accept=".txt,text/plain,application/json" hidden id="importBackupInput" type="file" /></span><div class="last-import-status" data-last-import-status>Last import: Never</div></footer>
     </main>
 
     <aside class="notes-sidebar" id="notesSidebar" aria-label="Lined notepad sidebar">
@@ -912,6 +914,7 @@
         const NOTE_WIDE_KEY = "timeblocks:expandedNoteWide";
         const NOTE_FOCUS_KEY = "timeblocks:notesFocusView";
         const QUOTE_KEY = "timeblocks:favouriteQuote";
+        const LAST_IMPORT_KEY = "timeblocks:lastImportAt";
         const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects", "Today"];
         const el = id => document.getElementById(id);
         const globalSearchInput = el("globalSearchInput");
@@ -1014,6 +1017,7 @@
         let expandedNoteLargeFont = localStorage.getItem(NOTE_FONT_KEY) === "true";
         let expandedNoteWide = localStorage.getItem(NOTE_WIDE_KEY) === "true";
         let favouriteQuote = localStorage.getItem(QUOTE_KEY) || "";
+        let lastImportAt = localStorage.getItem(LAST_IMPORT_KEY) || "";
         function pad(value) { return String(value).padStart(2, "0"); }
         function toKey(date) { return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`; }
         function dateStorageKey(key) { return `timeblocks:${key}`; }
@@ -1044,6 +1048,24 @@
             return date.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
         }
         function monthName(date) { return date.toLocaleDateString(undefined, { month: "short", year: "numeric" }); }
+        function formatLastImport(value) {
+            if (!value)
+                return "Never";
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime()))
+                return "Never";
+            return date.toLocaleString(undefined, { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+        }
+        function renderLastImportStatus() {
+            const shortText = `Last import: ${formatLastImport(lastImportAt)}`;
+            const fullText = lastImportAt && !Number.isNaN(new Date(lastImportAt).getTime())
+                ? `Last import completed on ${new Date(lastImportAt).toLocaleString()}`
+                : "No import has been completed on this device";
+            document.querySelectorAll("[data-last-import-status]").forEach(element => {
+                element.textContent = shortText;
+                element.title = fullText;
+            });
+        }
         function formatTime(hour, minute) { return `${hour % 12 || 12}:${pad(minute)}`; }
         function createId(prefix = "note") { return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`; }
         function loadJson(key, fallback) {
@@ -1508,6 +1530,9 @@
             renderGlobalTasks();
             buildCalendar();
             loadSelectedDate();
+            lastImportAt = new Date().toISOString();
+            localStorage.setItem(LAST_IMPORT_KEY, lastImportAt);
+            renderLastImportStatus();
             alert(`Imported ${entries.length} saved date(s).`);
         }
         function readSavedData() { storageKey = selectedStorageKey(); saved = readDateData(toKey(selectedDate)); notes = orderNotes(normalizeNotes(saved.notes)); }
@@ -2392,6 +2417,7 @@
         renderGlobalTasks();
         buildCalendar();
         quoteInput.value = favouriteQuote;
+        renderLastImportStatus();
         loadSelectedDate();
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
         setInterval(highlightCurrentTimeBlock, 60000);
