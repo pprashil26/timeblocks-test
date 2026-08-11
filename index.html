@@ -749,6 +749,40 @@
     padding-left: 48px;
   }
 }
+
+
+    /* Compact desktop timeblocks and muted quote styling */
+    #quoteInput {
+      color: var(--muted);
+    }
+    #quoteInput::placeholder {
+      color: var(--muted);
+      opacity: 1;
+    }
+    @media (min-width: 760px) {
+      .timeline {
+        gap: 1px;
+        padding-top: 3px;
+        padding-bottom: 4px;
+      }
+      .time-pair-row {
+        gap: 4px;
+        padding-bottom: 1px;
+      }
+      .slot {
+        min-height: 21px;
+      }
+      .time {
+        padding-top: 3px;
+        padding-bottom: 1px;
+      }
+      textarea[data-time] {
+        min-height: 21px;
+        height: 21px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+    }
   </style>
 </head>
 <body>
