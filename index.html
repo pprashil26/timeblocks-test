@@ -568,6 +568,7 @@
       text-decoration: none !important;
     }
     #notesFocusBtn.active,
+    #notesPinnedBtn.active,
     #compactNotesBtn.active,
     #notesBinBtn.active {
       color: var(--ink);
@@ -579,6 +580,7 @@
       font-weight: 700;
     }
     .notes-sidebar.bin-open #notesFocusBtn,
+    .notes-sidebar.bin-open #notesPinnedBtn,
     .notes-sidebar.bin-open #compactNotesBtn,
     .notes-sidebar.bin-open #sortNotesBtn,
     .notes-sidebar.bin-open #moveAllNotesBtn,
@@ -901,7 +903,7 @@
         <div class="mobile-notes-date" id="mobileNotesDate">Notes for selected date</div>
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
-        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn icon-btn notes-toolbar-icon compact-btn" id="compactNotesBtn" type="button" title="Hide note previews">▤</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
+        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn icon-btn notes-toolbar-icon" id="notesPinnedBtn" type="button" title="Show pinned notes only" aria-pressed="false">☆</button><button class="plain-btn icon-btn notes-toolbar-icon compact-btn" id="compactNotesBtn" type="button" title="Hide note previews">▤</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
     </aside>
@@ -944,6 +946,7 @@
         const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
         const NOTE_WIDE_KEY = "timeblocks:expandedNoteWide";
         const NOTE_FOCUS_KEY = "timeblocks:notesFocusView";
+        const NOTES_PINNED_ONLY_KEY = "timeblocks:notesPinnedOnly";
         const CALENDAR_RANGE_KEY = "timeblocks:threeMonthCalendar";
         const QUOTE_KEY = "timeblocks:favouriteQuote";
         const LAST_IMPORT_KEY = "timeblocks:lastImportAt";
@@ -992,6 +995,7 @@
         const compactNotesBtn = el("compactNotesBtn");
         const sortNotesBtn = el("sortNotesBtn");
         const notesFocusBtn = el("notesFocusBtn");
+        const notesPinnedBtn = el("notesPinnedBtn");
         const moveAllNotesBtn = el("moveAllNotesBtn");
         const notesBinBtn = el("notesBinBtn");
         const notesBinBackBtn = el("notesBinBackBtn");
@@ -1042,6 +1046,7 @@
         let notesSearchQuery = "";
         let notesBinOpen = false;
         let notesFocusView = localStorage.getItem(NOTE_FOCUS_KEY) === "true";
+        let notesPinnedOnly = localStorage.getItem(NOTES_PINNED_ONLY_KEY) === "true";
         let threeMonthCalendar = localStorage.getItem(CALENDAR_RANGE_KEY) === "true";
         let globalSearchQuery = "";
         let globalTasks = normalizeTaskLists(loadJson(TASKS_KEY, null));
@@ -1613,6 +1618,20 @@
             closeNotesMoreMenu();
             applyNotesFocusView();
         }
+        function applyNotesPinnedFilter() {
+            notesPinnedBtn.classList.toggle("active", notesPinnedOnly && !notesBinOpen);
+            notesPinnedBtn.setAttribute("aria-pressed", String(notesPinnedOnly && !notesBinOpen));
+            notesPinnedBtn.textContent = notesPinnedOnly ? "★" : "☆";
+            notesPinnedBtn.title = notesPinnedOnly ? "Show all notes" : "Show pinned notes only";
+        }
+        function toggleNotesPinnedFilter() {
+            if (notesBinOpen)
+                return;
+            notesPinnedOnly = !notesPinnedOnly;
+            localStorage.setItem(NOTES_PINNED_ONLY_KEY, String(notesPinnedOnly));
+            applyNotesPinnedFilter();
+            renderNotes();
+        }
         function updateSearchUi() {
             notesSearchRow.classList.toggle("open", notesSearchOpen && !notesBinOpen);
             notesSidebar.classList.toggle("bin-open", notesBinOpen);
@@ -1621,6 +1640,7 @@
             notesMoreBtn.classList.toggle("active", notesMoreMenu.classList.contains("open") || notesBinOpen);
             notesBinBtn.textContent = "♻";
             notesBinBtn.title = notesBinOpen ? "Recycle Bin is open" : "Recycle Bin";
+            applyNotesPinnedFilter();
         }
         function openSearch() { closeNotesMoreMenu(); notesBinOpen = false; notesSearchOpen = true; updateSearchUi(); setTimeout(() => notesSearchInput.focus(), 0); }
         function clearSearch() { notesSearchOpen = false; notesSearchQuery = ""; notesSearchInput.value = ""; updateSearchUi(); renderNotes(); }
@@ -2146,15 +2166,17 @@
         function renderNotes() {
             notesList.innerHTML = "";
             notes = orderNotes(notes);
-            const visibleNotes = notesBinOpen ? notes.filter(note => note.deleted) : notes.filter(note => !note.deleted && noteMatchesSearch(note));
+            const visibleNotes = notesBinOpen
+                ? notes.filter(note => note.deleted)
+                : notes.filter(note => !note.deleted && (!notesPinnedOnly || note.pinned) && noteMatchesSearch(note));
             visibleNotes.forEach(note => notesList.appendChild(notesBinOpen ? createTrashCard(note) : createNoteCard(note)));
             if (notesBinOpen) {
                 notesNoResults.textContent = visibleNotes.length ? "" : "Recycle bin is empty";
                 notesNoResults.classList.toggle("show", !visibleNotes.length);
             }
             else {
-                notesNoResults.textContent = "No matching notes";
-                notesNoResults.classList.toggle("show", Boolean(notesSearchQuery) && visibleNotes.length === 0);
+                notesNoResults.textContent = notesPinnedOnly ? "No pinned notes" : "No matching notes";
+                notesNoResults.classList.toggle("show", visibleNotes.length === 0 && (notesPinnedOnly || Boolean(notesSearchQuery)));
             }
             document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
             applyNotesCompact();
@@ -2372,6 +2394,7 @@
         });
         sortNotesBtn.addEventListener("click", sortNotesByTitle);
         notesFocusBtn.addEventListener("click", toggleNotesFocusView);
+        notesPinnedBtn.addEventListener("click", toggleNotesPinnedFilter);
         moveAllNotesBtn.addEventListener("click", () => { closeNotesMoreMenu(); openMoveAllNotes(); });
         notesBinBtn.addEventListener("click", toggleNotesBin);
         notesBinBackBtn.addEventListener("click", toggleNotesBin);
@@ -2470,6 +2493,7 @@
         window.addEventListener("hashchange", () => { const hashDate = fromKey(location.hash.replace("#", "")); if (hashDate && isWithinRange(hashDate))
             selectDate(hashDate, false); });
         applyNotesCompact();
+        applyNotesPinnedFilter();
         updateSearchUi();
         updateFocusViewButton();
         applyExpandedNoteFont();
