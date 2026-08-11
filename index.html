@@ -112,10 +112,11 @@
     textarea { width: 100%; min-height: 24px; height: 24px; resize: none; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 12px; padding: 4px 7px 3px; border-left: 1px solid var(--line); overflow: hidden; }
     textarea:focus, input:focus { background: var(--soft); }
     textarea.has-text { background: var(--entry); border-left: 3px solid var(--entry-border); }
-    .evening-planner { border-top: 1px solid var(--line); background: var(--panel); padding: 8px 11px 10px; }
-    .evening-label { display: block; color: var(--muted); font-size: var(--font-xs); font-weight: 600; margin-bottom: 5px; }
-    .evening-textarea, .note-body, .expanded-body { line-height: 26px; background-color: #fffdf8; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 25px, rgba(160,145,120,.24) 26px); }
-    .evening-textarea { min-height: 110px; height: 110px; border: 1px solid var(--line); border-radius: 12px; padding: 7px 10px; }
+    .note-body, .expanded-body { line-height: 26px; background-color: #fffdf8; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 25px, rgba(160,145,120,.24) 26px); }
+    .quote-block { padding: 6px 11px; border-top: 1px solid var(--line); background: var(--panel); }
+    .quote-line { display: grid; grid-template-columns: 68px 1fr; align-items: center; gap: 8px; }
+    .quote-label { color: var(--muted); font-size: var(--font-xs); font-weight: 500; text-align: right; }
+    #quoteInput { height: 28px; font-style: italic; }
     footer { padding: 6px 12px; border-top: 1px solid var(--line); background: var(--panel); display: flex; justify-content: center; }
     .notes-wrap { padding: 8px; }
     .mobile-notes-date { display: none; color: var(--muted); font-size: 11.5px; margin-bottom: 8px; }
@@ -341,12 +342,9 @@
       opacity: .62;
     }
     .note-block,
-    .evening-planner {
+    .quote-block {
       padding-left: var(--space-5);
       padding-right: var(--space-5);
-    }
-    .evening-textarea {
-      border-color: rgba(231, 223, 212, .95);
     }
     footer,
     .mobile-home-footer {
@@ -809,8 +807,8 @@
         <div class="toolbar"><div class="hint">A lightweight GTD-inspired daily planner</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="addTaskInboxBtn" type="button">+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button">+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
-      <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to 6 PM"></section>
-      <section class="evening-planner"><label class="evening-label" for="eveningInput">Evening</label><textarea id="eveningInput" class="evening-textarea" placeholder="Evening commitments, reminders, follow-ups..."></textarea></section>
+      <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to midnight"></section>
+      <section class="quote-block" aria-label="Favourite quote or reminder"><div class="quote-line"><label class="quote-label" for="quoteInput">Quote</label><input id="quoteInput" type="text" placeholder="Favourite quote, mantra or reminder..." autocomplete="off" /></div></section>
       <footer><span class="footer-actions"><span>Saved locally on this device</span><span>·</span><button class="plain-btn backup-btn" id="exportBackupBtn" type="button">Export</button><span>·</span><button class="plain-btn backup-btn" id="importBackupBtn" type="button">Import</button><span>·</span><button class="plain-btn backup-btn help-btn" type="button">Help</button><input accept=".txt,text/plain,application/json" hidden id="importBackupInput" type="file" /></span></footer>
     </main>
 
@@ -863,6 +861,7 @@
         const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
         const NOTE_WIDE_KEY = "timeblocks:expandedNoteWide";
         const NOTE_FOCUS_KEY = "timeblocks:notesFocusView";
+        const QUOTE_KEY = "timeblocks:favouriteQuote";
         const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects", "Today"];
         const el = id => document.getElementById(id);
         const globalSearchInput = el("globalSearchInput");
@@ -897,7 +896,7 @@
         const importBackupBtn = el("importBackupBtn");
         const importBackupInput = el("importBackupInput");
         const focusInput = el("focusInput");
-        const eveningInput = el("eveningInput");
+        const quoteInput = el("quoteInput");
         const notesSearchBtn = el("notesSearchBtn");
         const notesSearchRow = el("notesSearchRow");
         const notesSearchInput = el("notesSearchInput");
@@ -964,6 +963,7 @@
             activeTaskContext = "Inbox";
         let expandedNoteLargeFont = localStorage.getItem(NOTE_FONT_KEY) === "true";
         let expandedNoteWide = localStorage.getItem(NOTE_WIDE_KEY) === "true";
+        let favouriteQuote = localStorage.getItem(QUOTE_KEY) || "";
         function pad(value) { return String(value).padStart(2, "0"); }
         function toKey(date) { return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`; }
         function dateStorageKey(key) { return `timeblocks:${key}`; }
@@ -1390,7 +1390,7 @@
             const data = {};
             for (let index = 0; index < localStorage.length; index += 1) {
                 const key = localStorage.key(index);
-                if (!key || key === COMPACT_KEY || key === TASKS_KEY || key === TASK_CONTEXT_KEY || !/^timeblocks:\d{4}-\d{2}-\d{2}$/.test(key))
+                if (!key || key === COMPACT_KEY || key === TASKS_KEY || key === TASK_CONTEXT_KEY || key === QUOTE_KEY || !/^timeblocks:\d{4}-\d{2}-\d{2}$/.test(key))
                     continue;
                 try {
                     data[key] = JSON.parse(localStorage.getItem(key));
@@ -1404,6 +1404,7 @@
                 version: "1.0",
                 exportedAt: new Date().toISOString(),
                 preferences: { notesCompact, activeTaskContext },
+                quote: favouriteQuote,
                 tasks: globalTasks,
                 data
             };
@@ -1441,6 +1442,11 @@
                 localStorage.setItem(COMPACT_KEY, String(notesCompact));
                 applyNotesCompact();
             }
+            if (typeof backup.quote === "string") {
+                favouriteQuote = backup.quote;
+                quoteInput.value = favouriteQuote;
+                localStorage.setItem(QUOTE_KEY, favouriteQuote);
+            }
             if (backup.tasks) {
                 globalTasks = normalizeTaskLists(backup.tasks);
                 saveTasks();
@@ -1466,7 +1472,7 @@
                 entries[box.dataset.time] = box.value; });
             return entries;
         }
-        function currentDateDataFromState() { return { focus: focusInput.value, evening: eveningInput.value, notes: orderNotes(notes), entries: collectEntries() }; }
+        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries() }; }
         function save() { const data = currentDateDataFromState(); notes = data.notes; writeDateData(toKey(selectedDate), data); markDateHasData(toKey(selectedDate)); }
         function markDateHasData(key) {
             const button = document.querySelector(`.day-btn[data-date="${key}"]`);
@@ -1519,11 +1525,6 @@
             box.classList.toggle("has-text", box.value.trim().length > 0);
         }
         function autoGrowNoteBody(box) { box.style.height = (window.matchMedia("(max-width: 759px)").matches ? 104 : 96) + "px"; }
-        function autoGrowEvening() {
-            const minimumHeight = window.matchMedia("(max-width: 759px)").matches ? 150 : 124;
-            eveningInput.style.height = minimumHeight + "px";
-            eveningInput.style.height = Math.max(minimumHeight, eveningInput.scrollHeight) + "px";
-        }
         function clearDropClasses() { document.querySelectorAll(".slot.drop-ok, .slot.drop-block").forEach(slot => slot.classList.remove("drop-ok", "drop-block")); }
         function createSlot(total) {
             const hour = Math.floor(total / 60);
@@ -1597,7 +1598,7 @@
         }
         function buildTimeline() {
             timeline.innerHTML = "";
-            for (let total = 8 * 60; total < 18 * 60; total += 60) {
+            for (let total = 8 * 60; total < 24 * 60; total += 60) {
                 const row = document.createElement("div");
                 row.className = "time-pair-row";
                 row.append(createSlot(total), createSlot(total + 30));
@@ -1964,7 +1965,7 @@
                 return;
             }
             const targetDate = fromKey(targetKey);
-            const ok = confirm(`Move all ${sourceNotes.length} note(s) from ${displayDate(selectedDate)} to ${displayDate(targetDate)}?\n\nOnly notes will be moved. Focus, Evening, and timeblocks will stay on the current date.`);
+            const ok = confirm(`Move all ${sourceNotes.length} note(s) from ${displayDate(selectedDate)} to ${displayDate(targetDate)}?\n\nOnly notes will be moved. Focus and timeblocks will stay on the current date.`);
             if (!ok)
                 return;
             if (noteModal.classList.contains("open"))
@@ -2057,7 +2058,7 @@
                 return;
             const current = new Date();
             const currentMinutes = current.getHours() * 60 + current.getMinutes();
-            if (currentMinutes < 8 * 60 || currentMinutes > 20 * 60)
+            if (currentMinutes < 8 * 60)
                 return;
             const roundedMinutes = Math.floor(currentMinutes / 30) * 30;
             const timeId = `${pad(Math.floor(roundedMinutes / 60))}:${pad(roundedMinutes % 60)}`;
@@ -2070,8 +2071,7 @@
             selectedDateText.textContent = displayDate(selectedDate);
             mobileNotesDate.textContent = `Notes for ${displayDate(selectedDate)}`;
             focusInput.value = saved.focus || "";
-            eveningInput.value = saved.evening || "";
-            autoGrowEvening();
+            quoteInput.value = favouriteQuote;
             buildTimeline();
             renderNotes();
             updateSelectedCalendarDay();
@@ -2199,7 +2199,10 @@
         function openHelp() { helpModal.classList.add("open"); helpModal.setAttribute("aria-hidden", "false"); }
         function closeHelp() { helpModal.classList.remove("open"); helpModal.setAttribute("aria-hidden", "true"); }
         focusInput.addEventListener("input", save);
-        eveningInput.addEventListener("input", () => { autoGrowEvening(); save(); });
+        quoteInput.addEventListener("input", () => {
+            favouriteQuote = quoteInput.value;
+            localStorage.setItem(QUOTE_KEY, favouriteQuote);
+        });
         globalSearchInput.addEventListener("input", () => { globalSearchQuery = globalSearchInput.value; renderGlobalResults(); });
         globalSearchInput.addEventListener("keydown", event => { if (event.key === "Escape")
             clearGlobalSearch(); });
@@ -2304,8 +2307,6 @@
                 closeMoveNote();
             localStorage.removeItem(storageKey);
             focusInput.value = "";
-            eveningInput.value = "";
-            autoGrowEvening();
             notes = [];
             renderNotes();
             document.querySelectorAll("textarea[data-time]").forEach(box => { box.value = ""; autoGrow(box); });
@@ -2330,7 +2331,7 @@
         });
         sidebarToggle.addEventListener("click", () => { const collapsed = !sidebar.classList.contains("collapsed"); setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", collapsed); updateFocusViewButton(); });
         notesToggle.addEventListener("click", () => { const collapsed = !notesSidebar.classList.contains("collapsed"); setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", collapsed); updateFocusViewButton(); });
-        window.addEventListener("resize", () => { document.querySelectorAll("textarea[data-time]").forEach(autoGrow); document.querySelectorAll(".note-body").forEach(autoGrowNoteBody); autoGrowEvening(); });
+        window.addEventListener("resize", () => { document.querySelectorAll("textarea[data-time]").forEach(autoGrow); document.querySelectorAll(".note-body").forEach(autoGrowNoteBody); });
         window.addEventListener("hashchange", () => { const hashDate = fromKey(location.hash.replace("#", "")); if (hashDate && isWithinRange(hashDate))
             selectDate(hashDate, false); });
         applyNotesCompact();
@@ -2340,6 +2341,7 @@
         renderGlobalResults();
         renderGlobalTasks();
         buildCalendar();
+        quoteInput.value = favouriteQuote;
         loadSelectedDate();
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
         setInterval(highlightCurrentTimeBlock, 60000);
