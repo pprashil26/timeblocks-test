@@ -77,6 +77,10 @@
     .sidebar-head, .notes-head, header, .expanded-note-head, .move-note-head, .help-head { border-bottom: 1px solid var(--line); background: linear-gradient(180deg, #fffdf8 0%, #f8f3eb 100%); }
     .sidebar-head, .notes-head { min-height: 42px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 10px 7px; }
     .sidebar-title, .notes-title { font-weight: 650; }
+    .calendar-head-actions { display: inline-flex; align-items: center; gap: 7px; }
+    .calendar-range-btn { width: 24px; height: 24px; padding: 0; font-size: 11px; font-weight: 700; line-height: 1; }
+    .calendar-range-btn.active { color: var(--ink); background: var(--soft); }
+    .sidebar.collapsed .calendar-range-btn { display: none; }
     .sidebar.collapsed, .notes-sidebar.collapsed { width: 42px; }
     .sidebar.collapsed .sidebar-title, .sidebar.collapsed .calendar-wrap, .notes-sidebar.collapsed .notes-title, .notes-sidebar.collapsed .notes-wrap { display: none; }
     .calendar-wrap { max-height: calc(100vh - 80px); overflow: auto; padding: 8px; }
@@ -800,38 +804,33 @@
         opacity: .82;
       }
     }
-
-    /* Mobile calendar contrast refinement */
-    @media (max-width: 759px) {
-      .day-btn.has-data {
-        background: #cfe7e2;
-        border-color: #7faea5;
-        color: #2f4842;
-        font-weight: 650;
-      }
-
-      .day-btn.today {
-        background: #f6d98f;
-        border: 2px solid #b67f24;
-        color: #5b4419;
-        font-weight: 700;
-      }
-
-      .day-btn.selected {
-        background: #9fc8b5;
-        border: 2px solid #4f806c;
-        color: #203b31;
-        font-weight: 700;
-      }
-
-      .day-btn.today.selected {
-        background: #9fc8b5;
-        border-color: #4f806c;
-        color: #203b31;
-        box-shadow: 0 0 0 2px #e2b75e;
-      }
+  
+    /* Calendar highlight colour refinement */
+    .day-btn.has-data {
+      background: #e4f0e7;
+      border-color: #bdd4c5;
+      color: #425c50;
+      font-weight: 650;
     }
-
+    .day-btn.today {
+      background: #f5d98f;
+      border-color: #c8a947;
+      color: #5c4a18;
+      font-weight: 700;
+    }
+    .day-btn.selected {
+      background: #c9ded2;
+      border-color: #8fb3a1;
+      color: #2f493e;
+      font-weight: 700;
+      box-shadow: inset 0 0 0 1px rgba(84, 124, 105, .10);
+    }
+    .day-btn.today.selected {
+      background: #c9ded2;
+      border-color: #8fb3a1;
+      color: #2f493e;
+      box-shadow: 0 0 0 2px rgba(200, 169, 71, .38), inset 0 0 0 1px rgba(84, 124, 105, .10);
+    }
   </style>
 </head>
 <body>
@@ -874,7 +873,7 @@
 
   <div class="shell" id="shell">
     <aside class="sidebar" id="sidebar" aria-label="Compact calendar sidebar">
-      <div class="sidebar-head"><div class="sidebar-title">Calendar</div><button class="plain-btn" id="sidebarToggle" type="button">Hide</button></div>
+      <div class="sidebar-head"><div class="sidebar-title">Calendar</div><div class="calendar-head-actions"><button class="plain-btn icon-btn calendar-range-btn" id="calendarRangeBtn" type="button" title="Show three-month calendar" aria-pressed="false">3</button><button class="plain-btn" id="sidebarToggle" type="button">Hide</button></div></div>
       <div class="calendar-wrap" id="calendarWrap"></div>
     </aside>
 
@@ -945,6 +944,7 @@
         const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
         const NOTE_WIDE_KEY = "timeblocks:expandedNoteWide";
         const NOTE_FOCUS_KEY = "timeblocks:notesFocusView";
+        const CALENDAR_RANGE_KEY = "timeblocks:threeMonthCalendar";
         const QUOTE_KEY = "timeblocks:favouriteQuote";
         const LAST_IMPORT_KEY = "timeblocks:lastImportAt";
         const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects", "Today"];
@@ -965,6 +965,7 @@
         const shell = el("shell");
         const sidebar = el("sidebar");
         const sidebarToggle = el("sidebarToggle");
+        const calendarRangeBtn = el("calendarRangeBtn");
         const notesSidebar = el("notesSidebar");
         const notesToggle = el("notesToggle");
         const calendarWrap = el("calendarWrap");
@@ -1041,6 +1042,7 @@
         let notesSearchQuery = "";
         let notesBinOpen = false;
         let notesFocusView = localStorage.getItem(NOTE_FOCUS_KEY) === "true";
+        let threeMonthCalendar = localStorage.getItem(CALENDAR_RANGE_KEY) === "true";
         let globalSearchQuery = "";
         let globalTasks = normalizeTaskLists(loadJson(TASKS_KEY, null));
         let activeTaskContext = localStorage.getItem(TASK_CONTEXT_KEY) || "Inbox";
@@ -2222,11 +2224,36 @@
                 button.scrollIntoView({ block: "nearest" });
             }
         }
+        function applyCalendarRangeView() {
+            calendarRangeBtn.classList.toggle("active", threeMonthCalendar);
+            calendarRangeBtn.setAttribute("aria-pressed", String(threeMonthCalendar));
+            calendarRangeBtn.title = threeMonthCalendar ? "Show full calendar" : "Show three-month calendar";
+            calendarRangeBtn.textContent = threeMonthCalendar ? "↩" : "3";
+        }
+        function toggleCalendarRangeView() {
+            threeMonthCalendar = !threeMonthCalendar;
+            localStorage.setItem(CALENDAR_RANGE_KEY, String(threeMonthCalendar));
+            applyCalendarRangeView();
+            buildCalendar();
+            updateSelectedCalendarDay();
+        }
+        function isMonthInThreeMonthRange(date) {
+            if (!threeMonthCalendar)
+                return true;
+            const today = getToday();
+            const monthIndex = date.getFullYear() * 12 + date.getMonth();
+            const currentMonthIndex = today.getFullYear() * 12 + today.getMonth();
+            return monthIndex >= currentMonthIndex - 1 && monthIndex <= currentMonthIndex + 1;
+        }
         function buildCalendar() {
             calendarWrap.innerHTML = "";
             const todayKey = toKey(getToday());
             let cursor = new Date(START_DATE.getFullYear(), START_DATE.getMonth(), 1);
             while (cursor <= END_DATE) {
+                if (!isMonthInThreeMonthRange(cursor)) {
+                    cursor.setMonth(cursor.getMonth() + 1);
+                    continue;
+                }
                 const month = document.createElement("section");
                 month.className = "month";
                 const heading = document.createElement("div");
@@ -2436,6 +2463,7 @@
             reader.onerror = () => alert("Could not read the selected backup file.");
             reader.readAsText(file);
         });
+        calendarRangeBtn.addEventListener("click", toggleCalendarRangeView);
         sidebarToggle.addEventListener("click", () => { const collapsed = !sidebar.classList.contains("collapsed"); setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", collapsed); updateFocusViewButton(); });
         notesToggle.addEventListener("click", () => { const collapsed = !notesSidebar.classList.contains("collapsed"); setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", collapsed); updateFocusViewButton(); });
         window.addEventListener("resize", () => { document.querySelectorAll("textarea[data-time]").forEach(autoGrow); document.querySelectorAll(".note-body").forEach(autoGrowNoteBody); });
@@ -2447,6 +2475,7 @@
         applyExpandedNoteFont();
         renderGlobalResults();
         renderGlobalTasks();
+        applyCalendarRangeView();
         buildCalendar();
         quoteInput.value = favouriteQuote;
         renderLastImportStatus();
