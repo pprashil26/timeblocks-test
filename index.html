@@ -2740,6 +2740,70 @@
         loadSelectedDate();
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
         setInterval(highlightCurrentTimeBlock, 60000);
+      /* Keyboard shortcuts: G then F/T/I/A */
+let shortcutPrefixActive = false;
+let shortcutTimer = null;
+
+function isTypingField(element) {
+  return element instanceof HTMLInputElement ||
+    element instanceof HTMLTextAreaElement ||
+    element?.isContentEditable;
+}
+
+function clearShortcutPrefix() {
+  shortcutPrefixActive = false;
+
+  if (shortcutTimer) {
+    clearTimeout(shortcutTimer);
+    shortcutTimer = null;
+  }
+}
+
+document.addEventListener("keydown", event => {
+  if (
+    isTypingField(event.target) ||
+    event.ctrlKey ||
+    event.altKey ||
+    event.metaKey
+  ) {
+    clearShortcutPrefix();
+    return;
+  }
+
+  const key = event.key.toLowerCase();
+
+  if (!shortcutPrefixActive) {
+    if (key !== "g") return;
+
+    event.preventDefault();
+    shortcutPrefixActive = true;
+
+    shortcutTimer = setTimeout(() => {
+      clearShortcutPrefix();
+    }, 1000);
+
+    return;
+  }
+
+  event.preventDefault();
+  clearShortcutPrefix();
+
+  if (key === "f") {
+    document.getElementById("focusViewBtn")?.click();
+  }
+
+  if (key === "t") {
+    document.getElementById("addTaskTodayBtn")?.click();
+  }
+
+  if (key === "i") {
+    document.getElementById("addTaskInboxBtn")?.click();
+  }
+
+  if (key === "a") {
+    document.getElementById("activityBtn")?.click();
+  }
+});
     })();
   
   
