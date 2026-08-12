@@ -170,6 +170,22 @@
     #expandedFontBtn.active { color: var(--ink); background: var(--soft); font-weight: 700; }
     .tasks-panel { display: none; flex: 1; min-height: 460px; padding: 10px 12px; overflow: auto; background: #fffdf8; }
     .tasks-panel.open { display: block; }
+    .activity-panel { display: none; flex: 1; min-height: 460px; padding: 10px 12px; overflow: auto; background: #fffdf8; }
+    .activity-panel.open { display: block; }
+    .activity-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .activity-title { font-weight: 650; color: var(--ink); }
+    .activity-input { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .activity-input input { height: 31px; }
+    .activity-add-btn { height: 31px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--soft); color: var(--ink); }
+    .activity-day { margin-top: 12px; }
+    .activity-day:first-child { margin-top: 0; }
+    .activity-day-title { color: var(--muted); font-size: var(--font-xs); font-weight: 650; margin: 0 0 5px 2px; }
+    .activity-list { display: grid; gap: 5px; }
+    .activity-row { display: grid; grid-template-columns: 66px minmax(0, 1fr) auto; gap: 8px; align-items: start; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 5px 8px; }
+    .activity-time { color: var(--muted); font-size: var(--font-xs); font-variant-numeric: tabular-nums; padding-top: 5px; white-space: nowrap; }
+    .activity-text { min-width: 0; min-height: 26px !important; height: auto; padding: 3px 0 2px !important; line-height: 1.35; resize: none; overflow: hidden; border: 0 !important; background: transparent !important; }
+    .activity-delete { color: var(--danger); margin-top: 1px; }
+    .activity-empty { color: var(--muted); text-align: center; padding: 18px 8px; }
     .tasks-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--muted); }
     .tasks-title { font-weight: 650; color: var(--ink); }
     .task-contexts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
@@ -222,7 +238,7 @@
       input[type="text"], input[type="date"], textarea { font-size: 16px; }
       textarea { min-height: 34px; height: 34px; }
       .expanded-note { width: 100%; min-height: 78vh; max-height: 90vh; }
-      .expanded-body, .tasks-panel { min-height: 58vh; font-size: 16px; }
+      .expanded-body, .tasks-panel, .activity-panel { min-height: 58vh; font-size: 16px; }
       body .large-note-font .expanded-body { font-size: 18px; line-height: 32px; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 31px, rgba(160,145,120,.24) 32px); }
     }
 
@@ -409,7 +425,8 @@
       padding: var(--space-1) var(--space-5) var(--space-2);
     }
     .expanded-body,
-    .tasks-panel {
+    .tasks-panel,
+    .activity-panel {
       padding: var(--space-4) var(--space-5);
     }
     .tasks-toolbar {
@@ -889,7 +906,7 @@
             <button class="plain-btn nav-day-btn" id="nextDayBtn" type="button">›</button>
           </div>
         </div>
-        <div class="toolbar"><div class="hint">A lightweight GTD-inspired daily planner</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="addTaskInboxBtn" type="button">+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button">+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
+        <div class="toolbar"><div class="hint">A lightweight GTD-inspired daily planner</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="activityBtn" type="button">Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button">+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button">+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to midnight"></section>
@@ -920,6 +937,11 @@
         <div class="task-list" id="globalTaskList"></div>
         <div class="task-input"><input id="globalTaskInput" type="text" placeholder="+ Add task..." autocomplete="off" /><button class="plain-btn task-add-btn" id="taskAddBtn" type="button">Add</button></div>
       </div>
+      <div class="activity-panel" id="activityPanel" hidden>
+        <div class="activity-toolbar"><span class="activity-title">Daily Activity Log</span></div>
+        <div class="activity-input"><input id="activityInput" type="text" placeholder="What are you doing?" autocomplete="off" /><button class="plain-btn activity-add-btn" id="activityAddBtn" type="button">Add</button></div>
+        <div id="activityLog"></div>
+      </div>
       <div class="link-preview expanded-links" id="expandedLinks"></div>
     </section>
   </div>
@@ -942,6 +964,7 @@
         const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
         const COMPACT_KEY = "timeblocks:notesCompact";
         const TASKS_KEY = "timeblocks:globalTasks";
+        const ACTIVITY_KEY = "timeblocks:activityLog";
         const TASK_CONTEXT_KEY = "timeblocks:taskContext";
         const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
         const NOTE_WIDE_KEY = "timeblocks:expandedNoteWide";
@@ -976,6 +999,7 @@
         const selectedDateText = el("selectedDateText");
         const clearBtn = el("clearBtn");
         const focusViewBtn = el("focusViewBtn");
+        const activityBtn = el("activityBtn");
         const addTaskInboxBtn = el("addTaskInboxBtn");
         const addTaskTodayBtn = el("addTaskTodayBtn");
         const todayBtn = el("todayBtn");
@@ -1024,6 +1048,10 @@
         const taskAddBtn = el("taskAddBtn");
         const sortTasksBtn = el("sortTasksBtn");
         const clearDoneTasksBtn = el("clearDoneTasksBtn");
+        const activityPanel = el("activityPanel");
+        const activityInput = el("activityInput");
+        const activityAddBtn = el("activityAddBtn");
+        const activityLog = el("activityLog");
         const moveModal = el("moveModal");
         const moveModalTitle = el("moveModalTitle");
         const moveDateLabel = el("moveDateLabel");
@@ -1050,6 +1078,7 @@
         let threeMonthCalendar = localStorage.getItem(CALENDAR_RANGE_KEY) === "true";
         let globalSearchQuery = "";
         let globalTasks = normalizeTaskLists(loadJson(TASKS_KEY, null));
+        let activityEntries = normalizeActivityEntries(loadJson(ACTIVITY_KEY, []));
         let activeTaskContext = localStorage.getItem(TASK_CONTEXT_KEY) || "Inbox";
         if (!TASK_CONTEXTS.includes(activeTaskContext))
             activeTaskContext = "Inbox";
@@ -1193,6 +1222,115 @@
                 });
             });
             return results;
+        }
+        function normalizeActivityEntries(raw) {
+            if (!Array.isArray(raw))
+                return [];
+            return raw.map(entry => ({
+                id: entry.id || createId("activity"),
+                text: typeof entry.text === "string" ? entry.text : "",
+                createdAt: entry.createdAt && !Number.isNaN(new Date(entry.createdAt).getTime()) ? entry.createdAt : new Date().toISOString()
+            })).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+        function saveActivity() {
+            activityEntries = normalizeActivityEntries(activityEntries);
+            localStorage.setItem(ACTIVITY_KEY, JSON.stringify(activityEntries));
+        }
+        function activityDateKey(value) {
+            const date = new Date(value);
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+        }
+        function activityDayLabel(value) {
+            const date = new Date(value);
+            const today = getToday();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            if (isSameDay(date, today))
+                return "Today";
+            if (isSameDay(date, yesterday))
+                return "Yesterday";
+            return date.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+        }
+        function autoGrowActivityText(box) {
+            box.style.height = "auto";
+            box.style.height = Math.max(26, box.scrollHeight) + "px";
+        }
+        function renderActivity() {
+            activityEntries = normalizeActivityEntries(activityEntries);
+            activityLog.innerHTML = "";
+            if (!activityEntries.length) {
+                const empty = document.createElement("div");
+                empty.className = "activity-empty";
+                empty.textContent = "No activity recorded yet";
+                activityLog.appendChild(empty);
+                return;
+            }
+            const groups = new Map();
+            activityEntries.forEach(entry => {
+                const key = activityDateKey(entry.createdAt);
+                if (!groups.has(key))
+                    groups.set(key, []);
+                groups.get(key).push(entry);
+            });
+            groups.forEach(entries => {
+                const section = document.createElement("section");
+                section.className = "activity-day";
+                const heading = document.createElement("div");
+                heading.className = "activity-day-title";
+                heading.textContent = activityDayLabel(entries[0].createdAt);
+                const list = document.createElement("div");
+                list.className = "activity-list";
+                entries.forEach(entry => {
+                    const row = document.createElement("div");
+                    row.className = "activity-row";
+                    const time = document.createElement("div");
+                    time.className = "activity-time";
+                    time.textContent = new Date(entry.createdAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+                    time.title = new Date(entry.createdAt).toLocaleString();
+                    const text = document.createElement("textarea");
+                    text.className = "activity-text";
+                    text.rows = 1;
+                    text.value = entry.text;
+                    setTimeout(() => autoGrowActivityText(text), 0);
+                    const del = document.createElement("button");
+                    del.type = "button";
+                    del.className = "plain-btn icon-btn activity-delete";
+                    del.textContent = "×";
+                    del.title = "Delete activity entry";
+                    text.addEventListener("input", () => {
+                        entry.text = text.value;
+                        autoGrowActivityText(text);
+                        saveActivity();
+                    });
+                    text.addEventListener("keydown", event => {
+                        if (event.key === "Enter" && !event.shiftKey) {
+                            event.preventDefault();
+                            text.blur();
+                        }
+                    });
+                    del.addEventListener("click", () => {
+                        if (!confirm("Delete this activity entry?"))
+                            return;
+                        activityEntries = activityEntries.filter(item => item.id !== entry.id);
+                        saveActivity();
+                        renderActivity();
+                    });
+                    row.append(time, text, del);
+                    list.appendChild(row);
+                });
+                section.append(heading, list);
+                activityLog.appendChild(section);
+            });
+        }
+        function addActivityEntry() {
+            const text = activityInput.value.trim();
+            if (!text)
+                return;
+            activityEntries.unshift({ id: createId("activity"), text, createdAt: new Date().toISOString() });
+            activityInput.value = "";
+            saveActivity();
+            renderActivity();
+            activityInput.focus();
         }
         function normalizeTaskLists(raw) {
             const empty = Object.fromEntries(TASK_CONTEXTS.map(context => [context, []]));
@@ -1501,7 +1639,7 @@
             const data = {};
             for (let index = 0; index < localStorage.length; index += 1) {
                 const key = localStorage.key(index);
-                if (!key || key === COMPACT_KEY || key === TASKS_KEY || key === TASK_CONTEXT_KEY || key === QUOTE_KEY || !/^timeblocks:\d{4}-\d{2}-\d{2}$/.test(key))
+                if (!key || key === COMPACT_KEY || key === TASKS_KEY || key === TASK_CONTEXT_KEY || key === ACTIVITY_KEY || key === QUOTE_KEY || !/^timeblocks:\d{4}-\d{2}-\d{2}$/.test(key))
                     continue;
                 try {
                     data[key] = JSON.parse(localStorage.getItem(key));
@@ -1517,6 +1655,7 @@
                 preferences: { notesCompact, activeTaskContext },
                 quote: favouriteQuote,
                 tasks: globalTasks,
+                activity: activityEntries,
                 data
             };
             const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "text/plain" });
@@ -1561,6 +1700,10 @@
             if (backup.tasks) {
                 globalTasks = normalizeTaskLists(backup.tasks);
                 saveTasks();
+            }
+            if (Array.isArray(backup.activity)) {
+                activityEntries = normalizeActivityEntries(backup.activity);
+                saveActivity();
             }
             if (backup.preferences && TASK_CONTEXTS.includes(backup.preferences.activeTaskContext)) {
                 activeTaskContext = backup.preferences.activeTaskContext;
@@ -1885,6 +2028,9 @@
             globalTasksPanel.hidden = true;
             globalTasksPanel.classList.remove("open");
             globalTaskInput.value = "";
+            activityPanel.hidden = true;
+            activityPanel.classList.remove("open");
+            activityInput.value = "";
         }
         function updateExpandedToolbar() {
             if (!expandedNoteId)
@@ -1927,6 +2073,22 @@
             noteModal.setAttribute("aria-hidden", "false");
             setTimeout(() => isDeletedPreview ? closeExpandedNote.focus() : expandedBody.focus(), 0);
         }
+        function openActivity() {
+            expandedNoteId = null;
+            expandedTitle.value = "Activity";
+            expandedTitle.readOnly = true;
+            expandedBody.hidden = true;
+            expandedLinks.hidden = true;
+            expandedNoteTools.hidden = true;
+            globalTasksPanel.hidden = true;
+            globalTasksPanel.classList.remove("open");
+            activityPanel.hidden = false;
+            activityPanel.classList.add("open");
+            renderActivity();
+            noteModal.classList.add("open");
+            noteModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => activityInput.focus(), 0);
+        }
         function openTasksInboxShortcut() {
             openTasks();
             activeTaskContext = "Inbox";
@@ -1952,6 +2114,8 @@
             expandedNoteTools.hidden = true;
             globalTasksPanel.hidden = false;
             globalTasksPanel.classList.add("open");
+            activityPanel.hidden = true;
+            activityPanel.classList.remove("open");
             renderGlobalTasks();
             noteModal.classList.add("open");
             noteModal.setAttribute("aria-hidden", "false");
@@ -2409,11 +2573,17 @@
             expandedTitle.focus();
             expandedTitle.select();
         });
+        activityBtn.addEventListener("click", openActivity);
         addTaskInboxBtn.addEventListener("click", openTasksInboxShortcut);
         addTaskTodayBtn.addEventListener("click", openTasksTodayShortcut);
         sortTasksBtn.addEventListener("click", sortTasks);
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
         taskAddBtn.addEventListener("click", addGlobalTask);
+        activityAddBtn.addEventListener("click", addActivityEntry);
+        activityInput.addEventListener("keydown", event => { if (event.key === "Enter") {
+            event.preventDefault();
+            addActivityEntry();
+        } });
         globalTaskInput.addEventListener("keydown", event => { if (event.key === "Enter") {
             event.preventDefault();
             addGlobalTask();
@@ -2499,6 +2669,7 @@
         applyExpandedNoteFont();
         renderGlobalResults();
         renderGlobalTasks();
+        renderActivity();
         applyCalendarRangeView();
         buildCalendar();
         quoteInput.value = favouriteQuote;
