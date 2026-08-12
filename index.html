@@ -1368,11 +1368,11 @@
                     del.className = "plain-btn icon-btn activity-delete";
                     del.textContent = "×";
                     del.title = "Delete activity entry";
-                    text.addEventListener("input", () => {
-                        entry.text = text.value;
-                        autoGrowActivityText(text);
-                        saveActivity();
-                    });
+                    text.addEventListener("input", () => { const currentEntry = activityEntries.find(item => item.id === entry.id);
+
+if (!currentEntry) { return; }
+
+currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                     text.addEventListener("keydown", event => {
                         if (event.key === "Enter" && !event.shiftKey) {
                             event.preventDefault();
