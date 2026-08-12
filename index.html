@@ -879,6 +879,40 @@
     aspect-ratio: 105 / 148;
   }
 }
+    /* Tasks page: compact A6 portrait proportion */
+#noteModal:has(#globalTasksPanel.open) .expanded-note {
+  width: min(420px, 92vw, calc(88vh * 105 / 148));
+  height: auto;
+  min-height: 0;
+  max-height: 88vh;
+  aspect-ratio: 105 / 148;
+}
+
+#noteModal:has(#globalTasksPanel.open) .tasks-panel {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Prevent saved Wide note mode from enlarging Tasks */
+#noteModal.wide-note-page:has(#globalTasksPanel.open) .expanded-note {
+  width: min(420px, 92vw, calc(88vh * 105 / 148));
+}
+
+/* Mobile: preserve A6 proportion while fitting the viewport */
+@media (max-width: 759px) {
+  #noteModal:has(#globalTasksPanel.open) .expanded-note {
+    width: min(92vw, calc(88vh * 105 / 148));
+    height: auto;
+    min-height: 0;
+    max-height: 88vh;
+    aspect-ratio: 105 / 148;
+  }
+
+  #noteModal:has(#globalTasksPanel.open) .tasks-panel {
+    min-height: 0;
+  }
+}
   </style>
 </head>
 <body>
