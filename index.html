@@ -922,6 +922,41 @@
     min-height: 0;
   }
 }
+
+/* Mobile Calendar collapsed state: prominent full-width Show control */
+@media (max-width: 759px) {
+  body.mobile-section-active.mobile-view-calendar .sidebar.collapsed .sidebar-head {
+    min-height: 46px;
+    padding: 6px 8px;
+  }
+
+  body.mobile-section-active.mobile-view-calendar .sidebar.collapsed .calendar-head-actions {
+    display: block;
+    width: 100%;
+  }
+
+  body.mobile-section-active.mobile-view-calendar .sidebar.collapsed #sidebarToggle {
+    display: flex;
+    width: 100%;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--entry-border);
+    border-radius: 11px;
+    background: var(--soft);
+    color: var(--ink);
+    font-weight: 650;
+    text-decoration: none;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+  }
+
+  body.mobile-section-active.mobile-view-calendar .sidebar.collapsed #sidebarToggle:hover,
+  body.mobile-section-active.mobile-view-calendar .sidebar.collapsed #sidebarToggle:focus-visible {
+    background: var(--selected);
+    border-color: #aebfb6;
+  }
+}
+
   </style>
 </head>
 <body>
