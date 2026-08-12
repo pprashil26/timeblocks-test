@@ -181,8 +181,13 @@
     .activity-day:first-child { margin-top: 0; }
     .activity-day-title { color: var(--muted); font-size: var(--font-xs); font-weight: 650; margin: 0 0 5px 2px; }
     .activity-list { display: grid; gap: 5px; }
-    .activity-row { display: grid; grid-template-columns: 66px minmax(0, 1fr) auto; gap: 8px; align-items: start; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 5px 8px; }
+    .activity-row { display: grid; grid-template-columns: 66px 24px minmax(0, 1fr) auto; gap: 8px; align-items: start; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 5px 8px; }
     .activity-time { color: var(--muted); font-size: var(--font-xs); font-variant-numeric: tabular-nums; padding-top: 5px; white-space: nowrap; }
+    .activity-status { width: 24px; height: 24px; margin-top: 1px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 7px; line-height: 1; font-weight: 700; }
+    .activity-status-started { color: #526b7a; }
+    .activity-status-waiting { color: #8a6a24; }
+    .activity-status-completed { color: #4f6f5f; }
+    .activity-status-later { color: #6d6078; }
     .activity-text { min-width: 0; min-height: 26px !important; height: auto; padding: 3px 0 2px !important; line-height: 1.35; resize: none; overflow: hidden; border: 0 !important; background: transparent !important; }
     .activity-delete { color: var(--danger); margin-top: 1px; }
     .activity-empty { color: var(--muted); text-align: center; padding: 18px 8px; }
@@ -1035,6 +1040,12 @@
         const COMPACT_KEY = "timeblocks:notesCompact";
         const TASKS_KEY = "timeblocks:globalTasks";
         const ACTIVITY_KEY = "timeblocks:activityLog";
+        const ACTIVITY_STATUSES = [
+            { id: "started", icon: "▶", label: "Started" },
+            { id: "waiting", icon: "◷", label: "Waiting" },
+            { id: "completed", icon: "✓", label: "Completed" },
+            { id: "later", icon: "↷", label: "Act later" }
+        ];
         const TASK_CONTEXT_KEY = "timeblocks:taskContext";
         const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
         const NOTE_WIDE_KEY = "timeblocks:expandedNoteWide";
@@ -1300,6 +1311,7 @@
             return raw.map(entry => ({
                 id: entry.id || createId("activity"),
                 text: typeof entry.text === "string" ? entry.text : "",
+                status: ACTIVITY_STATUSES.some(status => status.id === entry.status) ? entry.status : "started",
                 createdAt: entry.createdAt && !Number.isNaN(new Date(entry.createdAt).getTime()) ? entry.createdAt : new Date().toISOString()
             })).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         }
@@ -1325,6 +1337,19 @@
         function autoGrowActivityText(box) {
             box.style.height = "auto";
             box.style.height = Math.max(26, box.scrollHeight) + "px";
+        }
+        function activityStatusDetails(statusId) {
+            return ACTIVITY_STATUSES.find(status => status.id === statusId) || ACTIVITY_STATUSES[0];
+        }
+        function cycleActivityStatus(entryId) {
+            const currentEntry = activityEntries.find(entry => entry.id === entryId);
+            if (!currentEntry)
+                return;
+            const currentIndex = ACTIVITY_STATUSES.findIndex(status => status.id === currentEntry.status);
+            const nextIndex = (currentIndex + 1) % ACTIVITY_STATUSES.length;
+            currentEntry.status = ACTIVITY_STATUSES[nextIndex].id;
+            saveActivity();
+            renderActivity();
         }
         function renderActivity() {
             activityEntries = normalizeActivityEntries(activityEntries);
@@ -1358,6 +1383,13 @@
                     time.className = "activity-time";
                     time.textContent = new Date(entry.createdAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
                     time.title = new Date(entry.createdAt).toLocaleString();
+                    const statusDetails = activityStatusDetails(entry.status);
+                    const status = document.createElement("button");
+                    status.type = "button";
+                    status.className = `plain-btn activity-status activity-status-${statusDetails.id}`;
+                    status.textContent = statusDetails.icon;
+                    status.title = `Status: ${statusDetails.label}. Click to change.`;
+                    status.setAttribute("aria-label", status.title);
                     const text = document.createElement("textarea");
                     text.className = "activity-text";
                     text.rows = 1;
@@ -1373,6 +1405,7 @@
 if (!currentEntry) { return; }
 
 currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
+                    status.addEventListener("click", () => cycleActivityStatus(entry.id));
                     text.addEventListener("keydown", event => {
                         if (event.key === "Enter" && !event.shiftKey) {
                             event.preventDefault();
@@ -1386,7 +1419,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                         saveActivity();
                         renderActivity();
                     });
-                    row.append(time, text, del);
+                    row.append(time, status, text, del);
                     list.appendChild(row);
                 });
                 section.append(heading, list);
@@ -1397,7 +1430,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             const text = activityInput.value.trim();
             if (!text)
                 return;
-            activityEntries.unshift({ id: createId("activity"), text, createdAt: new Date().toISOString() });
+            activityEntries.unshift({ id: createId("activity"), text, status: "started", createdAt: new Date().toISOString() });
             activityInput.value = "";
             saveActivity();
             renderActivity();
@@ -1439,7 +1472,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         minute: "2-digit"
       });
 
-      lines.push(`${timestamp} - ${activity.text || ""}`);
+      const statusLabel = activityStatusDetails(activity.status).label;
+      lines.push(`${timestamp} - [${statusLabel}] ${activity.text || ""}`);
     });
 
   const today = new Date();
