@@ -850,6 +850,35 @@
       color: #2f493e;
       box-shadow: 0 0 0 2px rgba(200, 169, 71, .38), inset 0 0 0 1px rgba(84, 124, 105, .10);
     }
+    /* Activity page: compact A6 portrait proportion */
+#noteModal:has(#activityPanel.open) .expanded-note {
+  width: min(420px, 92vw, calc(88vh * 105 / 148));
+  height: auto;
+  min-height: 0;
+  max-height: 88vh;
+  aspect-ratio: 105 / 148;
+}
+
+#noteModal:has(#activityPanel.open) .activity-panel {
+  min-height: 0;
+  flex: 1;
+}
+
+/* Prevent saved Wide note mode from enlarging Activity */
+#noteModal.wide-note-page:has(#activityPanel.open) .expanded-note {
+  width: min(420px, 92vw, calc(88vh * 105 / 148));
+}
+
+/* Mobile: preserve A6 proportion while fitting the viewport */
+@media (max-width: 759px) {
+  #noteModal:has(#activityPanel.open) .expanded-note {
+    width: min(92vw, calc(88vh * 105 / 148));
+    height: auto;
+    min-height: 0;
+    max-height: 88vh;
+    aspect-ratio: 105 / 148;
+  }
+}
   </style>
 </head>
 <body>
