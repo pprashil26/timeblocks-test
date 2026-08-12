@@ -1001,7 +1001,14 @@
         <div class="task-input"><input id="globalTaskInput" type="text" placeholder="+ Add task..." autocomplete="off" /><button class="plain-btn task-add-btn" id="taskAddBtn" type="button">Add</button></div>
       </div>
       <div class="activity-panel" id="activityPanel" hidden>
-        <div class="activity-toolbar"><span class="activity-title">Daily Activity Log</span></div>
+        <div class="activity-toolbar"><span class="activity-title">Daily Activity Log</span><button
+  class="plain-btn"
+  id="exportActivityBtn"
+  type="button"
+  title="Export all activity entries as a text file"
+>
+  Export
+</button></div>
         <div class="activity-input"><input id="activityInput" type="text" placeholder="What are you doing?" autocomplete="off" /><button class="plain-btn activity-add-btn" id="activityAddBtn" type="button">Add</button></div>
         <div id="activityLog"></div>
       </div>
@@ -1114,6 +1121,7 @@
         const activityPanel = el("activityPanel");
         const activityInput = el("activityInput");
         const activityAddBtn = el("activityAddBtn");
+      const exportActivityBtn = el("exportActivityBtn");
         const activityLog = el("activityLog");
         const moveModal = el("moveModal");
         const moveModalTitle = el("moveModalTitle");
@@ -1395,6 +1403,72 @@
             renderActivity();
             activityInput.focus();
         }
+      function exportActivityLog() {
+  const activities = loadJson(ACTIVITY_KEY, []);
+
+  if (!Array.isArray(activities) || activities.length === 0) {
+    alert("There are no activity entries to export.");
+    return;
+  }
+
+  const lines = [
+    "Activity Log",
+    "============",
+    ""
+  ];
+
+  activities
+    .slice()
+    .sort((a, b) => {
+      return new Date(b.createdAt).getTime() -
+        new Date(a.createdAt).getTime();
+    })
+    .forEach(activity => {
+      const date = new Date(activity.createdAt);
+
+      if (Number.isNaN(date.getTime())) {
+        return;
+      }
+
+      const timestamp = date.toLocaleString(undefined, {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      });
+
+      lines.push(`${timestamp} - ${activity.text || ""}`);
+    });
+
+  const today = new Date();
+
+  const fileDate = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, "0"),
+    String(today.getDate()).padStart(2, "0")
+  ].join("-");
+
+  const blob = new Blob(
+    [lines.join("\n")],
+    {
+      type: "text/plain;charset=utf-8"
+    }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = `activity-log-${fileDate}.txt`;
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
+}
         function normalizeTaskLists(raw) {
             const empty = Object.fromEntries(TASK_CONTEXTS.map(context => [context, []]));
             if (Array.isArray(raw)) {
@@ -2643,6 +2717,7 @@
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
         taskAddBtn.addEventListener("click", addGlobalTask);
         activityAddBtn.addEventListener("click", addActivityEntry);
+      exportActivityBtn.addEventListener("click", exportActivityLog);  
         activityInput.addEventListener("keydown", event => { if (event.key === "Enter") {
             event.preventDefault();
             addActivityEntry();
