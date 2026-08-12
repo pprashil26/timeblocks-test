@@ -226,6 +226,7 @@
       body:not(.mobile-section-active):not(.global-search-active) .shell { display: none; }
       .mobile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
       .mobile-tile { min-height: 92px; border: 1px solid var(--line); border-radius: 16px; background: #fffdf8; color: var(--ink); text-align: left; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; }
+      .mobile-primary-tile { grid-column: 1 / -1; min-height: 72px; }
       .mobile-tile-title { font-weight: 650; font-size: 14px; }
       .mobile-add-note-tile { width: 100%; min-height: 31px; margin-top: 8px; border: 1px solid var(--line); border-radius: 13px; background: #fffdf8; color: var(--ink); font-weight: 650; text-align: center; padding: 5px 10px; }
       .mobile-home-footer { margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10.5px; text-align: center; }
@@ -488,6 +489,9 @@
         min-height: 94px;
         padding: var(--space-5);
         border-radius: 17px;
+      }
+      .mobile-primary-tile {
+        min-height: 72px;
       }
       .mobile-tile-title {
         font-size: 14.5px;
@@ -935,8 +939,7 @@
 
   <section class="mobile-home" id="mobileHome" aria-label="Mobile home">
     <div class="mobile-grid">
-      <button class="mobile-tile" id="mobilePlanBtn" type="button"><span class="mobile-tile-title">Today's plan</span><span class="mobile-tile-sub">Plan your day</span></button>
-      <button class="mobile-tile" id="mobileCalendarBtn" type="button"><span class="mobile-tile-title">Calendar</span><span class="mobile-tile-sub">Open calendar</span></button>
+      <button class="mobile-tile mobile-primary-tile" id="mobileCalendarBtn" type="button"><span class="mobile-tile-title">Today's Plan &amp; Calendar</span><span class="mobile-tile-sub">Plan today or review a date</span></button>
       <button class="mobile-tile" id="mobileNotesBtn" type="button"><span class="mobile-tile-title">Notes</span><span class="mobile-tile-sub">View notes</span></button>
       <button class="mobile-tile" id="mobileTasksBtn" type="button"><span class="mobile-tile-title">Tasks</span><span class="mobile-tile-sub">Quick checklist</span></button>
     </div>
@@ -1060,7 +1063,6 @@
         const globalSearchClear = el("globalSearchClear");
         const globalResultsHead = el("globalResultsHead");
         const globalResultsList = el("globalResultsList");
-        const mobilePlanBtn = el("mobilePlanBtn");
         const mobileCalendarBtn = el("mobileCalendarBtn");
         const mobileNotesBtn = el("mobileNotesBtn");
         const mobileTasksBtn = el("mobileTasksBtn");
@@ -2698,9 +2700,12 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         globalSearchInput.addEventListener("keydown", event => { if (event.key === "Escape")
             clearGlobalSearch(); });
         globalSearchClear.addEventListener("click", clearGlobalSearch);
-        mobilePlanBtn.addEventListener("click", () => { const today = getToday(); if (isWithinRange(today))
-            selectDate(today, true); setMobileSection("plan"); });
-        mobileCalendarBtn.addEventListener("click", () => setMobileSection("calendar"));
+        mobileCalendarBtn.addEventListener("click", () => {
+            const today = getToday();
+            if (isWithinRange(today))
+                selectDate(today, true);
+            setMobileSection("calendar");
+        });
         mobileNotesBtn.addEventListener("click", () => setMobileSection("notes"));
         mobileTasksBtn.addEventListener("click", openTasksTodayShortcut);
         mobileAddNoteBtn.addEventListener("click", () => { const today = getToday(); if (isWithinRange(today))
