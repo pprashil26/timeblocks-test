@@ -957,6 +957,140 @@
   }
 }
 
+
+
+/* Desktop right-sidebar workspace: Notes, Tasks and Activity */
+.workspace-tabs {
+  display: none;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+.workspace-tab {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 4px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.workspace-tab:hover {
+  background: var(--soft);
+  color: var(--ink);
+}
+.workspace-tab.active {
+  background: var(--selected);
+  border-color: var(--entry-border);
+  color: var(--ink);
+  font-weight: 700;
+}
+.workspace-panel-host {
+  display: none;
+}
+.notes-sidebar.collapsed .workspace-tabs,
+.notes-sidebar.collapsed .workspace-panel-host {
+  display: none;
+}
+.workspace-panel-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.workspace-focus-btn {
+  display: none;
+  width: 26px;
+  height: 26px;
+  font-size: 12px;
+}
+.workspace-focus-btn.active {
+  color: var(--ink);
+  background: var(--soft);
+  font-weight: 700;
+}
+@media (min-width: 760px) {
+  .workspace-focus-btn {
+    display: inline-flex;
+  }
+  .notes-head .notes-title {
+    display: none;
+  }
+  .workspace-tabs {
+    display: inline-flex;
+  }
+  .workspace-panel-host {
+    display: block;
+  }
+  .workspace-panel-host .tasks-panel,
+  .workspace-panel-host .activity-panel {
+    display: block;
+    min-height: 0;
+    max-height: calc(100vh - 82px);
+    padding: 8px;
+    overflow-y: auto;
+    background: var(--page);
+  }
+  .workspace-panel-host .tasks-panel[hidden],
+  .workspace-panel-host .activity-panel[hidden] {
+    display: none !important;
+  }
+  .workspace-panel-host .tasks-toolbar,
+  .workspace-panel-host .activity-toolbar {
+    align-items: center;
+  }
+  .workspace-panel-host .activity-row {
+    grid-template-columns: 54px 24px minmax(0, 1fr) auto;
+    gap: 5px;
+    padding: 5px 6px;
+  }
+  .workspace-panel-host .activity-time {
+    font-size: 10px;
+  }
+  .workspace-panel-host .task-contexts {
+    gap: 4px;
+  }
+  .workspace-panel-host .task-context-btn {
+    padding: 3px 7px;
+    font-size: 11px;
+  }
+  body.workspace-focus-active:not(.global-search-active) .shell {
+    display: block;
+    max-width: 980px;
+  }
+  body.workspace-focus-active .sidebar,
+  body.workspace-focus-active .app {
+    display: none;
+  }
+  body.workspace-focus-active .notes-sidebar {
+    width: 100%;
+    max-width: 980px;
+    box-shadow: var(--shadow);
+  }
+  body.workspace-focus-active .notes-sidebar.collapsed {
+    width: 100%;
+  }
+  body.workspace-focus-active .notes-sidebar.collapsed .notes-head,
+  body.workspace-focus-active .notes-sidebar.collapsed .notes-wrap {
+    display: flex;
+  }
+  body.workspace-focus-active .notes-sidebar.collapsed .notes-wrap {
+    display: block;
+  }
+  body.workspace-focus-active .workspace-panel-host .tasks-panel,
+  body.workspace-focus-active .workspace-panel-host .activity-panel {
+    max-height: calc(100vh - 76px);
+    padding: 12px;
+  }
+  body.workspace-focus-active .workspace-panel-host .activity-row {
+    grid-template-columns: 74px 28px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  body.workspace-focus-active .workspace-panel-host .activity-time {
+    font-size: var(--font-xs);
+  }
+}
+
   </style>
 </head>
 <body>
@@ -1012,7 +1146,7 @@
             <button class="plain-btn nav-day-btn" id="nextDayBtn" type="button">›</button>
           </div>
         </div>
-        <div class="toolbar"><div class="hint">A lightweight GTD-inspired daily planner</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="activityBtn" type="button">Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button">+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button">+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
+        <div class="toolbar"><div class="hint">A lightweight GTD-inspired daily planner</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button" hidden>Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to midnight"></section>
@@ -1021,37 +1155,38 @@
     </main>
 
     <aside class="notes-sidebar" id="notesSidebar" aria-label="Lined notepad sidebar">
-      <div class="notes-head"><div class="notes-title">Notepad</div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
-      <div class="notes-wrap">
+      <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Right sidebar panels"><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
+      <div class="notes-wrap" id="notesWorkspacePanel">
         <div class="mobile-notes-date" id="mobileNotesDate">Notes for selected date</div>
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
         <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn icon-btn notes-toolbar-icon" id="notesPinnedBtn" type="button" title="Show pinned notes only" aria-pressed="false">☆</button><button class="plain-btn icon-btn notes-toolbar-icon compact-btn" id="compactNotesBtn" type="button" title="Hide note previews">▤</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
+      <div class="workspace-panel-host" id="workspacePanelHost"></div>
     </aside>
   </div>
 
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
-    <section class="expanded-note" role="dialog" aria-modal="true" aria-label="Expanded note editor">
+    <section class="expanded-note" id="expandedNoteShell" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
       <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="icon-btn" id="expandedWideBtn" type="button" title="Toggle wide note view">↔</button><button class="icon-btn" id="expandedLineBtn" type="button" title="Insert horizontal line">─</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedFontBtn" type="button">Larger font</button><button class="plain-btn" id="expandedCopyBtn" type="button">Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move note</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete note</button></span></span></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
-        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span><button class="plain-btn" id="sortTasksBtn" type="button">Sort</button><span> · </span><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button></span></div>
+        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" title="Focus on Tasks">⛶</button><button class="plain-btn" id="sortTasksBtn" type="button">Sort</button><span> · </span><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button></span></div>
         <div class="task-contexts" id="taskContexts"></div>
         <div class="task-list" id="globalTaskList"></div>
         <div class="task-input"><input id="globalTaskInput" type="text" placeholder="+ Add task..." autocomplete="off" /><button class="plain-btn task-add-btn" id="taskAddBtn" type="button">Add</button></div>
       </div>
       <div class="activity-panel" id="activityPanel" hidden>
-        <div class="activity-toolbar"><span class="activity-title">Daily Activity Log</span><button
+        <div class="activity-toolbar"><span class="activity-title">Daily Activity Log</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="activityFocusBtn" type="button" title="Focus on Activity">⛶</button><button
   class="plain-btn"
   id="exportActivityBtn"
   type="button"
   title="Export all activity entries as a text file"
 >
   Export
-</button></div>
+</button></span></div>
         <div class="activity-input"><input id="activityInput" type="text" placeholder="What are you doing?" autocomplete="off" /><button class="plain-btn activity-add-btn" id="activityAddBtn" type="button">Add</button></div>
         <div id="activityLog"></div>
       </div>
@@ -1111,6 +1246,11 @@
         const sidebarToggle = el("sidebarToggle");
         const calendarRangeBtn = el("calendarRangeBtn");
         const notesSidebar = el("notesSidebar");
+        const notesWorkspacePanel = el("notesWorkspacePanel");
+        const workspacePanelHost = el("workspacePanelHost");
+        const workspaceNotesTab = el("workspaceNotesTab");
+        const workspaceTasksTab = el("workspaceTasksTab");
+        const workspaceActivityTab = el("workspaceActivityTab");
         const notesToggle = el("notesToggle");
         const calendarWrap = el("calendarWrap");
         const timeline = el("timeline");
@@ -1159,6 +1299,7 @@
         const expandedFontBtn = el("expandedFontBtn");
         const expandedDeleteBtn = el("expandedDeleteBtn");
         const closeExpandedNote = el("closeExpandedNote");
+        const expandedNoteShell = el("expandedNoteShell");
         const globalTasksPanel = el("globalTasksPanel");
         const taskContexts = el("taskContexts");
         const globalTaskList = el("globalTaskList");
@@ -1166,9 +1307,11 @@
         const taskAddBtn = el("taskAddBtn");
         const sortTasksBtn = el("sortTasksBtn");
         const clearDoneTasksBtn = el("clearDoneTasksBtn");
+        const tasksFocusBtn = el("tasksFocusBtn");
         const activityPanel = el("activityPanel");
         const activityInput = el("activityInput");
         const activityAddBtn = el("activityAddBtn");
+        const activityFocusBtn = el("activityFocusBtn");
       const exportActivityBtn = el("exportActivityBtn");
         const activityLog = el("activityLog");
         const moveModal = el("moveModal");
@@ -1195,6 +1338,8 @@
         let notesFocusView = localStorage.getItem(NOTE_FOCUS_KEY) === "true";
         let notesPinnedOnly = localStorage.getItem(NOTES_PINNED_ONLY_KEY) === "true";
         let threeMonthCalendar = localStorage.getItem(CALENDAR_RANGE_KEY) === "true";
+        let desktopWorkspacePanel = "notes";
+        let workspaceFocusPanel = null;
         let globalSearchQuery = "";
         let globalTasks = normalizeTaskLists(loadJson(TASKS_KEY, null));
         let activityEntries = normalizeActivityEntries(loadJson(ACTIVITY_KEY, []));
@@ -1964,6 +2109,17 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             }
         }
         function toggleNotesFocusView() {
+            if (!isMobileViewport()) {
+                if (desktopWorkspacePanel !== "notes")
+                    showDesktopWorkspacePanel("notes");
+                notesFocusView = !notesFocusView;
+                workspaceFocusPanel = null;
+                localStorage.setItem(NOTE_FOCUS_KEY, String(notesFocusView));
+                closeNotesMoreMenu();
+                applyNotesFocusView();
+                applyWorkspaceFocusState();
+                return;
+            }
             notesFocusView = !notesFocusView;
             localStorage.setItem(NOTE_FOCUS_KEY, String(notesFocusView));
             closeNotesMoreMenu();
@@ -2233,12 +2389,16 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             expandedNoteTools.hidden = false;
             closeExpandedMoreMenu();
             applyExpandedNoteWide();
-            globalTasksPanel.hidden = true;
-            globalTasksPanel.classList.remove("open");
-            globalTaskInput.value = "";
-            activityPanel.hidden = true;
-            activityPanel.classList.remove("open");
-            activityInput.value = "";
+            if (globalTasksPanel.parentElement === expandedNoteShell) {
+                globalTasksPanel.hidden = true;
+                globalTasksPanel.classList.remove("open");
+                globalTaskInput.value = "";
+            }
+            if (activityPanel.parentElement === expandedNoteShell) {
+                activityPanel.hidden = true;
+                activityPanel.classList.remove("open");
+                activityInput.value = "";
+            }
         }
         function updateExpandedToolbar() {
             if (!expandedNoteId)
@@ -2281,7 +2441,84 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             noteModal.setAttribute("aria-hidden", "false");
             setTimeout(() => isDeletedPreview ? closeExpandedNote.focus() : expandedBody.focus(), 0);
         }
+        function moveWorkspacePanelsToSidebar() {
+            if (globalTasksPanel.parentElement !== workspacePanelHost)
+                workspacePanelHost.appendChild(globalTasksPanel);
+            if (activityPanel.parentElement !== workspacePanelHost)
+                workspacePanelHost.appendChild(activityPanel);
+        }
+        function moveWorkspacePanelsToModal() {
+            if (globalTasksPanel.parentElement !== expandedNoteShell)
+                expandedNoteShell.insertBefore(globalTasksPanel, expandedLinks);
+            if (activityPanel.parentElement !== expandedNoteShell)
+                expandedNoteShell.insertBefore(activityPanel, expandedLinks);
+        }
+        function updateWorkspaceTabs() {
+            const tabs = [
+                [workspaceNotesTab, "notes"],
+                [workspaceTasksTab, "tasks"],
+                [workspaceActivityTab, "activity"]
+            ];
+            tabs.forEach(([button, panel]) => {
+                const active = desktopWorkspacePanel === panel;
+                button.classList.toggle("active", active);
+                button.setAttribute("aria-selected", String(active));
+            });
+        }
+        function applyWorkspaceFocusState() {
+            const active = !isMobileViewport() && Boolean(workspaceFocusPanel);
+            document.body.classList.toggle("workspace-focus-active", active);
+            tasksFocusBtn.classList.toggle("active", workspaceFocusPanel === "tasks");
+            activityFocusBtn.classList.toggle("active", workspaceFocusPanel === "activity");
+            tasksFocusBtn.textContent = workspaceFocusPanel === "tasks" ? "↩" : "⛶";
+            activityFocusBtn.textContent = workspaceFocusPanel === "activity" ? "↩" : "⛶";
+            tasksFocusBtn.title = workspaceFocusPanel === "tasks" ? "Return to normal planner view" : "Focus on Tasks";
+            activityFocusBtn.title = workspaceFocusPanel === "activity" ? "Return to normal planner view" : "Focus on Activity";
+        }
+        function showDesktopWorkspacePanel(panel, focusCapture = false) {
+            if (isMobileViewport())
+                return;
+            const wasFocused = notesFocusView || Boolean(workspaceFocusPanel);
+            if (notesFocusView) {
+                notesFocusView = false;
+                localStorage.setItem(NOTE_FOCUS_KEY, "false");
+                applyNotesFocusView();
+            }
+            desktopWorkspacePanel = panel;
+            moveWorkspacePanelsToSidebar();
+            notesWorkspacePanel.hidden = panel !== "notes";
+            globalTasksPanel.hidden = panel !== "tasks";
+            globalTasksPanel.classList.toggle("open", panel === "tasks");
+            activityPanel.hidden = panel !== "activity";
+            activityPanel.classList.toggle("open", panel === "activity");
+            workspaceFocusPanel = wasFocused && panel !== "notes" ? panel : null;
+            if (wasFocused && panel === "notes") {
+                notesFocusView = true;
+                localStorage.setItem(NOTE_FOCUS_KEY, "true");
+                applyNotesFocusView();
+            }
+            if (panel === "tasks")
+                renderGlobalTasks();
+            if (panel === "activity")
+                renderActivity();
+            updateWorkspaceTabs();
+            applyWorkspaceFocusState();
+            setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
+            if (focusCapture)
+                setTimeout(() => panel === "tasks" ? globalTaskInput.focus() : activityInput.focus(), 0);
+        }
+        function toggleWorkspacePanelFocus(panel) {
+            if (isMobileViewport())
+                return;
+            workspaceFocusPanel = workspaceFocusPanel === panel ? null : panel;
+            applyWorkspaceFocusState();
+        }
         function openActivity() {
+            if (!isMobileViewport()) {
+                showDesktopWorkspacePanel("activity", true);
+                return;
+            }
+            moveWorkspacePanelsToModal();
             expandedNoteId = null;
             expandedTitle.value = "Activity";
             expandedTitle.readOnly = true;
@@ -2312,6 +2549,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             setTimeout(() => globalTaskInput.focus(), 0);
         }
         function openTasks() {
+            if (!isMobileViewport()) {
+                showDesktopWorkspacePanel("tasks");
+                return;
+            }
+            moveWorkspacePanelsToModal();
             expandedNoteId = null;
             activeTaskContext = "Inbox";
             localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext);
@@ -2351,6 +2593,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             expandedLinks.innerHTML = "";
             expandedLinks.hidden = true;
             expandedNoteId = null;
+            if (!isMobileViewport()) {
+                moveWorkspacePanelsToSidebar();
+                showDesktopWorkspacePanel(desktopWorkspacePanel);
+            }
         }
         function insertExpandedHorizontalLine() {
             if (!expandedNoteId || expandedBody.readOnly || expandedBody.hidden)
@@ -2784,6 +3030,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             expandedTitle.focus();
             expandedTitle.select();
         });
+        workspaceNotesTab.addEventListener("click", () => showDesktopWorkspacePanel("notes"));
+        workspaceTasksTab.addEventListener("click", () => showDesktopWorkspacePanel("tasks"));
+        workspaceActivityTab.addEventListener("click", () => showDesktopWorkspacePanel("activity"));
+        tasksFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("tasks"));
+        activityFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("activity"));
         activityBtn.addEventListener("click", openActivity);
         addTaskInboxBtn.addEventListener("click", openTasksInboxShortcut);
         addTaskTodayBtn.addEventListener("click", openTasksTodayShortcut);
@@ -2871,7 +3122,14 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         calendarRangeBtn.addEventListener("click", toggleCalendarRangeView);
         sidebarToggle.addEventListener("click", () => { const collapsed = !sidebar.classList.contains("collapsed"); setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", collapsed); updateFocusViewButton(); });
         notesToggle.addEventListener("click", () => { const collapsed = !notesSidebar.classList.contains("collapsed"); setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", collapsed); updateFocusViewButton(); });
-        window.addEventListener("resize", () => { document.querySelectorAll("textarea[data-time]").forEach(autoGrow); document.querySelectorAll(".note-body").forEach(autoGrowNoteBody); });
+        window.addEventListener("resize", () => {
+            document.querySelectorAll("textarea[data-time]").forEach(autoGrow);
+            document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
+            if (!isMobileViewport() && !noteModal.classList.contains("open")) {
+                moveWorkspacePanelsToSidebar();
+                showDesktopWorkspacePanel(desktopWorkspacePanel);
+            }
+        });
         window.addEventListener("hashchange", () => { const hashDate = fromKey(location.hash.replace("#", "")); if (hashDate && isWithinRange(hashDate))
             selectDate(hashDate, false); });
         applyNotesCompact();
@@ -2882,6 +3140,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         renderGlobalResults();
         renderGlobalTasks();
         renderActivity();
+        if (!isMobileViewport())
+            showDesktopWorkspacePanel("notes");
         applyCalendarRangeView();
         buildCalendar();
         quoteInput.value = favouriteQuote;
