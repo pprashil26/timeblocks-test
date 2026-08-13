@@ -943,11 +943,26 @@
   }
 }
 
-/* Mobile Calendar collapsed state: prominent full-width Show control */
+/* Mobile collapsed Calendar: full-width Show Calendar bar */
 @media (max-width: 759px) {
+  body.mobile-section-active.mobile-view-calendar .sidebar.collapsed {
+    width: 100%;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
   body.mobile-section-active.mobile-view-calendar .sidebar.collapsed .sidebar-head {
-    min-height: 46px;
-    padding: 6px 8px;
+    display: block;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  body.mobile-section-active.mobile-view-calendar .sidebar.collapsed .sidebar-title {
+    display: none;
   }
 
   body.mobile-section-active.mobile-view-calendar .sidebar.collapsed .calendar-head-actions {
@@ -958,22 +973,30 @@
   body.mobile-section-active.mobile-view-calendar .sidebar.collapsed #sidebarToggle {
     display: flex;
     width: 100%;
-    min-height: 34px;
+    min-height: 36px;
     align-items: center;
     justify-content: center;
+    padding: 7px 12px;
     border: 1px solid var(--entry-border);
-    border-radius: 11px;
-    background: var(--soft);
+    border-radius: 13px;
+    background: var(--selected);
     color: var(--ink);
+    font-size: var(--font-sm);
     font-weight: 650;
+    line-height: 1.2;
     text-decoration: none;
+    cursor: pointer;
     transition: background .15s ease, border-color .15s ease, color .15s ease;
   }
 
-  body.mobile-section-active.mobile-view-calendar .sidebar.collapsed #sidebarToggle:hover,
+  body.mobile-section-active.mobile-view-calendar .sidebar.collapsed #sidebarToggle:hover {
+    background: #d2e2d9;
+    text-decoration: none;
+  }
+
   body.mobile-section-active.mobile-view-calendar .sidebar.collapsed #sidebarToggle:focus-visible {
-    background: var(--selected);
-    border-color: #aebfb6;
+    outline: 2px solid rgba(123, 146, 133, .48);
+    outline-offset: 2px;
   }
 }
 
@@ -3268,12 +3291,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         function setSidebarCollapsed(panel, button, shellClass, collapsed) {
             panel.classList.toggle("collapsed", collapsed);
             shell.classList.toggle(shellClass, collapsed);
-            button.textContent =
-  collapsed && panel === sidebar && isMobileViewport()
-    ? "Show Calendar"
-    : collapsed
-      ? "Show"
-      : "Hide";
+            button.textContent = collapsed && panel === sidebar && isMobileViewport()
+                ? "Show Calendar"
+                : collapsed
+                    ? "Show"
+                    : "Hide";
             button.setAttribute("aria-expanded", String(!collapsed));
         }
         function applyDesktopCalendarPreference() {
@@ -3557,67 +3579,7 @@ document.addEventListener("keydown", event => {
   }
 });
     })();
-  /* Mobile collapsed Calendar: full-width Show Calendar bar */
-@media (max-width: 759px) {
-  body.mobile-section-active.mobile-view-calendar
-    .sidebar.collapsed {
-    width: 100%;
-    overflow: visible;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-  }
-
-  body.mobile-section-active.mobile-view-calendar
-    .sidebar.collapsed
-    .sidebar-head {
-    display: block;
-    min-height: 0;
-    padding: 0;
-    border: 0;
-    background: transparent;
-  }
-
-  body.mobile-section-active.mobile-view-calendar
-    .sidebar.collapsed
-    .sidebar-title {
-    display: none;
-  }
-
-  body.mobile-section-active.mobile-view-calendar
-    .sidebar.collapsed
-    #sidebarToggle {
-    display: flex;
-    width: 100%;
-    min-height: 36px;
-    align-items: center;
-    justify-content: center;
-    padding: 7px 12px;
-    border: 1px solid var(--entry-border);
-    border-radius: 13px;
-    background: var(--selected);
-    color: var(--ink);
-    font-size: var(--font-sm);
-    font-weight: 650;
-    line-height: 1.2;
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  body.mobile-section-active.mobile-view-calendar
-    .sidebar.collapsed
-    #sidebarToggle:hover {
-    background: #d2e2d9;
-    text-decoration: none;
-  }
-
-  body.mobile-section-active.mobile-view-calendar
-    .sidebar.collapsed
-    #sidebarToggle:focus-visible {
-    outline: 2px solid rgba(123, 146, 133, 0.48);
-    outline-offset: 2px;
-  }
-}
+  
   
   
   </script>
