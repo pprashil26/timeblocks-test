@@ -107,8 +107,23 @@
     .note-label { color: var(--muted); font-size: var(--font-xs); text-align: right; }
     .timeline { display: grid; gap: 3px; padding: 5px 10px 6px; }
     .time-pair-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; border-bottom: 1px solid var(--line); padding-bottom: 3px; }
-    .slot { display: grid; grid-template-columns: 42px 16px 1fr; min-height: 24px; border-radius: 8px; background: #fffdf8; }
+    .slot { position: relative; display: grid; grid-template-columns: 42px 16px 1fr; min-height: 24px; border-radius: 8px; background: #fffdf8; }
     .slot.current-slot { background: #fff3c7; }
+    .slot.current-slot::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 50%;
+      height: 3px;
+      border-radius: 0 3px 3px 0;
+      background: #a77820;
+      pointer-events: none;
+    }
+    .slot.current-slot.current-last-15::after {
+      left: 50%;
+      border-radius: 3px 0 0 3px;
+    }
     .slot.drop-ok { background: #e9f4ea; }
     .slot.drop-block { background: #f7ebe8; }
     .time { padding: 5px 5px 2px 2px; font-size: 10.5px; font-weight: 600; text-align: right; }
@@ -2923,7 +2938,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             updateSearchUi();
         }
         function highlightCurrentTimeBlock() {
-            document.querySelectorAll(".slot.current-slot").forEach(slot => slot.classList.remove("current-slot"));
+            document.querySelectorAll(".slot.current-slot, .slot.current-first-15, .slot.current-last-15").forEach(slot => {
+                slot.classList.remove("current-slot", "current-first-15", "current-last-15");
+                slot.removeAttribute("title");
+            });
             const today = getToday();
             if (!isSameDay(selectedDate, today))
                 return;
@@ -2934,8 +2952,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             const roundedMinutes = Math.floor(currentMinutes / 30) * 30;
             const timeId = `${pad(Math.floor(roundedMinutes / 60))}:${pad(roundedMinutes % 60)}`;
             const currentSlot = document.querySelector(`.slot[data-time="${timeId}"]`);
-            if (currentSlot)
-                currentSlot.classList.add("current-slot");
+            if (!currentSlot)
+                return;
+            const isFirstFifteen = currentMinutes - roundedMinutes < 15;
+            currentSlot.classList.add("current-slot", isFirstFifteen ? "current-first-15" : "current-last-15");
+            currentSlot.title = `Current block: ${isFirstFifteen ? "first" : "last"} 15 minutes`;
         }
         function loadSelectedDate() {
             readSavedData();
