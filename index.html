@@ -1325,6 +1325,7 @@
         const NOTE_FOCUS_KEY = "timeblocks:notesFocusView";
         const NOTES_PINNED_ONLY_KEY = "timeblocks:notesPinnedOnly";
         const CALENDAR_RANGE_KEY = "timeblocks:threeMonthCalendar";
+        const CALENDAR_COLLAPSED_KEY = "timeblocks:calendarCollapsed";
         const QUOTE_KEY = "timeblocks:favouriteQuote";
         const LAST_IMPORT_KEY = "timeblocks:lastImportAt";
         const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects", "Today"];
@@ -1439,6 +1440,7 @@
         let notesFocusView = localStorage.getItem(NOTE_FOCUS_KEY) === "true";
         let notesPinnedOnly = localStorage.getItem(NOTES_PINNED_ONLY_KEY) === "true";
         let threeMonthCalendar = localStorage.getItem(CALENDAR_RANGE_KEY) === "true";
+        let desktopCalendarCollapsed = localStorage.getItem(CALENDAR_COLLAPSED_KEY) === "true";
         let desktopWorkspacePanel = "notes";
         let workspaceFocusPanel = null;
         let globalSearchQuery = "";
@@ -3106,6 +3108,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             button.textContent = collapsed ? "Show" : "Hide";
             button.setAttribute("aria-expanded", String(!collapsed));
         }
+        function applyDesktopCalendarPreference() {
+            if (isMobileViewport())
+                return;
+            setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", desktopCalendarCollapsed);
+        }
         function toggleFocusView() {
             const bothCollapsed = sidebar.classList.contains("collapsed") && notesSidebar.classList.contains("collapsed");
             const collapseBoth = !bothCollapsed;
@@ -3264,7 +3271,15 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             reader.readAsText(file);
         });
         calendarRangeBtn.addEventListener("click", toggleCalendarRangeView);
-        sidebarToggle.addEventListener("click", () => { const collapsed = !sidebar.classList.contains("collapsed"); setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", collapsed); updateFocusViewButton(); });
+        sidebarToggle.addEventListener("click", () => {
+            const collapsed = !sidebar.classList.contains("collapsed");
+            setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", collapsed);
+            if (!isMobileViewport()) {
+                desktopCalendarCollapsed = collapsed;
+                localStorage.setItem(CALENDAR_COLLAPSED_KEY, String(desktopCalendarCollapsed));
+            }
+            updateFocusViewButton();
+        });
         notesToggle.addEventListener("click", () => { const collapsed = !notesSidebar.classList.contains("collapsed"); setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", collapsed); updateFocusViewButton(); });
         window.addEventListener("resize", () => {
             document.querySelectorAll("textarea[data-time]").forEach(autoGrow);
@@ -3279,6 +3294,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         applyNotesCompact();
         applyNotesPinnedFilter();
         updateSearchUi();
+        applyDesktopCalendarPreference();
         updateFocusViewButton();
         applyExpandedNoteFont();
         renderGlobalResults();
