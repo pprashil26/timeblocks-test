@@ -195,6 +195,7 @@
     .activity-text { min-width: 0; min-height: 26px !important; height: auto; padding: 3px 0 2px !important; line-height: 1.35; resize: none; overflow: hidden; border: 0 !important; background: transparent !important; }
     .activity-delete { color: var(--danger); margin-top: 1px; }
     .activity-empty { color: var(--muted); text-align: center; padding: 18px 8px; }
+    .activity-filter-btn.active { color: var(--ink); background: var(--soft); font-weight: 700; }
     .tasks-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--muted); }
     .tasks-title { font-weight: 650; color: var(--ink); }
     .task-contexts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
@@ -1262,7 +1263,7 @@
         <div class="task-input"><input id="globalTaskInput" type="text" placeholder="+ Add task..." autocomplete="off" /><button class="plain-btn task-add-btn" id="taskAddBtn" type="button">Add</button></div>
       </div>
       <div class="activity-panel" id="activityPanel" hidden>
-        <div class="activity-toolbar"><span class="activity-title">Daily Activity Log</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="activityFocusBtn" type="button" title="Focus on Activity">⛶</button><button
+        <div class="activity-toolbar"><span class="activity-title">Daily Activity Log</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="activityFocusBtn" type="button" title="Focus on Activity">⛶</button><button class="plain-btn icon-btn activity-filter-btn" id="activityFilterBtn" type="button" title="Hide completed activities" aria-pressed="false">✓</button><button
   class="plain-btn"
   id="exportActivityBtn"
   type="button"
@@ -1296,6 +1297,7 @@
         const COMPACT_KEY = "timeblocks:notesCompact";
         const TASKS_KEY = "timeblocks:globalTasks";
         const ACTIVITY_KEY = "timeblocks:activityLog";
+        const ACTIVITY_HIDE_COMPLETED_KEY = "timeblocks:activityHideCompleted";
         const ACTIVITY_STATUSES = [
             { id: "started", icon: "▶", label: "Started" },
             { id: "waiting", icon: "◷", label: "Waiting" },
@@ -1395,6 +1397,7 @@
         const activityInput = el("activityInput");
         const activityAddBtn = el("activityAddBtn");
         const activityFocusBtn = el("activityFocusBtn");
+        const activityFilterBtn = el("activityFilterBtn");
       const exportActivityBtn = el("exportActivityBtn");
         const activityLog = el("activityLog");
         const moveModal = el("moveModal");
@@ -1426,6 +1429,7 @@
         let globalSearchQuery = "";
         let globalTasks = normalizeTaskLists(loadJson(TASKS_KEY, null));
         let activityEntries = normalizeActivityEntries(loadJson(ACTIVITY_KEY, []));
+        let activityHideCompleted = localStorage.getItem(ACTIVITY_HIDE_COMPLETED_KEY) === "true";
         let activeTaskContext = localStorage.getItem(TASK_CONTEXT_KEY) || "Inbox";
         if (!TASK_CONTEXTS.includes(activeTaskContext))
             activeTaskContext = "Inbox";
@@ -1625,18 +1629,32 @@
             saveActivity();
             renderActivity();
         }
+        function applyActivityFilter() {
+            activityFilterBtn.classList.toggle("active", activityHideCompleted);
+            activityFilterBtn.setAttribute("aria-pressed", String(activityHideCompleted));
+            activityFilterBtn.title = activityHideCompleted ? "Show completed activities" : "Hide completed activities";
+        }
+        function toggleActivityFilter() {
+            activityHideCompleted = !activityHideCompleted;
+            localStorage.setItem(ACTIVITY_HIDE_COMPLETED_KEY, String(activityHideCompleted));
+            applyActivityFilter();
+            renderActivity();
+        }
         function renderActivity() {
             activityEntries = normalizeActivityEntries(activityEntries);
             activityLog.innerHTML = "";
-            if (!activityEntries.length) {
+            const visibleEntries = activityHideCompleted
+                ? activityEntries.filter(entry => entry.status !== "completed")
+                : activityEntries;
+            if (!visibleEntries.length) {
                 const empty = document.createElement("div");
                 empty.className = "activity-empty";
-                empty.textContent = "No activity recorded yet";
+                empty.textContent = activityEntries.length ? "No active activities" : "No activity recorded yet";
                 activityLog.appendChild(empty);
                 return;
             }
             const groups = new Map();
-            activityEntries.forEach(entry => {
+            visibleEntries.forEach(entry => {
                 const key = activityDateKey(entry.createdAt);
                 if (!groups.has(key))
                     groups.set(key, []);
@@ -3146,6 +3164,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
         taskAddBtn.addEventListener("click", addGlobalTask);
         activityAddBtn.addEventListener("click", addActivityEntry);
+        activityFilterBtn.addEventListener("click", toggleActivityFilter);
       exportActivityBtn.addEventListener("click", exportActivityLog);  
         activityInput.addEventListener("keydown", event => { if (event.key === "Enter") {
             event.preventDefault();
@@ -3243,6 +3262,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         applyExpandedNoteFont();
         renderGlobalResults();
         renderGlobalTasks();
+        applyActivityFilter();
         renderActivity();
         if (!isMobileViewport())
             showDesktopWorkspacePanel("notes");
