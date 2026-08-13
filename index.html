@@ -1190,6 +1190,129 @@
   }
 }
 
+
+/* Mobile capture-first home */
+@media (max-width: 759px) {
+  .mobile-home {
+    min-height: calc(100vh - 16px);
+    padding: 18px 14px 12px;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  body:not(.mobile-section-active):not(.global-search-active) .mobile-home {
+    display: flex;
+  }
+  .mobile-home-quote-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 12px;
+  }
+  .mobile-home-quote {
+    max-width: 320px;
+    margin: 0;
+    color: var(--ink);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.45;
+    letter-spacing: -0.02em;
+    text-align: center;
+    white-space: pre-wrap;
+  }
+  .mobile-home-bottom {
+    margin-top: auto;
+  }
+  .mobile-home-status {
+    margin-bottom: 10px;
+  }
+  .mobile-home-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
+  .mobile-home-link {
+    min-height: 42px;
+    padding: 7px 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    border-radius: 9px;
+    text-align: center;
+    text-decoration: none !important;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .mobile-home-link.primary {
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .mobile-home-link:hover,
+  .mobile-home-link:focus-visible {
+    background: var(--soft);
+    color: var(--ink);
+  }
+  .mobile-more-backdrop {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: flex-end;
+    padding: 12px;
+    background: rgba(61, 58, 52, .24);
+    backdrop-filter: blur(1px);
+    z-index: 60;
+  }
+  .mobile-more-backdrop.open {
+    display: flex;
+  }
+  .mobile-more-sheet {
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 8px;
+    background: var(--page);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(50, 40, 28, .22);
+  }
+  .mobile-more-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px 9px;
+    border-bottom: 1px solid var(--line);
+  }
+  .mobile-more-title {
+    font-weight: 700;
+  }
+  .mobile-more-list {
+    display: grid;
+    padding: 6px 0 2px;
+  }
+  .mobile-more-item {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 10px;
+    color: var(--ink);
+    text-align: left;
+    border-radius: 9px;
+    text-decoration: none !important;
+  }
+  .mobile-more-item:hover,
+  .mobile-more-item:focus-visible {
+    background: var(--soft);
+  }
+}
+@media (max-width: 360px) {
+  .mobile-home-nav {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -1206,23 +1329,37 @@
   </section>
 
   <section class="mobile-home" id="mobileHome" aria-label="Mobile home">
-    <div class="mobile-grid">
-      <button class="mobile-tile mobile-primary-tile" id="mobileCalendarBtn" type="button"><span class="mobile-tile-title">Today's Plan &amp; Calendar</span><span class="mobile-tile-sub">Plan today or review a date</span></button>
-      <button class="mobile-tile" id="mobileNotesBtn" type="button"><span class="mobile-tile-title">Notes</span><span class="mobile-tile-sub">View notes</span></button>
-      <button class="mobile-tile" id="mobileTasksBtn" type="button"><span class="mobile-tile-title">Tasks</span><span class="mobile-tile-sub">Quick checklist</span></button>
+    <div class="mobile-home-quote-wrap">
+      <p class="mobile-home-quote" id="mobileHomeQuote">You have to assemble your life yourself, action by action.</p>
     </div>
-    <button class="mobile-add-note-tile" id="mobileAddNoteBtn" type="button">+ Note</button>
-    <button class="mobile-add-note-tile mobile-add-task-tile" id="mobileAddTaskBtn" type="button">+ Task</button>
-    <div class="mobile-home-footer">
-      <span class="footer-actions">
-        <span>Saved locally on this device</span><span>·</span>
-        <button class="plain-btn backup-btn mobile-export-btn" type="button">Export</button><span>·</span>
-        <button class="plain-btn backup-btn mobile-import-btn" type="button">Import</button><span>·</span>
-        <button class="plain-btn backup-btn help-btn" type="button">Help</button>
-      </span>
-      <div class="last-import-status" data-last-import-status>Last import: Never</div>
+    <div class="mobile-home-bottom">
+      <div class="last-import-status mobile-home-status" data-last-import-status>Last import: Never</div>
+      <nav class="mobile-home-nav" aria-label="Quick actions">
+        <button class="plain-btn mobile-home-link primary" id="mobileAddTaskBtn" type="button">+ Inbox</button>
+        <button class="plain-btn mobile-home-link primary" id="mobileActivityBtn" type="button">+ Activity</button>
+        <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Calendar</button>
+        <button class="plain-btn mobile-home-link" id="mobileMoreBtn" type="button" aria-expanded="false">More</button>
+      </nav>
     </div>
   </section>
+
+  <div class="mobile-more-backdrop" id="mobileMoreMenu" aria-hidden="true">
+    <section class="mobile-more-sheet" role="dialog" aria-modal="true" aria-label="More options">
+      <div class="mobile-more-head">
+        <span class="mobile-more-title">More</span>
+        <button class="plain-btn" id="mobileMoreCloseBtn" type="button">Close</button>
+      </div>
+      <div class="mobile-more-list">
+        <button class="plain-btn mobile-more-item" id="mobilePlanBtn" type="button">Today's plan</button>
+        <button class="plain-btn mobile-more-item" id="mobileNotesBtn" type="button">Notes</button>
+        <button class="plain-btn mobile-more-item" id="mobileTasksBtn" type="button">Tasks</button>
+        <button class="plain-btn mobile-more-item" id="mobileMoreActivityBtn" type="button">Activity</button>
+        <button class="plain-btn mobile-more-item mobile-export-btn" type="button">Export</button>
+        <button class="plain-btn mobile-more-item mobile-import-btn" type="button">Import</button>
+        <button class="plain-btn mobile-more-item help-btn" type="button">Help</button>
+      </div>
+    </section>
+  </div>
 
   <div class="mobile-section-bar" id="mobileSectionBar">
     <button class="plain-btn" id="mobileHomeBtn" type="button">Home</button>
@@ -1328,6 +1465,7 @@
         const CALENDAR_COLLAPSED_KEY = "timeblocks:calendarCollapsed";
         const QUOTE_KEY = "timeblocks:favouriteQuote";
         const LAST_IMPORT_KEY = "timeblocks:lastImportAt";
+        const MOBILE_HOME_QUOTE_FALLBACK = "You have to assemble your life yourself, action by action.";
         const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects", "Today"];
         const el = id => document.getElementById(id);
         const globalSearchInput = el("globalSearchInput");
@@ -1335,10 +1473,16 @@
         const globalResultsHead = el("globalResultsHead");
         const globalResultsList = el("globalResultsList");
         const mobileCalendarBtn = el("mobileCalendarBtn");
+        const mobilePlanBtn = el("mobilePlanBtn");
         const mobileNotesBtn = el("mobileNotesBtn");
         const mobileTasksBtn = el("mobileTasksBtn");
-        const mobileAddNoteBtn = el("mobileAddNoteBtn");
         const mobileAddTaskBtn = el("mobileAddTaskBtn");
+        const mobileActivityBtn = el("mobileActivityBtn");
+        const mobileMoreBtn = el("mobileMoreBtn");
+        const mobileMoreMenu = el("mobileMoreMenu");
+        const mobileMoreCloseBtn = el("mobileMoreCloseBtn");
+        const mobileMoreActivityBtn = el("mobileMoreActivityBtn");
+        const mobileHomeQuote = el("mobileHomeQuote");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
         const mobileNotesDate = el("mobileNotesDate");
@@ -1501,6 +1645,19 @@
                 element.textContent = shortText;
                 element.title = fullText;
             });
+        }
+        function renderMobileHomeQuote() {
+            mobileHomeQuote.textContent = favouriteQuote.trim() || MOBILE_HOME_QUOTE_FALLBACK;
+        }
+        function openMobileMoreMenu() {
+            mobileMoreMenu.classList.add("open");
+            mobileMoreMenu.setAttribute("aria-hidden", "false");
+            mobileMoreBtn.setAttribute("aria-expanded", "true");
+        }
+        function closeMobileMoreMenu() {
+            mobileMoreMenu.classList.remove("open");
+            mobileMoreMenu.setAttribute("aria-hidden", "true");
+            mobileMoreBtn.setAttribute("aria-expanded", "false");
         }
         function formatTime(hour, minute) { return `${hour % 12 || 12}:${pad(minute)}`; }
         function createId(prefix = "note") { return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`; }
@@ -2188,6 +2345,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 favouriteQuote = backup.quote;
                 quoteInput.value = favouriteQuote;
                 localStorage.setItem(QUOTE_KEY, favouriteQuote);
+                renderMobileHomeQuote();
             }
             if (backup.tasks) {
                 globalTasks = normalizeTaskLists(backup.tasks);
@@ -3126,6 +3284,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         quoteInput.addEventListener("input", () => {
             favouriteQuote = quoteInput.value;
             localStorage.setItem(QUOTE_KEY, favouriteQuote);
+            renderMobileHomeQuote();
         });
         globalSearchInput.addEventListener("input", () => { globalSearchQuery = globalSearchInput.value; renderGlobalResults(); });
         globalSearchInput.addEventListener("keydown", event => { if (event.key === "Escape")
@@ -3137,15 +3296,25 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 selectDate(today, true);
             setMobileSection("calendar");
         });
-        mobileNotesBtn.addEventListener("click", () => setMobileSection("notes"));
-        mobileTasksBtn.addEventListener("click", openTasksTodayShortcut);
-        mobileAddNoteBtn.addEventListener("click", () => { const today = getToday(); if (isWithinRange(today))
-            selectDate(today, true); setMobileSection("notes"); setTimeout(() => addNoteBtn.click(), 0); });
+        mobilePlanBtn.addEventListener("click", () => {
+            closeMobileMoreMenu();
+            const today = getToday();
+            if (isWithinRange(today))
+                selectDate(today, true);
+            setMobileSection("plan");
+        });
+        mobileNotesBtn.addEventListener("click", () => { closeMobileMoreMenu(); setMobileSection("notes"); });
+        mobileTasksBtn.addEventListener("click", () => { closeMobileMoreMenu(); openTasksTodayShortcut(); });
         mobileAddTaskBtn.addEventListener("click", openTasksInboxShortcut);
+        mobileActivityBtn.addEventListener("click", openActivity);
+        mobileMoreActivityBtn.addEventListener("click", () => { closeMobileMoreMenu(); openActivity(); });
+        mobileMoreBtn.addEventListener("click", openMobileMoreMenu);
+        mobileMoreCloseBtn.addEventListener("click", closeMobileMoreMenu);
+        mobileMoreMenu.addEventListener("click", event => { if (event.target === mobileMoreMenu) closeMobileMoreMenu(); });
         mobileHomeBtn.addEventListener("click", clearMobileSection);
-        document.querySelectorAll(".mobile-export-btn").forEach(button => button.addEventListener("click", exportBackup));
-        document.querySelectorAll(".mobile-import-btn").forEach(button => button.addEventListener("click", () => importBackupBtn.click()));
-        document.querySelectorAll(".help-btn").forEach(button => button.addEventListener("click", openHelp));
+        document.querySelectorAll(".mobile-export-btn").forEach(button => button.addEventListener("click", () => { closeMobileMoreMenu(); exportBackup(); }));
+        document.querySelectorAll(".mobile-import-btn").forEach(button => button.addEventListener("click", () => { closeMobileMoreMenu(); importBackupBtn.click(); }));
+        document.querySelectorAll(".help-btn").forEach(button => button.addEventListener("click", () => { closeMobileMoreMenu(); openHelp(); }));
         closeHelpBtn.addEventListener("click", closeHelp);
         helpModal.addEventListener("click", event => { if (event.target === helpModal)
             closeHelp(); });
@@ -3229,6 +3398,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             closeMoveNote(); });
         document.addEventListener("keydown", event => {
             if (event.key === "Escape") {
+                if (mobileMoreMenu.classList.contains("open"))
+                    closeMobileMoreMenu();
                 if (globalSearchQuery)
                     clearGlobalSearch();
                 if (noteModal.classList.contains("open"))
@@ -3306,6 +3477,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         applyCalendarRangeView();
         buildCalendar();
         quoteInput.value = favouriteQuote;
+        renderMobileHomeQuote();
         renderLastImportStatus();
         loadSelectedDate();
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
