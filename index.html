@@ -1340,7 +1340,23 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+/* Mobile homepage tagline */
+.mobile-home-tagline {
+  display: none;
+}
 
+@media (max-width: 759px) {
+  .mobile-home-tagline {
+    display: block;
+    margin-top: 7px;
+    color: rgba(138, 131, 120, 0.72);
+    font-size: 10.5px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    text-align: center;
+  }
+}
   </style>
 </head>
 <body>
@@ -1362,6 +1378,7 @@
       <button class="plain-btn mobile-home-link primary" id="mobileActivityBtn" type="button">+ Activity</button>
       <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Calendar</button>
       <button class="plain-btn mobile-home-link" id="mobileMoreBtn" type="button" aria-expanded="false">More</button>
+      <div class="mobile-home-tagline">  A lightweight GTD app - empty your mind </div>
     </nav>
     <div class="mobile-home-quote-wrap">
       <p class="mobile-home-quote" id="mobileHomeQuote">You have to assemble your life yourself, action by action.</p>
