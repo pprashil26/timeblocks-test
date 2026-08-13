@@ -1191,6 +1191,11 @@
 }
 
 
+/* Mobile-only More menu: hidden by default so it cannot affect desktop layout */
+.mobile-more-backdrop {
+  display: none;
+}
+
 /* Mobile capture-first home */
 @media (max-width: 759px) {
   .mobile-home {
@@ -1225,14 +1230,14 @@
     margin-top: auto;
   }
   .mobile-home-status {
-    margin-bottom: 10px;
+    margin-top: 10px;
   }
   .mobile-home-nav {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 4px;
-    padding-top: 10px;
-    border-top: 1px solid var(--line);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
   }
   .mobile-home-link {
     min-height: 42px;
@@ -1329,17 +1334,17 @@
   </section>
 
   <section class="mobile-home" id="mobileHome" aria-label="Mobile home">
+    <nav class="mobile-home-nav" aria-label="Quick actions">
+      <button class="plain-btn mobile-home-link primary" id="mobileAddTaskBtn" type="button">+ Inbox</button>
+      <button class="plain-btn mobile-home-link primary" id="mobileActivityBtn" type="button">+ Activity</button>
+      <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Calendar</button>
+      <button class="plain-btn mobile-home-link" id="mobileMoreBtn" type="button" aria-expanded="false">More</button>
+    </nav>
     <div class="mobile-home-quote-wrap">
       <p class="mobile-home-quote" id="mobileHomeQuote">You have to assemble your life yourself, action by action.</p>
     </div>
     <div class="mobile-home-bottom">
       <div class="last-import-status mobile-home-status" data-last-import-status>Last import: Never</div>
-      <nav class="mobile-home-nav" aria-label="Quick actions">
-        <button class="plain-btn mobile-home-link primary" id="mobileAddTaskBtn" type="button">+ Inbox</button>
-        <button class="plain-btn mobile-home-link primary" id="mobileActivityBtn" type="button">+ Activity</button>
-        <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Calendar</button>
-        <button class="plain-btn mobile-home-link" id="mobileMoreBtn" type="button" aria-expanded="false">More</button>
-      </nav>
     </div>
   </section>
 
