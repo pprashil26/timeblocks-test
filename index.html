@@ -1115,6 +1115,17 @@
   }
 }
 
+
+/* Desktop: widen right workspace when only Calendar is collapsed */
+@media (min-width: 760px) {
+  .shell.left-collapsed:not(.right-collapsed) {
+    grid-template-columns:
+      42px
+      minmax(0, 1fr)
+      clamp(280px, 28vw, 380px);
+  }
+}
+
   </style>
 </head>
 <body>
