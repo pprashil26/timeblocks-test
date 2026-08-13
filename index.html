@@ -1091,6 +1091,30 @@
   }
 }
 
+
+
+/* Desktop responsive full-width workspace */
+@media (min-width: 760px) {
+  .global-search-wrap,
+  .shell {
+    width: calc(100vw - 24px);
+    max-width: 1560px;
+  }
+
+  .shell {
+    grid-template-columns:
+      clamp(190px, 17vw, 230px)
+      minmax(0, 1fr)
+      clamp(250px, 23vw, 320px);
+    gap: 10px;
+  }
+
+  .app,
+  .notes-sidebar {
+    min-width: 0;
+  }
+}
+
   </style>
 </head>
 <body>
