@@ -1130,6 +1130,50 @@
   }
 }
 
+
+/* Activity entry layout: keep content primary and actions below */
+.activity-row {
+  grid-template-columns: 66px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  row-gap: 3px;
+  grid-template-areas:
+    "time text delete"
+    ". actions .";
+}
+.activity-time {
+  grid-area: time;
+}
+.activity-text {
+  grid-area: text;
+}
+.activity-delete {
+  grid-area: delete;
+}
+.activity-row-actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+}
+.activity-row-actions .activity-status,
+.activity-row-actions .activity-highlight {
+  margin-top: 0;
+}
+
+@media (min-width: 760px) {
+  .workspace-panel-host .activity-row {
+    grid-template-columns: 54px minmax(0, 1fr) auto;
+    column-gap: 6px;
+  }
+
+  body.workspace-focus-active .workspace-panel-host .activity-row {
+    grid-template-columns: 74px minmax(0, 1fr) auto;
+    column-gap: 8px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -1658,7 +1702,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                         saveActivity();
                         renderActivity();
                     });
-                    row.append(time, status, highlight, text, del);
+                    const actions = document.createElement("div");
+                    actions.className = "activity-row-actions";
+                    actions.append(status, highlight);
+                    row.append(time, text, del, actions);
                     list.appendChild(row);
                 });
                 section.append(heading, list);
