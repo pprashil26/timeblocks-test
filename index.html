@@ -1231,23 +1231,36 @@
   body:not(.mobile-section-active):not(.global-search-active) .mobile-home {
     display: flex;
   }
-  .mobile-home-quote-wrap {
+  .mobile-home-brand {
     flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 10px;
     padding: 28px 12px;
-  }
-  .mobile-home-quote {
-    max-width: 320px;
-    margin: 0;
-    color: var(--ink);
-    font-size: 22px;
-    font-weight: 600;
-    line-height: 1.45;
-    letter-spacing: -0.02em;
     text-align: center;
-    white-space: pre-wrap;
+  }
+  .mobile-home-logo {
+    display: block;
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+  }
+  .mobile-home-brand-tagline {
+    margin: 0;
+    color: rgba(138, 131, 120, .78);
+    font-size: 11.5px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: .005em;
+  }
+  .mobile-home-brand-tagline span {
+    display: block;
+  }
+  .mobile-home-brand-tagline span:last-child {
+    color: rgba(61, 58, 52, .72);
+    font-style: italic;
   }
   .mobile-home-bottom {
     margin-top: auto;
@@ -1340,23 +1353,6 @@
     grid-template-columns: 1fr 1fr;
   }
 }
-/* Mobile homepage tagline */
-.mobile-home-tagline {
-  display: none;
-}
-
-@media (max-width: 759px) {
-  .mobile-home-tagline {
-    display: block;
-    margin-top: 7px;
-    color: rgba(138, 131, 120, 0.72);
-    font-size: 10.5px;
-    font-weight: 500;
-    line-height: 1.3;
-    letter-spacing: 0.01em;
-    text-align: center;
-  }
-}
   </style>
 </head>
 <body>
@@ -1379,9 +1375,12 @@
       <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Calendar</button>
       <button class="plain-btn mobile-home-link" id="mobileMoreBtn" type="button" aria-expanded="false">More</button>
       </nav>
-    <div class="mobile-home-tagline">  A lightweight GTD app - empty your mind </div>
-    <div class="mobile-home-quote-wrap">
-      <p class="mobile-home-quote" id="mobileHomeQuote">You have to assemble your life yourself, action by action.</p>
+    <div class="mobile-home-brand" aria-label="Timeblocks">
+      <img class="mobile-home-logo" src="logo.png" alt="Timeblocks logo" />
+      <p class="mobile-home-brand-tagline">
+        <span>A lightweight GTD app</span>
+        <span>empty your mind</span>
+      </p>
     </div>
     <div class="mobile-home-bottom">
       <div class="last-import-status mobile-home-status" data-last-import-status>Last import: Never</div>
@@ -1510,7 +1509,6 @@
         const CALENDAR_COLLAPSED_KEY = "timeblocks:calendarCollapsed";
         const QUOTE_KEY = "timeblocks:favouriteQuote";
         const LAST_IMPORT_KEY = "timeblocks:lastImportAt";
-        const MOBILE_HOME_QUOTE_FALLBACK = "You have to assemble your life yourself, action by action.";
         const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects", "Today"];
         const el = id => document.getElementById(id);
         const globalSearchInput = el("globalSearchInput");
@@ -1527,7 +1525,6 @@
         const mobileMoreMenu = el("mobileMoreMenu");
         const mobileMoreCloseBtn = el("mobileMoreCloseBtn");
         const mobileMoreActivityBtn = el("mobileMoreActivityBtn");
-        const mobileHomeQuote = el("mobileHomeQuote");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
         const mobileNotesDate = el("mobileNotesDate");
@@ -1690,9 +1687,6 @@
                 element.textContent = shortText;
                 element.title = fullText;
             });
-        }
-        function renderMobileHomeQuote() {
-            mobileHomeQuote.textContent = favouriteQuote.trim() || MOBILE_HOME_QUOTE_FALLBACK;
         }
         function openMobileMoreMenu() {
             mobileMoreMenu.classList.add("open");
@@ -2390,7 +2384,6 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 favouriteQuote = backup.quote;
                 quoteInput.value = favouriteQuote;
                 localStorage.setItem(QUOTE_KEY, favouriteQuote);
-                renderMobileHomeQuote();
             }
             if (backup.tasks) {
                 globalTasks = normalizeTaskLists(backup.tasks);
@@ -3333,7 +3326,6 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         quoteInput.addEventListener("input", () => {
             favouriteQuote = quoteInput.value;
             localStorage.setItem(QUOTE_KEY, favouriteQuote);
-            renderMobileHomeQuote();
         });
         globalSearchInput.addEventListener("input", () => { globalSearchQuery = globalSearchInput.value; renderGlobalResults(); });
         globalSearchInput.addEventListener("keydown", event => { if (event.key === "Escape")
@@ -3526,7 +3518,6 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         applyCalendarRangeView();
         buildCalendar();
         quoteInput.value = favouriteQuote;
-        renderMobileHomeQuote();
         renderLastImportStatus();
         loadSelectedDate();
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
