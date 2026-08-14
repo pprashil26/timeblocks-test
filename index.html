@@ -2724,10 +2724,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 text.value = task.text;
                 text.placeholder = "Task";
                 setTimeout(() => autoGrowTaskText(text), 0);
-                const canMoveTask = activeTaskContext === "Inbox" || ["Home", "Work", "Projects"].includes(activeTaskContext);
-                const moveTargets = activeTaskContext === "Inbox"
+                const canMoveTask = TASK_CONTEXTS.includes(activeTaskContext);
+                const moveTargets = activeTaskContext === "Inbox" || activeTaskContext === "Today"
                     ? TASK_CONTEXTS.filter(context => context !== activeTaskContext)
-                    : canMoveTask ? ["Today"] : [];
+                    : ["Today"];
                 row.classList.toggle("no-move", !canMoveTask);
                 const move = document.createElement("button");
                 move.type = "button";
