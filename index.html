@@ -1526,6 +1526,90 @@
   }
 }
 
+
+/* Mobile homepage Help action */
+@media (max-width: 759px) {
+  .mobile-home-nav {
+    grid-template-columns: minmax(52px, .85fr) minmax(62px, .95fr) minmax(128px, 1.75fr) minmax(48px, .72fr) 38px;
+  }
+  .mobile-home-help {
+    width: 38px;
+    min-width: 38px;
+    padding-left: 0;
+    padding-right: 0;
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+@media (max-width: 430px) {
+  .mobile-home-nav {
+    grid-template-columns: 1fr 1fr;
+  }
+  .mobile-home-help {
+    width: 100%;
+  }
+}
+
+
+/* Mobile homepage direct navigation and backup footer */
+@media (max-width: 759px) {
+  .mobile-home-nav {
+    grid-template-columns:
+      minmax(108px, 1.35fr)
+      minmax(72px, .9fr)
+      minmax(132px, 1.55fr)
+      minmax(50px, .65fr)
+      38px;
+  }
+
+  .mobile-home-data-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 28px;
+    flex-wrap: wrap;
+    color: var(--muted);
+    font-size: 10.5px;
+    line-height: 1.25;
+    text-align: center;
+  }
+
+  .mobile-home-data-row .mobile-home-status {
+    margin-top: 0;
+  }
+
+  .mobile-home-data-link {
+    min-height: 28px;
+    padding: 4px 2px;
+    color: var(--muted);
+    font-size: 10.5px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .mobile-home-data-link:hover,
+  .mobile-home-data-link:focus-visible {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  .mobile-home-data-separator {
+    color: rgba(138, 131, 120, .62);
+  }
+}
+
+@media (max-width: 520px) {
+  .mobile-home-nav {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mobile-home-help {
+    width: 100%;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -1543,37 +1627,28 @@
 
   <section class="mobile-home" id="mobileHome" aria-label="Mobile home">
     <nav class="mobile-home-nav" aria-label="Quick actions">
-      <button class="plain-btn mobile-home-link primary" id="mobileAddTaskBtn" type="button">+ Inbox</button>
+      <button class="plain-btn mobile-home-link primary" id="mobileAddTaskBtn" type="button">+ Inbox &amp; Tasks</button>
       <button class="plain-btn mobile-home-link primary" id="mobileActivityBtn" type="button">+ Activity</button>
       <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Calendar &amp; Today's plan</button>
-      <button class="plain-btn mobile-home-link" id="mobileMoreBtn" type="button" aria-expanded="false">More</button>
-      </nav>
+      <button class="plain-btn mobile-home-link" id="mobileNotesBtn" type="button">Notes</button>
+      <button class="plain-btn mobile-home-link mobile-home-help" id="mobileHelpBtn" type="button" title="Help" aria-label="Help">?</button>
+    </nav>
     <div class="mobile-home-brand" aria-label="Timeblocks">
       <img class="mobile-home-logo" src="logo.png" alt="Timeblocks logo" />
       <p class="mobile-home-brand-motto">Finish Actions, Save Time</p>
       <p class="mobile-home-brand-tagline">A lightweight GTD app · empty your mind</p>
     </div>
     <div class="mobile-home-bottom">
-      <div class="last-import-status mobile-home-status" data-last-import-status>Last import: Never</div>
+      <div class="mobile-home-data-row">
+        <div class="last-import-status mobile-home-status" data-last-import-status>Last import: Never</div>
+        <span class="mobile-home-data-separator" aria-hidden="true">·</span>
+        <button class="plain-btn mobile-home-data-link mobile-export-btn" type="button">Export</button>
+        <span class="mobile-home-data-separator" aria-hidden="true">·</span>
+        <button class="plain-btn mobile-home-data-link mobile-import-btn" type="button">Import</button>
+      </div>
     </div>
   </section>
 
-  <div class="mobile-more-backdrop" id="mobileMoreMenu" aria-hidden="true">
-    <section class="mobile-more-sheet" role="dialog" aria-modal="true" aria-label="More options">
-      <div class="mobile-more-head">
-        <span class="mobile-more-title">More</span>
-        <button class="plain-btn" id="mobileMoreCloseBtn" type="button">Close</button>
-      </div>
-      <div class="mobile-more-list">
-        <button class="plain-btn mobile-more-item" id="mobileNotesBtn" type="button">Notes</button>
-        <button class="plain-btn mobile-more-item" id="mobileTasksBtn" type="button">Tasks</button>
-        <button class="plain-btn mobile-more-item" id="mobileMoreActivityBtn" type="button">Activity</button>
-        <button class="plain-btn mobile-more-item mobile-export-btn" type="button">Export</button>
-        <button class="plain-btn mobile-more-item mobile-import-btn" type="button">Import</button>
-        <button class="plain-btn mobile-more-item help-btn" type="button">Help</button>
-      </div>
-    </section>
-  </div>
 
   <div class="mobile-section-bar" id="mobileSectionBar">
     <button class="plain-btn" id="mobileHomeBtn" type="button">Home</button>
@@ -1687,13 +1762,9 @@
         const globalResultsList = el("globalResultsList");
         const mobileCalendarBtn = el("mobileCalendarBtn");
         const mobileNotesBtn = el("mobileNotesBtn");
-        const mobileTasksBtn = el("mobileTasksBtn");
         const mobileAddTaskBtn = el("mobileAddTaskBtn");
         const mobileActivityBtn = el("mobileActivityBtn");
-        const mobileMoreBtn = el("mobileMoreBtn");
-        const mobileMoreMenu = el("mobileMoreMenu");
-        const mobileMoreCloseBtn = el("mobileMoreCloseBtn");
-        const mobileMoreActivityBtn = el("mobileMoreActivityBtn");
+        const mobileHelpBtn = el("mobileHelpBtn");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
         const mobileNotesDate = el("mobileNotesDate");
@@ -1856,16 +1927,6 @@
                 element.textContent = shortText;
                 element.title = fullText;
             });
-        }
-        function openMobileMoreMenu() {
-            mobileMoreMenu.classList.add("open");
-            mobileMoreMenu.setAttribute("aria-hidden", "false");
-            mobileMoreBtn.setAttribute("aria-expanded", "true");
-        }
-        function closeMobileMoreMenu() {
-            mobileMoreMenu.classList.remove("open");
-            mobileMoreMenu.setAttribute("aria-hidden", "true");
-            mobileMoreBtn.setAttribute("aria-expanded", "false");
         }
         function formatTime(hour, minute) { return `${hour % 12 || 12}:${pad(minute)}`; }
         function createId(prefix = "note") { return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`; }
@@ -3506,18 +3567,14 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 selectDate(today, true);
             setMobileSection("calendar");
         });
-        mobileNotesBtn.addEventListener("click", () => { closeMobileMoreMenu(); setMobileSection("notes"); });
-        mobileTasksBtn.addEventListener("click", () => { closeMobileMoreMenu(); openTasksTodayShortcut(); });
+        mobileNotesBtn.addEventListener("click", () => setMobileSection("notes"));
         mobileAddTaskBtn.addEventListener("click", openTasksInboxShortcut);
         mobileActivityBtn.addEventListener("click", openActivity);
-        mobileMoreActivityBtn.addEventListener("click", () => { closeMobileMoreMenu(); openActivity(); });
-        mobileMoreBtn.addEventListener("click", openMobileMoreMenu);
-        mobileMoreCloseBtn.addEventListener("click", closeMobileMoreMenu);
-        mobileMoreMenu.addEventListener("click", event => { if (event.target === mobileMoreMenu) closeMobileMoreMenu(); });
+        mobileHelpBtn.addEventListener("click", openHelp);
         mobileHomeBtn.addEventListener("click", clearMobileSection);
-        document.querySelectorAll(".mobile-export-btn").forEach(button => button.addEventListener("click", () => { closeMobileMoreMenu(); exportBackup(); }));
-        document.querySelectorAll(".mobile-import-btn").forEach(button => button.addEventListener("click", () => { closeMobileMoreMenu(); importBackupBtn.click(); }));
-        document.querySelectorAll(".help-btn").forEach(button => button.addEventListener("click", () => { closeMobileMoreMenu(); openHelp(); }));
+        document.querySelectorAll(".mobile-export-btn").forEach(button => button.addEventListener("click", exportBackup));
+        document.querySelectorAll(".mobile-import-btn").forEach(button => button.addEventListener("click", () => importBackupBtn.click()));
+        document.querySelectorAll(".help-btn").forEach(button => button.addEventListener("click", openHelp));
         closeHelpBtn.addEventListener("click", closeHelp);
         helpModal.addEventListener("click", event => { if (event.target === helpModal)
             closeHelp(); });
@@ -3601,8 +3658,6 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             closeMoveNote(); });
         document.addEventListener("keydown", event => {
             if (event.key === "Escape") {
-                if (mobileMoreMenu.classList.contains("open"))
-                    closeMobileMoreMenu();
                 if (globalSearchQuery)
                     clearGlobalSearch();
                 if (noteModal.classList.contains("open"))
