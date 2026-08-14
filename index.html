@@ -1607,6 +1607,22 @@
   }
 }
 
+
+/* Responsive Help content; Help panel UI remains unchanged */
+.help-mobile-content {
+  display: none;
+}
+
+@media (max-width: 759px) {
+  .help-desktop-content {
+    display: none;
+  }
+
+  .help-mobile-content {
+    display: block;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -1721,7 +1737,7 @@
   </div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true">
-    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use Notes for details, links, and reminders.</li><li>Use Tasks for a simple global checklist by context.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Compact to show more notes.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are global and grouped by Inbox, Home, Work, Projects, and Today.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></section>
+    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by context.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Use Compact to show more notes and the star to show pinned notes only.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Home, Work, Projects, and Today.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>How to use</h3><ol><li>Use + Inbox to capture a task and open the Tasks panel.</li><li>Use + Activity to record an Activity entry.</li><li>Use Planner to open Calendar and Today’s plan.</li><li>Use Notes to open notes for the selected date.</li><li>Use ? to open Help at any time.</li><li>Use Export in the homepage footer regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>In Tasks, switch between Inbox, Home, Work, Projects, and Today.</li><li>In Notes, use the star to show pinned notes only and Compact to show more entries.</li><li>Select the required date in Planner before opening date-specific Notes.</li><li>Import and Last import are available in the homepage footer.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></div></section>
   </div>
 
   <script>
