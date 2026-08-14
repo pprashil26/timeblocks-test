@@ -1900,6 +1900,36 @@
   }
 }
 
+
+/* Mobile-only Share action */
+@media (max-width: 759px) {
+  .mobile-share-btn {
+    min-height: 28px;
+    padding: 4px 8px;
+    border: 1px solid #e2cd61;
+    border-radius: 999px;
+    background: #FFEE8C;
+    color: #4f4518;
+    font-weight: 700;
+    text-decoration: none !important;
+    box-shadow: 0 2px 7px rgba(122, 106, 42, .13);
+  }
+
+  .mobile-share-btn:hover,
+  .mobile-share-btn:focus-visible,
+  .mobile-share-btn.copied {
+    background: #f8e46f;
+    color: #3f3713;
+    text-decoration: none;
+  }
+}
+
+@media (min-width: 760px) {
+  .mobile-share-btn {
+    display: none !important;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -1935,6 +1965,8 @@
         <button class="plain-btn mobile-home-data-link mobile-export-btn" type="button">Export</button>
         <span class="mobile-home-data-separator" aria-hidden="true">·</span>
         <button class="plain-btn mobile-home-data-link mobile-import-btn" type="button">Import</button>
+        <span class="mobile-home-data-separator" aria-hidden="true">·</span>
+        <button class="plain-btn mobile-home-data-link mobile-share-btn" id="mobileShareBtn" type="button" title="Share FAST GTD" aria-label="Share FAST GTD">↗ Share</button>
       </div>
     </div>
   </section>
@@ -2056,6 +2088,7 @@
         const mobileAddTaskBtn = el("mobileAddTaskBtn");
         const mobileActivityBtn = el("mobileActivityBtn");
         const mobileHelpBtn = el("mobileHelpBtn");
+        const mobileShareBtn = el("mobileShareBtn");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
         const mobileNotesDate = el("mobileNotesDate");
@@ -3596,6 +3629,39 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 fallbackCopy(text, markCopied);
             }
         }
+        function shareFastGtd() {
+            const shareData = {
+                title: "FAST GTD",
+                text: "Try FAST GTD, a lightweight GTD app for planning, tasks, notes and activity tracking. Finish Actions, Save Time.",
+                url: "https://pprashil26.github.io/fastgtd/"
+            };
+            const markCopied = () => {
+                const originalText = mobileShareBtn.textContent;
+                mobileShareBtn.textContent = "Copied ✓";
+                mobileShareBtn.classList.add("copied");
+                setTimeout(() => {
+                    mobileShareBtn.textContent = originalText;
+                    mobileShareBtn.classList.remove("copied");
+                }, 1200);
+            };
+            const copyShareLink = () => {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(shareData.url).then(markCopied).catch(() => fallbackCopy(shareData.url, markCopied));
+                }
+                else {
+                    fallbackCopy(shareData.url, markCopied);
+                }
+            };
+            if (navigator.share) {
+                navigator.share(shareData).catch(error => {
+                    if (error && error.name !== "AbortError")
+                        copyShareLink();
+                });
+            }
+            else {
+                copyShareLink();
+            }
+        }
         function fallbackCopy(text, callback) {
             const temp = document.createElement("textarea");
             temp.value = text;
@@ -3976,6 +4042,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         mobileAddTaskBtn.addEventListener("click", openTasksInboxShortcut);
         mobileActivityBtn.addEventListener("click", openActivity);
         mobileHelpBtn.addEventListener("click", openHelp);
+        mobileShareBtn.addEventListener("click", shareFastGtd);
         mobileHomeBtn.addEventListener("click", clearMobileSection);
         document.querySelectorAll(".mobile-export-btn").forEach(button => button.addEventListener("click", exportBackup));
         document.querySelectorAll(".mobile-import-btn").forEach(button => button.addEventListener("click", () => importBackupBtn.click()));
