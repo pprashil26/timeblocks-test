@@ -1804,6 +1804,102 @@
   }
 }
 
+
+/* Mobile-only brighter warm-white theme */
+@media (max-width: 759px) {
+  :root {
+    --bg: #f5f6f4;
+    --page: #ffffff;
+    --panel: #f8f9f7;
+    --ink: #343832;
+    --muted: #737970;
+    --line: #dce1dc;
+    --soft: #eef1ed;
+    --entry: #edf4f0;
+    --entry-border: #b8cec2;
+    --selected: #d7e7de;
+    --shadow: 0 9px 24px rgba(46, 57, 50, .065);
+  }
+
+  body {
+    background: var(--bg);
+  }
+
+  .global-search-box,
+  .global-results,
+  .mobile-home,
+  .mobile-section-bar,
+  .sidebar,
+  .notes-sidebar,
+  .app,
+  .expanded-note,
+  .move-note-panel,
+  .help-panel,
+  .mobile-more-sheet {
+    background-color: var(--page);
+    border-color: var(--line);
+  }
+
+  .sidebar-head,
+  .notes-head,
+  header,
+  .expanded-note-head,
+  .move-note-head,
+  .help-head {
+    background: linear-gradient(180deg, #ffffff 0%, #f6f8f5 100%);
+    border-bottom-color: var(--line);
+  }
+
+  input[type="text"],
+  input[type="date"],
+  textarea,
+  .slot,
+  .note-card,
+  .global-result-card,
+  .tasks-panel,
+  .activity-panel {
+    background-color: #ffffff;
+  }
+
+  .global-search-box input {
+    background: transparent;
+  }
+
+  .quote-block,
+  footer,
+  .note-title-area,
+  .note-tools-row,
+  .link-preview,
+  .global-results-head {
+    background-color: var(--panel);
+    border-color: var(--line);
+  }
+
+  .note-body,
+  .expanded-body {
+    background-color: #ffffff;
+  }
+
+  #noteModal.wide-note-page .expanded-body {
+    background-color: #ffffff;
+  }
+
+  #noteModal:has(#globalTasksPanel.open) .task-row,
+  #noteModal:has(#activityPanel.open) .activity-row {
+    background: #ffffff;
+    border-color: var(--line);
+  }
+
+  .task-row.done {
+    background: #f7f8f6;
+  }
+
+  .modal-backdrop,
+  .mobile-more-backdrop {
+    background: rgba(52, 56, 50, .22);
+  }
+}
+
   </style>
 </head>
 <body>
