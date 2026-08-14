@@ -1555,12 +1555,7 @@
 /* Mobile homepage direct navigation and backup footer */
 @media (max-width: 759px) {
   .mobile-home-nav {
-    grid-template-columns:
-      minmax(108px, 1.35fr)
-      minmax(72px, .9fr)
-      minmax(132px, 1.55fr)
-      minmax(50px, .65fr)
-      38px;
+    grid-template-columns: minmax(52px, .9fr) minmax(68px, 1.05fr) minmax(52px, .85fr) minmax(48px, .75fr) 38px;
   }
 
   .mobile-home-data-row {
@@ -1600,13 +1595,15 @@
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 360px) {
   .mobile-home-nav {
-    grid-template-columns: 1fr 1fr;
+    gap: 2px;
   }
 
-  .mobile-home-help {
-    width: 100%;
+  .mobile-home-link {
+    padding-left: 1px;
+    padding-right: 1px;
+    font-size: 11px;
   }
 }
 
@@ -1627,9 +1624,9 @@
 
   <section class="mobile-home" id="mobileHome" aria-label="Mobile home">
     <nav class="mobile-home-nav" aria-label="Quick actions">
-      <button class="plain-btn mobile-home-link primary" id="mobileAddTaskBtn" type="button">+ Inbox &amp; Tasks</button>
+      <button class="plain-btn mobile-home-link primary" id="mobileAddTaskBtn" type="button">+ Inbox</button>
       <button class="plain-btn mobile-home-link primary" id="mobileActivityBtn" type="button">+ Activity</button>
-      <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Calendar &amp; Today's plan</button>
+      <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Planner</button>
       <button class="plain-btn mobile-home-link" id="mobileNotesBtn" type="button">Notes</button>
       <button class="plain-btn mobile-home-link mobile-home-help" id="mobileHelpBtn" type="button" title="Help" aria-label="Help">?</button>
     </nav>
