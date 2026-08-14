@@ -14,7 +14,7 @@ jobs:
       - name: Checkout live repo
         uses: actions/checkout@v4
         with:
-          repository: pprashil26/timeblocks
+          repository: pprashil26/fastgtd
           token: ${{ secrets.LIVE_REPO_TOKEN }}
           path: live-repo
 
@@ -32,6 +32,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to promote."
           else
-            git commit -m "Promote tested Timeblocks version to live"
+            git commit -m "Promote tested fastgtd version to live"
             git push
           fi
