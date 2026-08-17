@@ -4159,11 +4159,15 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
     return;
   }
 
-  if (globalSearchQuery) {
-    clearGlobalSearch();
-    globalSearchInput.blur();
-    return;
-  }
+  if (
+  globalSearchQuery ||
+  document.activeElement === globalSearchInput ||
+  document.body.classList.contains("global-search-active")
+) {
+  clearGlobalSearch();
+  globalSearchInput.blur();
+  return;
+}
 
   closeExpandedMoreMenu();
   closeNotesMoreMenu();
@@ -4220,8 +4224,13 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             localStorage.setItem(QUOTE_KEY, favouriteQuote);
         });
         globalSearchInput.addEventListener("input", () => { globalSearchQuery = globalSearchInput.value; renderGlobalResults(); });
-        globalSearchInput.addEventListener("keydown", event => { if (event.key === "Escape")
-            clearGlobalSearch(); });
+        globalSearchInput.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    clearGlobalSearch();
+    globalSearchInput.blur();
+  }
+});
         globalSearchClear.addEventListener("click", clearGlobalSearch);
         mobileCalendarBtn.addEventListener("click", () => {
             const today = getToday();
