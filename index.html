@@ -1985,7 +1985,42 @@
     padding-bottom: 6px;
   }
 }
+/* Desktop keyboard shortcut hints */
+.desktop-shortcut-hints {
+  disp*ay: none;
+}
 
+@media (min-width: 76*px) {
+  .app > footer {
+    flex-d*rection: column;
+    align-items: *enter;
+    gap: 4px;
+  }
+
+  .deskt*p-shortcut-hints {
+    display: fl*x;
+    width: 100%;
+    align-item*: center;
+    justify-content: cen*er;
+    gap: 5px 10px;
+    flex-wr*p: wrap;
+    color: var(--muted);
+*   font-size: 10px;
+    font*weight: 400;
+    line-height: 1.25*
+    text-align: center;
+ *}
+
+* .desktop*shortcut-hints strong {
+    color:*rgba(61, 58, 52, 0.78);
+    font-w*ight: *50*
+  }
+
+  .desktop-shortcut-hints:ho*er {
+    color: var(--ink);
+  }
+}
+*
   </style>
 </head>
 <body>
@@ -2055,7 +2090,18 @@
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to midnight"></section>
       <section class="quote-block" aria-label="Favourite quote or reminder"><div class="quote-line"><label class="quote-label" for="quoteInput">Quote</label><input id="quoteInput" type="text" placeholder="Favourite quote, mantra or reminder..." autocomplete="off" /></div></section>
-      <footer><span class="footer-actions"><span>Saved locally on this device</span><span>·</span><button class="plain-btn backup-btn" id="exportBackupBtn" type="button">Export</button><span>·</span><button class="plain-btn backup-btn" id="importBackupBtn" type="button">Import</button><span>·</span><button class="plain-btn backup-btn help-btn" type="button">Help</button><input accept=".txt,text/plain,application/json" hidden id="importBackupInput" type="file" /></span><div class="last-import-status" data-last-import-status>Last import: Never</div></footer>
+      <footer><span class="footer-actions"><span>Saved locally on this device</span><span>·</span><button class="plain-btn backup-btn" id="exportBackupBtn" type="button">Export</button><span>·</span><button class="plain-btn backup-btn" id="importBackupBtn" type="button">Import</button><span>·</span><button class="plain-btn backup-btn help-btn" type="button">Help</button><input accept=".txt,text/plain,application/json" hidden id="importBackupInput" type="file" /></span><div class="last-import-status" data-last-import-status>Last import: Never</div><div
+  class="desktop-shortcut-hints"
+  title="Press G, then the second key"
+>
+  <span>Shortcuts:</span>
+  <span><strong>GF</strong> Focus</span>
+  <span><strong>GT</strong> Today task</span>
+  <span><strong>GI</strong> Inbox</span>
+  <span><strong>GA</strong> Activity</span>
+  <span><strong>GN</strong> New note</span>
+  <span><strong>GS</strong> Search</span>
+</div></footer>
     </main>
 
     <aside class="notes-sidebar" id="notesSidebar" aria-label="Lined notepad sidebar">
