@@ -4348,6 +4348,22 @@ document.addEventListener("keydown", event => {
   if (key === "a") {
     document.getElementById("activityBtn")?.click();
   }
+  if (key === "n") {
+  const today = getToday();
+
+  if (isWithinRange(today)) {
+    selectDate(today, true);
+  }
+
+  setTimeout(() => {
+    addNoteBtn.click();
+  }, 0);
+}
+
+if (key === "s") {
+  globalSearchInput.focus();
+  globalSearchInput.select();
+}
 });
     })();
   
