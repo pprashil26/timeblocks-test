@@ -2021,7 +2021,7 @@
     color: var(--ink);
   }
 }
-*
+
   </style>
 </head>
 <body>
@@ -4144,25 +4144,75 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
       function handleEscapeKey() {
   clearShortcutPrefix();
 
-  if (globalSearchQuery) {
-    clearGlobalSearch();
-  }
-
-  if (noteModal.classList.contains("open")) {
-    closeExpandedEditor();
+  if (helpModal.classList.contains("open")) {
+    closeHelp();
+    return;
   }
 
   if (moveModal.classList.contains("open")) {
     closeMoveNote();
+    return;
   }
 
-  if (helpModal.classList.contains("open")) {
-    closeHelp();
+  if (noteModal.classList.contains("open")) {
+    closeExpandedEditor();
+    return;
+  }
+
+  if (globalSearchQuery) {
+    clearGlobalSearch();
+    globalSearchInput.blur();
+    return;
   }
 
   closeExpandedMoreMenu();
   closeNotesMoreMenu();
   closeTaskMoveMenus();
+
+  if (isMobileViewport()) {
+    return;
+  }
+
+  if (notesFocusView) {
+    notesFocusView = false;
+    notesFocusAll = false;
+    localStorage.setItem(NOTE_FOCUS_KEY, "false");
+    applyNotesFocusView();
+    return;
+  }
+
+  if (workspaceFocusPanel) {
+    workspaceFocusPanel = null;
+    applyWorkspaceFocusState();
+    return;
+  }
+
+  const bothCollapsed =
+    sidebar.classList.contains("collapsed") &&
+    notesSidebar.classList.contains("collapsed");
+
+  if (bothCollapsed) {
+    setSidebarCollapsed(
+      sidebar,
+      sidebarToggle,
+      "left-collapsed",
+      false
+    );
+
+    setSidebarCollapsed(
+      notesSidebar,
+      notesToggle,
+      "right-collapsed",
+      false
+    );
+
+    updateFocusViewButton();
+    return;
+  }
+
+  if (desktopWorkspacePanel !== "notes") {
+    showDesktopWorkspacePanel("notes");
+  }
 }
         focusInput.addEventListener("input", save);
         quoteInput.addEventListener("input", () => {
