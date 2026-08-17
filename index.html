@@ -1986,37 +1986,38 @@
   }
 }
 /* Desktop keyboard shortcut hints */
+/* Desktop keyboard shortcut hints */
 .desktop-shortcut-hints {
-  disp*ay: none;
+  display: none;
 }
 
-@media (min-width: 76*px) {
+@media (min-width: 760px) {
   .app > footer {
-    flex-d*rection: column;
-    align-items: *enter;
+    flex-direction: column;
+    align-items: center;
     gap: 4px;
   }
 
-  .deskt*p-shortcut-hints {
-    display: fl*x;
+  .desktop-shortcut-hints {
+    display: flex;
     width: 100%;
-    align-item*: center;
-    justify-content: cen*er;
+    align-items: center;
+    justify-content: center;
     gap: 5px 10px;
-    flex-wr*p: wrap;
+    flex-wrap: wrap;
     color: var(--muted);
-*   font-size: 10px;
-    font*weight: 400;
-    line-height: 1.25*
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.25;
     text-align: center;
- *}
-
-* .desktop*shortcut-hints strong {
-    color:*rgba(61, 58, 52, 0.78);
-    font-w*ight: *50*
   }
 
-  .desktop-shortcut-hints:ho*er {
+  .desktop-shortcut-hints strong {
+    color: rgba(61, 58, 52, 0.78);
+    font-weight: 650;
+  }
+
+  .desktop-shortcut-hints:hover {
     color: var(--ink);
   }
 }
@@ -4140,6 +4141,29 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         }
         function openHelp() { helpModal.classList.add("open"); helpModal.setAttribute("aria-hidden", "false"); }
         function closeHelp() { helpModal.classList.remove("open"); helpModal.setAttribute("aria-hidden", "true"); }
+      function handleEscapeKey() {
+  clearShortcutPrefix();
+
+  if (globalSearchQuery) {
+    clearGlobalSearch();
+  }
+
+  if (noteModal.classList.contains("open")) {
+    closeExpandedEditor();
+  }
+
+  if (moveModal.classList.contains("open")) {
+    closeMoveNote();
+  }
+
+  if (helpModal.classList.contains("open")) {
+    closeHelp();
+  }
+
+  closeExpandedMoreMenu();
+  closeNotesMoreMenu();
+  closeTaskMoveMenus();
+}
         focusInput.addEventListener("input", save);
         quoteInput.addEventListener("input", () => {
             favouriteQuote = quoteInput.value;
@@ -4249,17 +4273,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         moveModal.addEventListener("click", event => { if (event.target === moveModal)
             closeMoveNote(); });
         document.addEventListener("keydown", event => {
-            if (event.key === "Escape") {
-                if (globalSearchQuery)
-                    clearGlobalSearch();
-                if (noteModal.classList.contains("open"))
-                    closeExpandedEditor();
-                if (moveModal.classList.contains("open"))
-                    closeMoveNote();
-                if (helpModal.classList.contains("open"))
-                    closeHelp();
-            }
-        });
+  if (event.key === "Escape") {
+    handleEscapeKey();
+  }
+});
         clearBtn.addEventListener("click", () => {
             if (!confirm(`Clear all entries for ${displayDate(selectedDate)}?`))
                 return;
@@ -4351,12 +4368,7 @@ function clearShortcutPrefix() {
 }
 
 document.addEventListener("keydown", event => {
-  if (event.key === "Escape") {
-  clearShortcutPrefix();
-  return;
-}
-
-  if (
+    if (
     isTypingField(event.target) ||
     event.ctrlKey ||
     event.altKey ||
