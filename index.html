@@ -4351,6 +4351,11 @@ function clearShortcutPrefix() {
 }
 
 document.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+  clearShortcutPrefix();
+  return;
+}
+
   if (
     isTypingField(event.target) ||
     event.ctrlKey ||
