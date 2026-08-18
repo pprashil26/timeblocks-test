@@ -865,6 +865,12 @@
       color: #425c50;
       font-weight: 650;
     }
+    .day-btn.has-events {
+      background: #dceaf7;
+      border-color: #a9c9e5;
+      color: #35566f;
+      font-weight: 700;
+    }
     .day-btn.today {
       background: #f5d98f;
       border-color: #c8a947;
@@ -878,11 +884,18 @@
       font-weight: 700;
       box-shadow: inset 0 0 0 1px rgba(84, 124, 105, .10);
     }
+    .day-btn.has-events.today,
+    .day-btn.has-events.selected {
+      box-shadow: inset 0 0 0 2px rgba(102, 160, 205, .55);
+    }
     .day-btn.today.selected {
       background: #c9ded2;
       border-color: #8fb3a1;
       color: #2f493e;
       box-shadow: 0 0 0 2px rgba(200, 169, 71, .38), inset 0 0 0 1px rgba(84, 124, 105, .10);
+    }
+    .day-btn.has-events.today.selected {
+      box-shadow: 0 0 0 2px rgba(200, 169, 71, .38), inset 0 0 0 2px rgba(102, 160, 205, .55);
     }
     /* Activity page: compact A6 portrait proportion */
 #noteModal:has(#activityPanel.open) .expanded-note {
@@ -5488,6 +5501,7 @@ ${body}` : title };
                         button.textContent = day.getDate();
                         button.dataset.date = key;
                         const eventCount = eventsForDate(key).length;
+                        button.classList.toggle("has-events", eventCount > 0);
                         button.title = `${displayDate(day)}${eventCount ? ` · ${eventCount} event${eventCount === 1 ? "" : "s"}` : ""}`;
                         if (day.getDay() === 0 || day.getDay() === 6)
                             button.classList.add("weekend");
