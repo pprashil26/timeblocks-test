@@ -2514,6 +2514,175 @@ button.note-label-chip {
   font-weight: 800;
 }
 
+
+/* Lightweight Events: selected-date strip, workspace and editor */
+.events-strip {
+  padding: 6px 11px 7px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.events-strip-head,
+.events-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.events-strip-title,
+.events-title {
+  color: var(--ink);
+  font-size: var(--font-sm);
+  font-weight: 700;
+}
+.events-strip-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.event-add-link {
+  color: #536b60;
+  font-weight: 700;
+}
+.events-strip-list {
+  display: flex;
+  gap: 5px;
+  margin-top: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.events-strip-list::-webkit-scrollbar { display: none; }
+.event-strip-item {
+  flex: 0 0 auto;
+  max-width: 280px;
+  min-height: 27px;
+  padding: 4px 8px;
+  overflow: hidden;
+  border: 1px solid var(--entry-border);
+  border-radius: 999px;
+  background: var(--page);
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.events-strip-empty,
+.event-empty {
+  color: var(--muted);
+  font-size: 11px;
+}
+.events-panel {
+  display: none;
+  flex: 1;
+  min-height: 460px;
+  padding: 10px 12px;
+  overflow-y: auto;
+  background: var(--page);
+}
+.events-panel.open { display: block; }
+.events-toolbar { margin-bottom: 9px; }
+.event-group { margin-top: 12px; }
+.event-group:first-child { margin-top: 0; }
+.event-group-title {
+  margin: 0 0 5px 2px;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+.event-list { display: grid; gap: 5px; }
+.event-row {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--page);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.event-row:hover { background: var(--soft); }
+.event-today { background: #fff5cf; border-color: #d8bd5d; }
+.event-past { background: #f4f5f3; color: var(--muted); }
+.event-when { color: var(--muted); font-size: 10.5px; }
+.event-row-title { font-size: 12.5px; font-weight: 650; }
+.event-editor-panel {
+  width: min(390px, 94vw);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--page);
+  box-shadow: 0 18px 50px rgba(50,40,28,.22);
+}
+.event-editor-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.event-editor-title { margin: 0; font-size: var(--font-lg); font-weight: 700; }
+.event-editor-body { display: grid; gap: 6px; padding: 12px 14px; }
+.event-editor-body label { color: var(--muted); font-size: 11px; font-weight: 650; }
+.event-editor-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 4px; }
+.event-editor-date-row > div { display: grid; gap: 5px; }
+.event-optional { font-weight: 400; }
+.event-editor-actions {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px 12px;
+}
+.event-save-btn {
+  min-height: 31px;
+  padding: 5px 12px;
+  border: 1px solid #e2cd61;
+  border-radius: 10px;
+  background: #FFEE8C;
+  color: #4f4518;
+  font-weight: 700;
+}
+@media (min-width: 760px) {
+  .workspace-panel-host .events-panel {
+    display: block;
+    min-height: 0;
+    max-height: calc(100vh - 82px);
+    padding: 8px;
+  }
+  .workspace-panel-host .events-panel[hidden] { display: none !important; }
+  body.workspace-focus-active .workspace-panel-host .events-panel {
+    max-height: calc(100vh - 76px);
+    padding: 12px;
+  }
+}
+@media (max-width: 759px) {
+  .events-strip { padding: 6px 9px 7px; }
+  .event-strip-item { max-width: 230px; min-height: 30px; font-size: 11.5px; }
+  #noteModal:has(#eventsPanel.open) { padding: 6px; }
+  #noteModal:has(#eventsPanel.open) .expanded-note {
+    width: min(520px, calc(100vw - 12px));
+    height: min(90dvh, 760px);
+    min-height: min(82dvh, 620px);
+    max-height: 90dvh;
+  }
+  #noteModal:has(#eventsPanel.open) .events-panel {
+    min-height: 0;
+    height: auto;
+    flex: 1;
+    padding: 8px 10px 10px;
+    overflow-y: auto;
+  }
+  .event-editor-date-row { grid-template-columns: 1fr; }
+}
+
   </style>
 </head>
 <body>
@@ -2581,6 +2750,7 @@ button.note-label-chip {
         <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
+      <section class="events-strip" id="eventsStrip" aria-label="Events for selected date"><div class="events-strip-head"><span class="events-strip-title">Events</span><span class="events-strip-actions"><button class="plain-btn" id="viewEventsBtn" type="button">All events</button><button class="plain-btn event-add-link" id="addEventBtn" type="button">+ Event</button></span></div><div class="events-strip-list" id="eventsStripList"></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to midnight"></section>
       <section class="quote-block" aria-label="Favourite quote or reminder"><div class="quote-line"><label class="quote-label" for="quoteInput">Quote</label><input id="quoteInput" type="text" placeholder="Favourite quote, mantra or reminder..." autocomplete="off" /></div></section>
       <footer><span class="footer-actions"><span>Saved locally on this device</span><span>·</span><button class="plain-btn backup-btn" id="exportBackupBtn" type="button">Export</button><span>·</span><button class="plain-btn backup-btn" id="importBackupBtn" type="button">Import</button><span>·</span><button class="plain-btn backup-btn help-btn" type="button">Help</button><input accept=".txt,text/plain,application/json" hidden id="importBackupInput" type="file" /></span><div class="last-import-status" data-last-import-status>Last import: Never</div><div
@@ -2595,11 +2765,12 @@ button.note-label-chip {
   <span><strong>GN</strong> New note</span>
   <span><strong>GS</strong> Search</span>
   <span><strong>GL</strong> Labels</span>
+  <span><strong>GE</strong> Event</span>
 </div></footer>
     </main>
 
     <aside class="notes-sidebar" id="notesSidebar" aria-label="Lined notepad sidebar">
-      <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Right sidebar panels"><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceLabelsTab" type="button" role="tab" aria-selected="false">Labels</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
+      <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Right sidebar panels"><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceLabelsTab" type="button" role="tab" aria-selected="false">Labels</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button><button class="workspace-tab" id="workspaceEventsTab" type="button" role="tab" aria-selected="false">Events</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
       <div class="notes-wrap" id="notesWorkspacePanel">
         <div class="mobile-notes-date" id="mobileNotesDate">Notes for selected date</div>
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
@@ -2637,6 +2808,10 @@ button.note-label-chip {
         <div class="activity-input"><input id="activityInput" type="text" placeholder="What are you doing?" autocomplete="off" /><button class="plain-btn activity-add-btn" id="activityAddBtn" type="button">Add</button></div>
         <div id="activityLog"></div>
       </div>
+      <div class="events-panel" id="eventsPanel" hidden>
+        <div class="events-toolbar"><span class="events-title">Events</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" title="Focus on Events">⛶</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link" id="eventsPanelAddBtn" type="button">+ Event</button></span></div>
+        <div id="eventsList"></div>
+      </div>
       <div class="link-preview expanded-links" id="expandedLinks"></div>
     </section>
   </div>
@@ -2649,6 +2824,17 @@ button.note-label-chip {
         <div class="label-add-row"><input id="labelInput" type="text" maxlength="30" placeholder="Add a label..." autocomplete="off" /><button class="plain-btn label-add-btn" id="labelAddBtn" type="button">Add</button></div>
         <div class="label-existing" id="labelExisting"></div>
       </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="eventModal" aria-hidden="true">
+    <section class="event-editor-panel" role="dialog" aria-modal="true" aria-label="Event editor">
+      <div class="event-editor-head"><p class="event-editor-title" id="eventEditorTitle">New Event</p><button class="plain-btn" id="closeEventBtn" type="button">Close</button></div>
+      <div class="event-editor-body">
+        <label for="eventTitleInput">Event</label><input id="eventTitleInput" type="text" maxlength="120" placeholder="Event title" autocomplete="off" />
+        <div class="event-editor-date-row"><div><label for="eventDateInput">Date</label><input id="eventDateInput" type="date" /></div><div><label for="eventTimeInput">Time <span class="event-optional">optional</span></label><input id="eventTimeInput" type="time" /></div></div>
+      </div>
+      <div class="event-editor-actions"><button class="plain-btn delete-note-btn" id="deleteEventBtn" type="button" hidden>Delete</button><span></span><button class="plain-btn" id="cancelEventBtn" type="button">Cancel</button><button class="plain-btn event-save-btn" id="saveEventBtn" type="button">Save</button></div>
     </section>
   </div>
 
@@ -2670,6 +2856,7 @@ button.note-label-chip {
         const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
         const COMPACT_KEY = "timeblocks:notesCompact";
         const TASKS_KEY = "timeblocks:globalTasks";
+        const EVENTS_KEY = "timeblocks:events";
         const ACTIVITY_KEY = "timeblocks:activityLog";
         const ACTIVITY_HIDE_COMPLETED_KEY = "timeblocks:activityHideCompleted";
         const ACTIVITY_STATUSES = [
@@ -2714,9 +2901,14 @@ button.note-label-chip {
         const workspaceLabelsTab = el("workspaceLabelsTab");
         const workspaceTasksTab = el("workspaceTasksTab");
         const workspaceActivityTab = el("workspaceActivityTab");
+        const workspaceEventsTab = el("workspaceEventsTab");
         const notesToggle = el("notesToggle");
         const calendarWrap = el("calendarWrap");
         const timeline = el("timeline");
+        const eventsStrip = el("eventsStrip");
+        const eventsStripList = el("eventsStripList");
+        const addEventBtn = el("addEventBtn");
+        const viewEventsBtn = el("viewEventsBtn");
         const selectedDateText = el("selectedDateText");
         const clearBtn = el("clearBtn");
         const focusViewBtn = el("focusViewBtn");
@@ -2797,6 +2989,20 @@ button.note-label-chip {
         const activityFilterBtn = el("activityFilterBtn");
       const exportActivityBtn = el("exportActivityBtn");
         const activityLog = el("activityLog");
+        const eventsPanel = el("eventsPanel");
+        const eventsList = el("eventsList");
+        const eventsFocusBtn = el("eventsFocusBtn");
+        const eventsPastBtn = el("eventsPastBtn");
+        const eventsPanelAddBtn = el("eventsPanelAddBtn");
+        const eventModal = el("eventModal");
+        const eventEditorTitle = el("eventEditorTitle");
+        const eventTitleInput = el("eventTitleInput");
+        const eventDateInput = el("eventDateInput");
+        const eventTimeInput = el("eventTimeInput");
+        const closeEventBtn = el("closeEventBtn");
+        const cancelEventBtn = el("cancelEventBtn");
+        const saveEventBtn = el("saveEventBtn");
+        const deleteEventBtn = el("deleteEventBtn");
         const labelModal = el("labelModal");
         const closeLabelBtn = el("closeLabelBtn");
         const labelInput = el("labelInput");
@@ -2836,6 +3042,9 @@ button.note-label-chip {
         let workspaceFocusPanel = null;
         let globalSearchQuery = "";
         let globalTasks = normalizeTaskLists(loadJson(TASKS_KEY, null));
+        let events = normalizeEvents(loadJson(EVENTS_KEY, []));
+        let editingEventId = null;
+        let showPastEvents = false;
         let activityEntries = normalizeActivityEntries(loadJson(ACTIVITY_KEY, []));
         let activityHideCompleted = localStorage.getItem(ACTIVITY_HIDE_COMPLETED_KEY) === "true";
         let activeTaskContext = localStorage.getItem(TASK_CONTEXT_KEY) || "Inbox";
@@ -2994,6 +3203,194 @@ button.note-label-chip {
                 });
             });
             return results;
+        }
+        function normalizeEvents(raw) {
+            if (!Array.isArray(raw))
+                return [];
+            return raw.map(item => ({
+                id: item.id || createId("event"),
+                title: typeof item.title === "string" ? item.title.trim() : "",
+                date: fromKey(item.date) ? item.date : toKey(getToday()),
+                time: /^([01]\d|2[0-3]):[0-5]\d$/.test(item.time || "") ? item.time : "",
+                createdAt: item.createdAt && !Number.isNaN(new Date(item.createdAt).getTime()) ? item.createdAt : new Date().toISOString()
+            })).filter(item => item.title).sort(compareEvents);
+        }
+        function compareEvents(a, b) {
+            const aValue = `${a.date}T${a.time || "23:59"}`;
+            const bValue = `${b.date}T${b.time || "23:59"}`;
+            return aValue.localeCompare(bValue) || a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
+        }
+        function saveEvents() {
+            events = normalizeEvents(events);
+            localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+        }
+        function eventPhase(event) {
+            const todayKey = toKey(getToday());
+            if (event.date < todayKey)
+                return "past";
+            if (event.date > todayKey)
+                return "upcoming";
+            return "today";
+        }
+        function eventTimeLabel(event) {
+            if (!event.time)
+                return "All day";
+            const [hour, minute] = event.time.split(":").map(Number);
+            return new Date(2000, 0, 1, hour, minute).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+        }
+        function eventsForDate(dateKey) {
+            return events.filter(event => event.date === dateKey).sort(compareEvents);
+        }
+        function renderSelectedDateEvents() {
+            const selectedKey = toKey(selectedDate);
+            const selectedEvents = eventsForDate(selectedKey);
+            eventsStripList.innerHTML = "";
+            eventsStrip.classList.toggle("has-events", selectedEvents.length > 0);
+            selectedEvents.forEach(event => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "event-strip-item";
+                button.textContent = `${event.time ? eventTimeLabel(event) + "  " : ""}${event.title}`;
+                button.title = `Edit ${event.title}`;
+                button.addEventListener("click", () => openEventEditor(event.id));
+                eventsStripList.appendChild(button);
+            });
+            if (!selectedEvents.length) {
+                const empty = document.createElement("span");
+                empty.className = "events-strip-empty";
+                empty.textContent = "No events for this date";
+                eventsStripList.appendChild(empty);
+            }
+        }
+        function createEventRow(event) {
+            const row = document.createElement("button");
+            row.type = "button";
+            row.className = `event-row event-${eventPhase(event)}`;
+            const date = fromKey(event.date);
+            const dateText = eventPhase(event) === "today" ? "Today" : date ? displayDate(date) : event.date;
+            const when = document.createElement("span");
+            when.className = "event-when";
+            when.textContent = `${dateText}${event.time ? " · " + eventTimeLabel(event) : " · All day"}`;
+            const title = document.createElement("span");
+            title.className = "event-row-title";
+            title.textContent = event.title;
+            row.append(when, title);
+            row.addEventListener("click", () => openEventEditor(event.id));
+            return row;
+        }
+        function renderEvents() {
+            eventsList.innerHTML = "";
+            const groups = [
+                ["Today", events.filter(event => eventPhase(event) === "today")],
+                ["Upcoming", events.filter(event => eventPhase(event) === "upcoming")],
+                ["Past", events.filter(event => eventPhase(event) === "past").sort((a, b) => compareEvents(b, a))]
+            ];
+            groups.forEach(([label, items]) => {
+                if (label === "Past" && !showPastEvents)
+                    return;
+                const section = document.createElement("section");
+                section.className = "event-group";
+                const heading = document.createElement("div");
+                heading.className = "event-group-title";
+                heading.textContent = label;
+                const list = document.createElement("div");
+                list.className = "event-list";
+                if (!items.length) {
+                    const empty = document.createElement("div");
+                    empty.className = "event-empty";
+                    empty.textContent = `No ${label.toLowerCase()} events`;
+                    list.appendChild(empty);
+                }
+                else {
+                    items.forEach(event => list.appendChild(createEventRow(event)));
+                }
+                section.append(heading, list);
+                eventsList.appendChild(section);
+            });
+            eventsPastBtn.textContent = showPastEvents ? "Hide past" : "Show past";
+            eventsPastBtn.setAttribute("aria-expanded", String(showPastEvents));
+        }
+        function openEventEditor(eventId = null) {
+            const event = eventId ? events.find(item => item.id === eventId) : null;
+            editingEventId = event ? event.id : null;
+            eventEditorTitle.textContent = event ? "Edit Event" : "New Event";
+            eventTitleInput.value = event ? event.title : "";
+            eventDateInput.min = toKey(START_DATE);
+            eventDateInput.max = toKey(END_DATE);
+            eventDateInput.value = event ? event.date : toKey(selectedDate);
+            eventTimeInput.value = event ? event.time : "";
+            deleteEventBtn.hidden = !event;
+            eventModal.classList.add("open");
+            eventModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => eventTitleInput.focus(), 0);
+        }
+        function closeEventEditor() {
+            eventModal.classList.remove("open");
+            eventModal.setAttribute("aria-hidden", "true");
+            editingEventId = null;
+        }
+        function saveEventFromEditor() {
+            const title = eventTitleInput.value.trim();
+            const date = eventDateInput.value;
+            if (!title) {
+                alert("Please enter an event title.");
+                eventTitleInput.focus();
+                return;
+            }
+            if (!fromKey(date) || !isWithinRange(fromKey(date))) {
+                alert("Please select a valid event date.");
+                return;
+            }
+            if (editingEventId) {
+                const current = events.find(item => item.id === editingEventId);
+                if (!current)
+                    return;
+                current.title = title;
+                current.date = date;
+                current.time = eventTimeInput.value || "";
+            }
+            else {
+                events.push({ id: createId("event"), title, date, time: eventTimeInput.value || "", createdAt: new Date().toISOString() });
+            }
+            saveEvents();
+            closeEventEditor();
+            renderSelectedDateEvents();
+            renderEvents();
+            buildCalendar();
+        }
+        function deleteEditingEvent() {
+            if (!editingEventId)
+                return;
+            if (!confirm("Delete this event?"))
+                return;
+            events = events.filter(event => event.id !== editingEventId);
+            saveEvents();
+            closeEventEditor();
+            renderSelectedDateEvents();
+            renderEvents();
+            buildCalendar();
+        }
+        function openEvents() {
+            if (!isMobileViewport()) {
+                showDesktopWorkspacePanel("events");
+                return;
+            }
+            moveWorkspacePanelsToModal();
+            expandedNoteId = null;
+            expandedTitle.value = "Events";
+            expandedTitle.readOnly = true;
+            expandedBody.hidden = true;
+            expandedLinks.hidden = true;
+            expandedNoteTools.hidden = true;
+            globalTasksPanel.hidden = true;
+            globalTasksPanel.classList.remove("open");
+            activityPanel.hidden = true;
+            activityPanel.classList.remove("open");
+            eventsPanel.hidden = false;
+            eventsPanel.classList.add("open");
+            renderEvents();
+            noteModal.classList.add("open");
+            noteModal.setAttribute("aria-hidden", "false");
         }
         function normalizeActivityEntries(raw) {
             if (!Array.isArray(raw))
@@ -3543,7 +3940,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             const data = {};
             for (let index = 0; index < localStorage.length; index += 1) {
                 const key = localStorage.key(index);
-                if (!key || key === COMPACT_KEY || key === TASKS_KEY || key === TASK_CONTEXT_KEY || key === ACTIVITY_KEY || key === QUOTE_KEY || !/^timeblocks:\d{4}-\d{2}-\d{2}$/.test(key))
+                if (!key || key === COMPACT_KEY || key === TASKS_KEY || key === TASK_CONTEXT_KEY || key === ACTIVITY_KEY || key === EVENTS_KEY || key === QUOTE_KEY || !/^timeblocks:\d{4}-\d{2}-\d{2}$/.test(key))
                     continue;
                 try {
                     data[key] = JSON.parse(localStorage.getItem(key));
@@ -3559,6 +3956,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 preferences: { notesCompact, activeTaskContext },
                 quote: favouriteQuote,
                 tasks: globalTasks,
+                events,
                 activity: activityEntries,
                 data
             };
@@ -3605,6 +4003,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 globalTasks = normalizeTaskLists(backup.tasks);
                 saveTasks();
             }
+            if (Array.isArray(backup.events)) {
+                events = normalizeEvents(backup.events);
+                saveEvents();
+            }
             if (Array.isArray(backup.activity)) {
                 activityEntries = normalizeActivityEntries(backup.activity);
                 saveActivity();
@@ -3625,7 +4027,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         function hasNotesData(data) { return Array.isArray(data.notes) ? normalizeNotes(data.notes).some(note => !note.deleted && ((note.title || "").trim() || (note.body || "").trim())) : Boolean((data.notes || "").trim()); }
         function hasSavedDataForDate(key) {
             const data = readDateData(key);
-            return Boolean((data.focus || "").trim()) || Boolean((data.evening || "").trim()) || Boolean(data.entries && Object.keys(data.entries).length) || hasNotesData(data);
+            return Boolean((data.focus || "").trim()) || Boolean((data.evening || "").trim()) || Boolean(data.entries && Object.keys(data.entries).length) || hasNotesData(data) || eventsForDate(key).length > 0;
         }
         function collectEntries() {
             const entries = {};
@@ -4276,6 +4678,10 @@ ${body}` : title };
                 activityPanel.classList.remove("open");
                 activityInput.value = "";
             }
+            if (eventsPanel.parentElement === expandedNoteShell) {
+                eventsPanel.hidden = true;
+                eventsPanel.classList.remove("open");
+            }
         }
         function setExpandedNoteEditMode(editing, focusEditor = true) {
             const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
@@ -4368,19 +4774,24 @@ ${body}` : title };
                 workspacePanelHost.appendChild(globalTasksPanel);
             if (activityPanel.parentElement !== workspacePanelHost)
                 workspacePanelHost.appendChild(activityPanel);
+            if (eventsPanel.parentElement !== workspacePanelHost)
+                workspacePanelHost.appendChild(eventsPanel);
         }
         function moveWorkspacePanelsToModal() {
             if (globalTasksPanel.parentElement !== expandedNoteShell)
                 expandedNoteShell.insertBefore(globalTasksPanel, expandedLinks);
             if (activityPanel.parentElement !== expandedNoteShell)
                 expandedNoteShell.insertBefore(activityPanel, expandedLinks);
+            if (eventsPanel.parentElement !== expandedNoteShell)
+                expandedNoteShell.insertBefore(eventsPanel, expandedLinks);
         }
         function updateWorkspaceTabs() {
             const tabs = [
                 [workspaceNotesTab, "notes"],
                 [workspaceLabelsTab, "labels"],
                 [workspaceTasksTab, "tasks"],
-                [workspaceActivityTab, "activity"]
+                [workspaceActivityTab, "activity"],
+                [workspaceEventsTab, "events"]
             ];
             tabs.forEach(([button, panel]) => {
                 const active = desktopWorkspacePanel === panel;
@@ -4393,10 +4804,13 @@ ${body}` : title };
             document.body.classList.toggle("workspace-focus-active", active);
             tasksFocusBtn.classList.toggle("active", workspaceFocusPanel === "tasks");
             activityFocusBtn.classList.toggle("active", workspaceFocusPanel === "activity");
+            eventsFocusBtn.classList.toggle("active", workspaceFocusPanel === "events");
             tasksFocusBtn.textContent = workspaceFocusPanel === "tasks" ? "↩" : "⛶";
             activityFocusBtn.textContent = workspaceFocusPanel === "activity" ? "↩" : "⛶";
+            eventsFocusBtn.textContent = workspaceFocusPanel === "events" ? "↩" : "⛶";
             tasksFocusBtn.title = workspaceFocusPanel === "tasks" ? "Return to normal planner view" : "Focus on Tasks";
             activityFocusBtn.title = workspaceFocusPanel === "activity" ? "Return to normal planner view" : "Focus on Activity";
+            eventsFocusBtn.title = workspaceFocusPanel === "events" ? "Return to normal planner view" : "Focus on Events";
         }
         function showDesktopWorkspacePanel(panel, focusCapture = false) {
             if (isMobileViewport())
@@ -4427,6 +4841,8 @@ ${body}` : title };
             globalTasksPanel.classList.toggle("open", panel === "tasks");
             activityPanel.hidden = panel !== "activity";
             activityPanel.classList.toggle("open", panel === "activity");
+            eventsPanel.hidden = panel !== "events";
+            eventsPanel.classList.toggle("open", panel === "events");
             workspaceFocusPanel = wasFocused && !notesPanelActive ? panel : null;
             if (wasFocused && notesPanelActive) {
                 notesFocusView = true;
@@ -4439,11 +4855,13 @@ ${body}` : title };
                 renderGlobalTasks();
             if (panel === "activity")
                 renderActivity();
+            if (panel === "events")
+                renderEvents();
             updateWorkspaceTabs();
             applyWorkspaceFocusState();
             setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
             if (focusCapture)
-                setTimeout(() => panel === "tasks" ? globalTaskInput.focus() : activityInput.focus(), 0);
+                setTimeout(() => panel === "tasks" ? globalTaskInput.focus() : panel === "activity" ? activityInput.focus() : eventTitleInput.focus(), 0);
         }
         function toggleWorkspacePanelFocus(panel) {
             if (isMobileViewport())
@@ -4467,6 +4885,8 @@ ${body}` : title };
             globalTasksPanel.classList.remove("open");
             activityPanel.hidden = false;
             activityPanel.classList.add("open");
+            eventsPanel.hidden = true;
+            eventsPanel.classList.remove("open");
             renderActivity();
             noteModal.classList.add("open");
             noteModal.setAttribute("aria-hidden", "false");
@@ -4517,6 +4937,8 @@ ${body}` : title };
             globalTasksPanel.classList.add("open");
             activityPanel.hidden = true;
             activityPanel.classList.remove("open");
+            eventsPanel.hidden = true;
+            eventsPanel.classList.remove("open");
             renderGlobalTasks();
             noteModal.classList.add("open");
             noteModal.setAttribute("aria-hidden", "false");
@@ -4817,6 +5239,7 @@ ${body}` : title };
             focusInput.value = saved.focus || "";
             quoteInput.value = favouriteQuote;
             buildTimeline();
+            renderSelectedDateEvents();
             renderNotes();
             updateSelectedCalendarDay();
             updateDayNavigation();
@@ -4910,7 +5333,8 @@ ${body}` : title };
                         button.type = "button";
                         button.textContent = day.getDate();
                         button.dataset.date = key;
-                        button.title = displayDate(day);
+                        const eventCount = eventsForDate(key).length;
+                        button.title = `${displayDate(day)}${eventCount ? ` · ${eventCount} event${eventCount === 1 ? "" : "s"}` : ""}`;
                         if (day.getDay() === 0 || day.getDay() === 6)
                             button.classList.add("weekend");
                         if (hasSavedDataForDate(key))
@@ -4981,6 +5405,10 @@ ${body}` : title };
       function handleEscapeKey() {
   clearShortcutPrefix();
 
+  if (eventModal.classList.contains("open")) {
+    closeEventEditor();
+    return;
+  }
   if (labelModal.classList.contains("open")) {
     closeLabelSelector();
     return;
@@ -5156,8 +5584,20 @@ ${body}` : title };
         workspaceLabelsTab.addEventListener("click", () => showDesktopWorkspacePanel("labels"));
         workspaceTasksTab.addEventListener("click", () => showDesktopWorkspacePanel("tasks"));
         workspaceActivityTab.addEventListener("click", () => showDesktopWorkspacePanel("activity"));
+        workspaceEventsTab.addEventListener("click", () => showDesktopWorkspacePanel("events"));
         tasksFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("tasks"));
         activityFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("activity"));
+        eventsFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("events"));
+        addEventBtn.addEventListener("click", () => openEventEditor());
+        viewEventsBtn.addEventListener("click", openEvents);
+        eventsPanelAddBtn.addEventListener("click", () => openEventEditor());
+        eventsPastBtn.addEventListener("click", () => { showPastEvents = !showPastEvents; renderEvents(); });
+        closeEventBtn.addEventListener("click", closeEventEditor);
+        cancelEventBtn.addEventListener("click", closeEventEditor);
+        saveEventBtn.addEventListener("click", saveEventFromEditor);
+        deleteEventBtn.addEventListener("click", deleteEditingEvent);
+        eventTitleInput.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); saveEventFromEditor(); } });
+        eventModal.addEventListener("click", event => { if (event.target === eventModal) closeEventEditor(); });
         activityBtn.addEventListener("click", openActivity);
         addTaskInboxBtn.addEventListener("click", openTasksInboxShortcut);
         addTaskTodayBtn.addEventListener("click", openTasksTodayShortcut);
@@ -5274,6 +5714,8 @@ ${body}` : title };
         renderGlobalTasks();
         applyActivityFilter();
         renderActivity();
+        renderEvents();
+        renderSelectedDateEvents();
         if (!isMobileViewport())
             showDesktopWorkspacePanel("notes");
         applyCalendarRangeView();
@@ -5283,7 +5725,7 @@ ${body}` : title };
         loadSelectedDate();
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
         setInterval(highlightCurrentTimeBlock, 60000);
-      /* Keyboard shortcuts: G then F/T/I/A/N/S/L */
+      /* Keyboard shortcuts: G then F/T/I/A/N/S/L/E */
 let shortcutPrefixActive = false;
 let shortcutTimer = null;
 
@@ -5366,6 +5808,9 @@ if (key === "l") {
   const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
   if (noteModal.classList.contains("open") && note && !note.deleted)
     openLabelSelector();
+}
+if (key === "e") {
+  openEventEditor();
 }
 });
     })();
