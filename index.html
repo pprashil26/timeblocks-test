@@ -70,6 +70,7 @@
     .global-results-list { padding: 8px; }
     .global-result-card { width: 100%; text-align: left; border: 1px solid var(--line); border-radius: 12px; background: #fffdf8; color: var(--ink); padding: 8px 9px; margin-bottom: 7px; cursor: pointer; }
     .global-result-date, .global-result-preview { color: var(--muted); font-size: var(--font-xs); }
+    .global-result-type { color: #526b7a; font-size: 10px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }
     .global-result-title { font-weight: 650; margin: 3px 0; }
     .mobile-home, .mobile-section-bar { display: none; }
     .shell { display: grid; grid-template-columns: 230px minmax(0, 780px) 230px; gap: 10px; align-items: start; justify-content: center; }
@@ -2807,12 +2808,12 @@ button.note-label-chip {
 <body>
   <div class="global-search-wrap">
     <div class="global-search-box">
-      <input id="globalSearchInput" type="text" placeholder="Search all notes..." autocomplete="off" />
+      <input id="globalSearchInput" type="text" placeholder="Search notes, tasks and events..." autocomplete="off" />
       <button class="plain-btn global-search-clear" id="globalSearchClear" type="button" title="Clear global search">×</button>
     </div>
   </div>
 
-  <section class="global-results" id="globalResults" aria-label="Global note search results">
+  <section class="global-results" id="globalResults" aria-label="Global search results">
     <div class="global-results-head" id="globalResultsHead">Search results</div>
     <div class="global-results-list" id="globalResultsList"></div>
   </section>
@@ -3320,7 +3321,7 @@ button.note-label-chip {
             return keys.sort();
         }
         function globalPreview(text) { return (text || "").replace(/\s+/g, " ").trim() || "No note body"; }
-        function searchAllNotes(query) {
+        function searchAllContent(query) {
             const cleanQuery = query.trim().toLowerCase();
             if (!cleanQuery)
                 return [];
@@ -3329,7 +3330,17 @@ button.note-label-chip {
                 const data = readDateData(dateKey);
                 normalizeNotes(data.notes).filter(note => !note.deleted).forEach(note => {
                     if (noteMatchesGlobalSearch(note, cleanQuery))
-                        results.push({ dateKey, note });
+                        results.push({ type: "note", dateKey, note });
+                });
+            });
+            events.forEach(event => {
+                if (event.title.toLowerCase().includes(cleanQuery))
+                    results.push({ type: "event", event });
+            });
+            TASK_CONTEXTS.forEach(context => {
+                (globalTasks[context] || []).forEach(task => {
+                    if ((task.text || "").toLowerCase().includes(cleanQuery))
+                        results.push({ type: "task", context, task });
                 });
             });
             return results;
@@ -4017,31 +4028,52 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 globalResultsHead.textContent = "Search results";
                 return;
             }
-            const results = searchAllNotes(query);
+            const results = searchAllContent(query);
             globalResultsHead.textContent = results.length ? `Search results for "${query}"` : `No results for "${query}"`;
             if (!results.length) {
                 const empty = document.createElement("div");
                 empty.className = "no-results show";
-                empty.textContent = "No matching notes found across saved dates";
+                empty.textContent = "No matching notes, tasks or events found";
                 globalResultsList.appendChild(empty);
                 return;
             }
             results.forEach(result => {
-                const resultDate = fromKey(result.dateKey);
                 const button = document.createElement("button");
                 button.className = "global-result-card";
                 button.type = "button";
+                const typeLine = document.createElement("div");
+                typeLine.className = "global-result-type";
                 const dateLine = document.createElement("div");
                 dateLine.className = "global-result-date";
-                dateLine.textContent = resultDate ? displayDate(resultDate) : result.dateKey;
                 const titleLine = document.createElement("div");
                 titleLine.className = "global-result-title";
-                titleLine.textContent = `${result.note.pinned ? "★ " : ""}${result.note.title || "Untitled"}`;
                 const preview = document.createElement("div");
                 preview.className = "global-result-preview";
-                preview.textContent = globalPreview(result.note.body);
-                button.append(dateLine, titleLine, preview);
-                button.addEventListener("click", () => openGlobalResult(result.dateKey, result.note.id));
+                if (result.type === "note") {
+                    const resultDate = fromKey(result.dateKey);
+                    typeLine.textContent = "Note";
+                    dateLine.textContent = resultDate ? displayDate(resultDate) : result.dateKey;
+                    titleLine.textContent = `${result.note.pinned ? "★ " : ""}${result.note.title || "Untitled"}`;
+                    preview.textContent = globalPreview(result.note.body);
+                    button.addEventListener("click", () => openGlobalResult(result.dateKey, result.note.id));
+                }
+                else if (result.type === "event") {
+                    const resultDate = fromKey(result.event.date);
+                    typeLine.textContent = "Event";
+                    dateLine.textContent = `${resultDate ? displayDate(resultDate) : result.event.date} · ${eventTimeLabel(result.event)}`;
+                    titleLine.textContent = result.event.title;
+                    const phase = eventPhase(result.event);
+                    preview.textContent = phase === "today" ? "Today" : phase.charAt(0).toUpperCase() + phase.slice(1);
+                    button.addEventListener("click", () => openGlobalEventResult(result.event.id));
+                }
+                else {
+                    typeLine.textContent = `Task · ${result.context}`;
+                    dateLine.textContent = result.task.done ? "Completed" : "Open";
+                    titleLine.textContent = `${result.task.highlighted ? "★ " : ""}${result.task.text || "Task"}`;
+                    preview.textContent = `Open ${result.context} tasks`;
+                    button.addEventListener("click", () => openGlobalTaskResult(result.context));
+                }
+                button.append(typeLine, dateLine, titleLine, preview);
                 globalResultsList.appendChild(button);
             });
         }
@@ -4055,6 +4087,25 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             if (isMobileViewport())
                 setMobileSection("notes");
             setTimeout(() => openExpandedNote(noteId), 0);
+        }
+        function openGlobalEventResult(eventId) {
+            const event = events.find(item => item.id === eventId);
+            if (!event)
+                return;
+            const targetDate = fromKey(event.date);
+            clearGlobalSearch();
+            if (targetDate)
+                selectDate(targetDate, true);
+            setTimeout(() => openEventEditor(event.id), 0);
+        }
+        function openGlobalTaskResult(context) {
+            if (!TASK_CONTEXTS.includes(context))
+                return;
+            clearGlobalSearch();
+            openTasks();
+            activeTaskContext = context;
+            localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext);
+            renderGlobalTasks();
         }
         function readDateData(key) {
             try {
