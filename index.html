@@ -2619,6 +2619,82 @@ button.note-label-chip {
 .event-past { background: #f4f5f3; color: var(--muted); }
 .event-when { color: var(--muted); font-size: 10.5px; }
 .event-row-title { font-size: 12.5px; font-weight: 650; }
+.event-overview-btn { display: none; }
+.event-overview-panel {
+  width: min(430px, 96vw);
+  max-height: 94dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--page);
+  box-shadow: 0 18px 50px rgba(50,40,28,.22);
+}
+.event-overview-head,
+.event-overview-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--page);
+}
+.event-overview-head { border-bottom: 1px solid var(--line); }
+.event-overview-actions { border-top: 1px solid var(--line); justify-content: flex-end; }
+.event-overview-title { margin: 0; font-size: var(--font-lg); font-weight: 700; }
+.event-overview-card {
+  margin: 10px;
+  padding: 16px;
+  overflow-y: auto;
+  border: 1px solid #a9c9e5;
+  border-radius: 16px;
+  background: #f4f8fc;
+  color: var(--ink);
+}
+.event-overview-card-title {
+  margin: 0 0 12px;
+  color: #35566f;
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: .04em;
+  text-align: center;
+}
+.event-overview-section { margin-top: 14px; }
+.event-overview-section:first-of-type { margin-top: 0; }
+.event-overview-section-title {
+  margin-bottom: 6px;
+  color: #35566f;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.event-overview-date { margin-top: 9px; color: var(--muted); font-size: 10.5px; font-weight: 700; }
+.event-overview-item {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 8px;
+  margin-top: 5px;
+  padding: 7px 8px;
+  border: 1px solid #a9c9e5;
+  border-radius: 10px;
+  background: #dceaf7;
+}
+.event-overview-time { color: #35566f; font-size: 10.5px; font-weight: 700; }
+.event-overview-name { min-width: 0; font-size: 12px; font-weight: 650; overflow-wrap: anywhere; }
+.event-overview-more,
+.event-overview-empty { margin-top: 10px; color: var(--muted); font-size: 11px; text-align: center; }
+.event-overview-brand { margin-top: 16px; color: #35566f; font-size: 10.5px; font-weight: 750; letter-spacing: .08em; text-align: center; }
+.event-overview-share-btn {
+  min-height: 32px;
+  padding: 5px 11px;
+  border: 1px solid #a9c9e5;
+  border-radius: 10px;
+  background: #dceaf7;
+  color: #35566f;
+  font-weight: 700;
+}
 .event-editor-panel {
   width: min(390px, 94vw);
   overflow: hidden;
@@ -2673,6 +2749,10 @@ button.note-label-chip {
   }
 }
 @media (max-width: 759px) {
+  .event-overview-btn { display: inline-flex; }
+  #eventOverviewModal { padding: 6px; }
+  .event-overview-panel { width: min(520px, calc(100vw - 12px)); max-height: 96dvh; }
+  .event-overview-card { margin: 8px; padding: 14px; }
   .events-strip { padding: 6px 9px 7px; }
   .event-strip-item { max-width: 230px; min-height: 30px; font-size: 11.5px; }
   #noteModal:has(#eventsPanel.open) { padding: 6px; }
@@ -2901,7 +2981,7 @@ button.note-label-chip {
         <div id="activityLog"></div>
       </div>
       <div class="events-panel" id="eventsPanel" hidden>
-        <div class="events-toolbar"><span class="events-title">Events</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" title="Focus on Events">⛶</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link" id="eventsPanelAddBtn" type="button">+ Event</button></span></div>
+        <div class="events-toolbar"><span class="events-title">Events</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" title="Focus on Events">⛶</button><button class="plain-btn event-overview-btn" id="eventOverviewBtn" type="button">Share overview</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link" id="eventsPanelAddBtn" type="button">+ Event</button></span></div>
         <div id="eventsList"></div>
       </div>
       <div class="link-preview expanded-links" id="expandedLinks"></div>
@@ -2919,6 +2999,13 @@ button.note-label-chip {
     </section>
   </div>
 
+  <div class="modal-backdrop" id="eventOverviewModal" aria-hidden="true">
+    <section class="event-overview-panel" role="dialog" aria-modal="true" aria-label="Events overview">
+      <div class="event-overview-head"><p class="event-overview-title">Events Overview</p><button class="plain-btn" id="closeEventOverviewBtn" type="button">Close</button></div>
+      <div class="event-overview-card" id="eventOverviewCard"></div>
+      <div class="event-overview-actions"><button class="plain-btn event-overview-share-btn" id="shareEventOverviewBtn" type="button">Share as text</button><button class="plain-btn" id="closeEventOverviewBottomBtn" type="button">Close</button></div>
+    </section>
+  </div>
   <div class="modal-backdrop" id="eventModal" aria-hidden="true">
     <section class="event-editor-panel" role="dialog" aria-modal="true" aria-label="Event editor">
       <div class="event-editor-head"><p class="event-editor-title" id="eventEditorTitle">New Event</p><button class="plain-btn" id="closeEventBtn" type="button">Close</button></div>
@@ -3093,6 +3180,12 @@ button.note-label-chip {
         const eventsFocusBtn = el("eventsFocusBtn");
         const eventsPastBtn = el("eventsPastBtn");
         const eventsPanelAddBtn = el("eventsPanelAddBtn");
+        const eventOverviewBtn = el("eventOverviewBtn");
+        const eventOverviewModal = el("eventOverviewModal");
+        const eventOverviewCard = el("eventOverviewCard");
+        const closeEventOverviewBtn = el("closeEventOverviewBtn");
+        const closeEventOverviewBottomBtn = el("closeEventOverviewBottomBtn");
+        const shareEventOverviewBtn = el("shareEventOverviewBtn");
         const eventModal = el("eventModal");
         const eventEditorTitle = el("eventEditorTitle");
         const eventTitleInput = el("eventTitleInput");
@@ -3418,6 +3511,120 @@ button.note-label-chip {
             });
             eventsPastBtn.textContent = showPastEvents ? "Hide past" : "Show past";
             eventsPastBtn.setAttribute("aria-expanded", String(showPastEvents));
+        }
+        function shareableEvents() {
+            return events.filter(event => eventPhase(event) !== "past").sort(compareEvents);
+        }
+        function overviewDateLabel(dateKey) {
+            const date = fromKey(dateKey);
+            if (!date)
+                return dateKey;
+            return date.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+        }
+        function buildEventOverviewText() {
+            const items = shareableEvents();
+            if (!items.length)
+                return "FAST GTD Events\n\nNo today or upcoming events";
+            const lines = ["FAST GTD Events", ""];
+            let currentDate = "";
+            items.forEach(event => {
+                if (event.date !== currentDate) {
+                    currentDate = event.date;
+                    lines.push(eventPhase(event) === "today" ? "TODAY" : overviewDateLabel(event.date).toUpperCase());
+                }
+                lines.push(`${eventTimeLabel(event)}  ${event.title}`);
+                lines.push("");
+            });
+            return lines.join("\n").trim();
+        }
+        function renderEventOverview() {
+            eventOverviewCard.innerHTML = "";
+            const title = document.createElement("h2");
+            title.className = "event-overview-card-title";
+            title.textContent = "EVENTS";
+            eventOverviewCard.appendChild(title);
+            const todayItems = events.filter(event => eventPhase(event) === "today").sort(compareEvents);
+            const upcomingItems = events.filter(event => eventPhase(event) === "upcoming").sort(compareEvents);
+            const visibleUpcoming = upcomingItems.slice(0, 10);
+            const addSection = (label, items, groupByDate) => {
+                if (!items.length)
+                    return;
+                const section = document.createElement("section");
+                section.className = "event-overview-section";
+                const heading = document.createElement("div");
+                heading.className = "event-overview-section-title";
+                heading.textContent = label;
+                section.appendChild(heading);
+                let currentDate = "";
+                items.forEach(event => {
+                    if (groupByDate && event.date !== currentDate) {
+                        currentDate = event.date;
+                        const date = document.createElement("div");
+                        date.className = "event-overview-date";
+                        date.textContent = overviewDateLabel(event.date);
+                        section.appendChild(date);
+                    }
+                    const row = document.createElement("div");
+                    row.className = "event-overview-item";
+                    const time = document.createElement("div");
+                    time.className = "event-overview-time";
+                    time.textContent = eventTimeLabel(event);
+                    const name = document.createElement("div");
+                    name.className = "event-overview-name";
+                    name.textContent = event.title;
+                    row.append(time, name);
+                    section.appendChild(row);
+                });
+                eventOverviewCard.appendChild(section);
+            };
+            addSection("Today", todayItems, false);
+            addSection("Upcoming", visibleUpcoming, true);
+            if (!todayItems.length && !upcomingItems.length) {
+                const empty = document.createElement("div");
+                empty.className = "event-overview-empty";
+                empty.textContent = "No today or upcoming events";
+                eventOverviewCard.appendChild(empty);
+            }
+            if (upcomingItems.length > visibleUpcoming.length) {
+                const more = document.createElement("div");
+                more.className = "event-overview-more";
+                more.textContent = `+ ${upcomingItems.length - visibleUpcoming.length} more upcoming event${upcomingItems.length - visibleUpcoming.length === 1 ? "" : "s"}`;
+                eventOverviewCard.appendChild(more);
+            }
+            const brand = document.createElement("div");
+            brand.className = "event-overview-brand";
+            brand.textContent = "FAST GTD";
+            eventOverviewCard.appendChild(brand);
+        }
+        function openEventOverview() {
+            if (!isMobileViewport())
+                return;
+            renderEventOverview();
+            eventOverviewModal.classList.add("open");
+            eventOverviewModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => closeEventOverviewBtn.focus(), 0);
+        }
+        function closeEventOverview() {
+            eventOverviewModal.classList.remove("open");
+            eventOverviewModal.setAttribute("aria-hidden", "true");
+        }
+        function shareEventOverviewText() {
+            const text = buildEventOverviewText();
+            const markShared = () => {
+                const original = shareEventOverviewBtn.textContent;
+                shareEventOverviewBtn.textContent = "Copied ✓";
+                setTimeout(() => { shareEventOverviewBtn.textContent = original; }, 1000);
+            };
+            const copyText = () => {
+                if (navigator.clipboard && navigator.clipboard.writeText)
+                    navigator.clipboard.writeText(text).then(markShared).catch(() => fallbackCopy(text, markShared));
+                else
+                    fallbackCopy(text, markShared);
+            };
+            if (navigator.share)
+                navigator.share({ title: "FAST GTD Events", text }).catch(error => { if (error && error.name !== "AbortError") copyText(); });
+            else
+                copyText();
         }
         function openEventEditor(eventId = null) {
             const event = eventId ? events.find(item => item.id === eventId) : null;
@@ -5545,6 +5752,10 @@ ${body}` : title };
       function handleEscapeKey() {
   clearShortcutPrefix();
 
+  if (eventOverviewModal.classList.contains("open")) {
+    closeEventOverview();
+    return;
+  }
   if (eventModal.classList.contains("open")) {
     closeEventEditor();
     return;
@@ -5733,6 +5944,11 @@ ${body}` : title };
         addEventBtn.addEventListener("click", () => openEventEditor());
         viewEventsBtn.addEventListener("click", openEvents);
         eventsPanelAddBtn.addEventListener("click", () => openEventEditor());
+        eventOverviewBtn.addEventListener("click", openEventOverview);
+        closeEventOverviewBtn.addEventListener("click", closeEventOverview);
+        closeEventOverviewBottomBtn.addEventListener("click", closeEventOverview);
+        shareEventOverviewBtn.addEventListener("click", shareEventOverviewText);
+        eventOverviewModal.addEventListener("click", event => { if (event.target === eventOverviewModal) closeEventOverview(); });
         eventsPastBtn.addEventListener("click", () => { showPastEvents = !showPastEvents; renderEvents(); });
         closeEventBtn.addEventListener("click", closeEventEditor);
         cancelEventBtn.addEventListener("click", closeEventEditor);
