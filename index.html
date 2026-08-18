@@ -5949,8 +5949,12 @@ if (key === "s") {
 }
 if (key === "l") {
   const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
-  if (noteModal.classList.contains("open") && note && !note.deleted)
+  if (noteModal.classList.contains("open") && note && !note.deleted) {
     openLabelSelector();
+  }
+  else if (!isMobileViewport()) {
+    showDesktopWorkspacePanel("labels");
+  }
 }
 if (key === "e") {
   openEventEditor();
