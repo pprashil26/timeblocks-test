@@ -2161,6 +2161,41 @@ button.note-label-chip {
   }
 }
 
+
+/* Desktop Labels workspace: global labelled notes using the existing Notes UI */
+@media (min-width: 760px) {
+  .workspace-tabs {
+    gap: 2px;
+  }
+
+  .workspace-tab {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  .notes-focus-scope.labels-mode {
+    display: flex;
+    justify-content: flex-start;
+    padding: 7px 8px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: var(--panel);
+  }
+
+  .notes-focus-scope.labels-mode .notes-scope-btn {
+    display: none;
+  }
+
+  .notes-focus-scope.labels-mode .notes-label-filter {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-height: 32px;
+    padding-left: 10px;
+    font-weight: 650;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -2246,7 +2281,7 @@ button.note-label-chip {
     </main>
 
     <aside class="notes-sidebar" id="notesSidebar" aria-label="Lined notepad sidebar">
-      <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Right sidebar panels"><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
+      <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Right sidebar panels"><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceLabelsTab" type="button" role="tab" aria-selected="false">Labels</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
       <div class="notes-wrap" id="notesWorkspacePanel">
         <div class="mobile-notes-date" id="mobileNotesDate">Notes for selected date</div>
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
@@ -2357,6 +2392,7 @@ button.note-label-chip {
         const notesWorkspacePanel = el("notesWorkspacePanel");
         const workspacePanelHost = el("workspacePanelHost");
         const workspaceNotesTab = el("workspaceNotesTab");
+        const workspaceLabelsTab = el("workspaceLabelsTab");
         const workspaceTasksTab = el("workspaceTasksTab");
         const workspaceActivityTab = el("workspaceActivityTab");
         const notesToggle = el("notesToggle");
@@ -3431,9 +3467,14 @@ ${body}` : title };
             else
                 copyNote();
         }
+        function isLabelsWorkspace() {
+            return !isMobileViewport() && desktopWorkspacePanel === "labels";
+        }
         function applyNotesFocusScope() {
-            const allActive = !isMobileViewport() && notesFocusView && notesFocusAll;
-            notesFocusScope.classList.toggle("show", !isMobileViewport() && notesFocusView && !notesBinOpen);
+            const labelsMode = isLabelsWorkspace();
+            const allActive = labelsMode || (!isMobileViewport() && notesFocusView && notesFocusAll);
+            notesFocusScope.classList.toggle("show", !isMobileViewport() && !notesBinOpen && (notesFocusView || labelsMode));
+            notesFocusScope.classList.toggle("labels-mode", labelsMode);
             notesLabelFilter.classList.toggle("show", allActive);
             if (allActive)
                 updateLabelFilterOptions();
@@ -3454,7 +3495,9 @@ ${body}` : title };
             allDateKeys().forEach(dateKey => {
                 const data = readDateData(dateKey);
                 normalizeNotes(data.notes).forEach(note => {
-                    if (!note.deleted && (!notesPinnedOnly || note.pinned) && (!notesLabelFilterValue || note.labels.some(label => label.toLowerCase() === notesLabelFilterValue.toLowerCase())) && noteMatchesSearch(note))
+                    const labelsMode = isLabelsWorkspace();
+                    const hasRequiredLabel = labelsMode ? note.labels.length > 0 : true;
+                    if (!note.deleted && hasRequiredLabel && (!notesPinnedOnly || note.pinned) && (!notesLabelFilterValue || note.labels.some(label => label.toLowerCase() === notesLabelFilterValue.toLowerCase())) && noteMatchesSearch(note))
                         results.push({ dateKey, note });
                 });
             });
@@ -3530,7 +3573,14 @@ ${body}` : title };
         function renderAllFocusNotes() {
             const results = collectAllFocusNotes();
             results.forEach(result => notesList.appendChild(createAllFocusNoteCard(result)));
-            notesNoResults.textContent = notesPinnedOnly ? "No pinned notes across saved dates" : "No notes found across saved dates";
+            if (isLabelsWorkspace()) {
+                notesNoResults.textContent = notesLabelFilterValue
+                    ? `No notes with label “${notesLabelFilterValue}”`
+                    : "No labelled notes yet";
+            }
+            else {
+                notesNoResults.textContent = notesPinnedOnly ? "No pinned notes across saved dates" : "No notes found across saved dates";
+            }
             notesNoResults.classList.toggle("show", results.length === 0);
             applyNotesCompact();
             updateSearchUi();
@@ -3546,7 +3596,7 @@ ${body}` : title };
                 if (isMobileViewport())
                     setMobileSection("notes");
             }
-            else {
+            else if (!isLabelsWorkspace()) {
                 notesFocusAll = false;
             }
             applyNotesFocusScope();
@@ -3554,8 +3604,10 @@ ${body}` : title };
         }
         function toggleNotesFocusView() {
             if (!isMobileViewport()) {
-                if (desktopWorkspacePanel !== "notes")
+                if (desktopWorkspacePanel !== "notes" && desktopWorkspacePanel !== "labels")
                     showDesktopWorkspacePanel("notes");
+                if (desktopWorkspacePanel === "labels")
+                    notesFocusAll = true;
                 notesFocusView = !notesFocusView;
                 workspaceFocusPanel = null;
                 localStorage.setItem(NOTE_FOCUS_KEY, String(notesFocusView));
@@ -3905,6 +3957,7 @@ ${body}` : title };
         function updateWorkspaceTabs() {
             const tabs = [
                 [workspaceNotesTab, "notes"],
+                [workspaceLabelsTab, "labels"],
                 [workspaceTasksTab, "tasks"],
                 [workspaceActivityTab, "activity"]
             ];
@@ -3934,18 +3987,33 @@ ${body}` : title };
                 applyNotesFocusView();
             }
             desktopWorkspacePanel = panel;
+            const notesPanelActive = panel === "notes" || panel === "labels";
+            if (panel === "labels") {
+                notesFocusAll = true;
+                notesLabelFilterValue = "";
+                notesBinOpen = false;
+                notesSearchOpen = false;
+                notesSearchQuery = "";
+                notesSearchInput.value = "";
+            }
+            else if (panel === "notes" && !notesFocusView) {
+                notesFocusAll = false;
+                notesLabelFilterValue = "";
+            }
             moveWorkspacePanelsToSidebar();
-            notesWorkspacePanel.hidden = panel !== "notes";
+            notesWorkspacePanel.hidden = !notesPanelActive;
             globalTasksPanel.hidden = panel !== "tasks";
             globalTasksPanel.classList.toggle("open", panel === "tasks");
             activityPanel.hidden = panel !== "activity";
             activityPanel.classList.toggle("open", panel === "activity");
-            workspaceFocusPanel = wasFocused && panel !== "notes" ? panel : null;
-            if (wasFocused && panel === "notes") {
+            workspaceFocusPanel = wasFocused && !notesPanelActive ? panel : null;
+            if (wasFocused && notesPanelActive) {
                 notesFocusView = true;
                 localStorage.setItem(NOTE_FOCUS_KEY, "true");
                 applyNotesFocusView();
             }
+            if (notesPanelActive)
+                renderNotes();
             if (panel === "tasks")
                 renderGlobalTasks();
             if (panel === "activity")
@@ -4280,7 +4348,7 @@ ${body}` : title };
             notesList.innerHTML = "";
             notes = orderNotes(notes);
             applyNotesFocusScope();
-            if (!isMobileViewport() && notesFocusView && notesFocusAll && !notesBinOpen) {
+            if (!isMobileViewport() && !notesBinOpen && (isLabelsWorkspace() || (notesFocusView && notesFocusAll))) {
                 renderAllFocusNotes();
                 return;
             }
@@ -4638,6 +4706,7 @@ ${body}` : title };
             expandedTitle.select();
         });
         workspaceNotesTab.addEventListener("click", () => showDesktopWorkspacePanel("notes"));
+        workspaceLabelsTab.addEventListener("click", () => showDesktopWorkspacePanel("labels"));
         workspaceTasksTab.addEventListener("click", () => showDesktopWorkspacePanel("tasks"));
         workspaceActivityTab.addEventListener("click", () => showDesktopWorkspacePanel("activity"));
         tasksFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("tasks"));
