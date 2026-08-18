@@ -2683,6 +2683,95 @@ button.note-label-chip {
   .event-editor-date-row { grid-template-columns: 1fr; }
 }
 
+
+/* Mobile homepage compact Event capture and view */
+.mobile-home-capture-row,
+.mobile-quick-event-btn,
+.mobile-all-events-btn {
+  display: none;
+}
+
+@media (max-width: 759px) {
+  .mobile-home-capture-row {
+    display: flex;
+    width: min(310px, 92%);
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .mobile-home-capture-row .mobile-quick-note-btn,
+  .mobile-quick-event-btn {
+    display: inline-flex;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 42px;
+    margin-top: 0;
+    padding: 8px 11px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2cd61;
+    border-radius: 999px;
+    background: #FFEE8C;
+    color: #4f4518;
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none !important;
+    box-shadow: 0 3px 10px rgba(122, 106, 42, .12);
+  }
+
+  .mobile-quick-event-btn {
+    border-color: var(--entry-border);
+    background: var(--selected);
+    color: var(--ink);
+    box-shadow: 0 3px 10px rgba(67, 94, 78, .08);
+  }
+
+  .mobile-quick-event-btn:hover,
+  .mobile-quick-event-btn:focus-visible {
+    background: #cfe0d6;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .mobile-all-events-btn {
+    display: inline-flex;
+    min-height: 30px;
+    margin-top: 6px;
+    padding: 4px 10px;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 11.5px;
+    font-weight: 650;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .mobile-all-events-btn:hover,
+  .mobile-all-events-btn:focus-visible {
+    color: var(--ink);
+  }
+}
+
+@media (max-width: 759px) and (max-height: 650px) {
+  .mobile-home-capture-row {
+    margin-top: 6px;
+  }
+
+  .mobile-home-capture-row .mobile-quick-note-btn,
+  .mobile-quick-event-btn {
+    min-height: 38px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .mobile-all-events-btn {
+    min-height: 26px;
+    margin-top: 3px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -2710,7 +2799,11 @@ button.note-label-chip {
       <img class="mobile-home-logo" src="logo.png" alt="Timeblocks logo" />
       <p class="mobile-home-brand-motto">Finish Actions, Save Time</p>
       <p class="mobile-home-brand-tagline">A lightweight GTD app · empty your mind</p>
-      <button class="plain-btn mobile-quick-note-btn" id="mobileQuickNoteBtn" type="button" title="Add a quick note for today">＋ Quick note</button>
+      <div class="mobile-home-capture-row" aria-label="Quick capture">
+        <button class="plain-btn mobile-quick-note-btn" id="mobileQuickNoteBtn" type="button" title="Add a quick note for today">＋ Quick note</button>
+        <button class="plain-btn mobile-quick-event-btn" id="mobileQuickEventBtn" type="button" title="Add an event for today">＋ Event</button>
+      </div>
+      <button class="plain-btn mobile-all-events-btn" id="mobileAllEventsBtn" type="button">All events</button>
     </div>
     <div class="mobile-home-bottom">
       <div class="mobile-home-data-row">
@@ -2887,6 +2980,8 @@ button.note-label-chip {
         const mobileHelpBtn = el("mobileHelpBtn");
         const mobileShareBtn = el("mobileShareBtn");
         const mobileQuickNoteBtn = el("mobileQuickNoteBtn");
+        const mobileQuickEventBtn = el("mobileQuickEventBtn");
+        const mobileAllEventsBtn = el("mobileAllEventsBtn");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
         const mobileNotesDate = el("mobileNotesDate");
@@ -4892,6 +4987,13 @@ ${body}` : title };
             noteModal.setAttribute("aria-hidden", "false");
             setTimeout(() => activityInput.focus(), 0);
         }
+        function openMobileQuickEvent() {
+            const today = getToday();
+            if (!isWithinRange(today))
+                return;
+            selectDate(today, true);
+            openEventEditor();
+        }
         function openQuickNote() {
             const today = getToday();
             if (!isWithinRange(today))
@@ -5520,6 +5622,8 @@ ${body}` : title };
         mobileHelpBtn.addEventListener("click", openHelp);
         mobileShareBtn.addEventListener("click", shareFastGtd);
         mobileQuickNoteBtn.addEventListener("click", openQuickNote);
+        mobileQuickEventBtn.addEventListener("click", openMobileQuickEvent);
+        mobileAllEventsBtn.addEventListener("click", openEvents);
         mobileHomeBtn.addEventListener("click", clearMobileSection);
         document.querySelectorAll(".mobile-export-btn").forEach(button => button.addEventListener("click", exportBackup));
         document.querySelectorAll(".mobile-import-btn").forEach(button => button.addEventListener("click", () => importBackupBtn.click()));
