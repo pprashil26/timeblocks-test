@@ -2022,6 +2022,145 @@
   }
 }
 
+
+/* Note labels, label selector and mobile note sharing */
+.note-label-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 9px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.note-label-chips[hidden] {
+  display: none !important;
+}
+.note-label-chip {
+  display: inline-flex;
+  min-height: 22px;
+  align-items: center;
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--page);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+button.note-label-chip {
+  cursor: pointer;
+}
+.note-label-chip.removable:hover {
+  color: var(--danger);
+  border-color: #d9b7b2;
+}
+.expanded-label-chips {
+  padding: 6px 12px;
+}
+.notes-sidebar.notes-compact .note-card > .note-label-chips {
+  display: none;
+}
+.notes-label-filter {
+  display: none;
+  min-height: 28px;
+  max-width: 150px;
+  padding: 3px 24px 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--page);
+  color: var(--ink);
+  font-size: 11px;
+}
+.notes-label-filter.show {
+  display: inline-block;
+}
+.label-panel {
+  width: min(380px, 92vw);
+  max-height: 78vh;
+  overflow: hidden;
+  background: var(--page);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 18px 50px rgba(50, 40, 28, .22);
+}
+.label-panel-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 9px 12px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.label-panel-title {
+  margin: 0;
+  font-size: var(--font-lg);
+  font-weight: 650;
+}
+.label-panel-body {
+  max-height: calc(78vh - 45px);
+  padding: 12px;
+  overflow-y: auto;
+}
+.label-add-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin: 10px 0 12px;
+}
+.label-add-btn {
+  min-width: 48px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--soft);
+  color: var(--ink);
+}
+.label-section-title {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.label-empty {
+  color: var(--muted);
+  font-size: var(--font-sm);
+}
+.label-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.label-option {
+  min-height: 28px;
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--page);
+  color: var(--muted);
+  text-decoration: none !important;
+}
+.label-option.active {
+  background: var(--selected);
+  border-color: var(--entry-border);
+  color: var(--ink);
+  font-weight: 700;
+}
+.expanded-share-btn {
+  display: none;
+}
+@media (max-width: 759px) {
+  .expanded-share-btn {
+    display: inline-flex;
+  }
+  .notes-label-filter {
+    display: none !important;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -2102,6 +2241,7 @@
   <span><strong>GA</strong> Activity</span>
   <span><strong>GN</strong> New note</span>
   <span><strong>GS</strong> Search</span>
+  <span><strong>GL</strong> Labels</span>
 </div></footer>
     </main>
 
@@ -2112,7 +2252,7 @@
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
         <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn icon-btn notes-toolbar-icon" id="notesPinnedBtn" type="button" title="Show pinned notes only" aria-pressed="false">☆</button><button class="plain-btn icon-btn notes-toolbar-icon compact-btn" id="compactNotesBtn" type="button" title="Hide note previews">▤</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
-        <div class="notes-focus-scope" id="notesFocusScope" aria-label="Notes focus scope"><button class="plain-btn notes-scope-btn active" id="notesScopeDateBtn" type="button">This date</button><button class="plain-btn notes-scope-btn" id="notesScopeAllBtn" type="button">All notes</button></div>
+        <div class="notes-focus-scope" id="notesFocusScope" aria-label="Notes focus scope"><button class="plain-btn notes-scope-btn active" id="notesScopeDateBtn" type="button">This date</button><button class="plain-btn notes-scope-btn" id="notesScopeAllBtn" type="button">All notes</button><select class="notes-label-filter" id="notesLabelFilter" title="Filter All notes by label" aria-label="Filter All notes by label"><option value="">All labels</option></select></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
       <div class="workspace-panel-host" id="workspacePanelHost"></div>
@@ -2122,7 +2262,8 @@
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" id="expandedNoteShell" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
-      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="icon-btn" id="expandedWideBtn" type="button" title="Toggle wide note view">↔</button><button class="icon-btn" id="expandedLineBtn" type="button" title="Insert horizontal line"><span class="expanded-line-icon" aria-hidden="true">─</span><span class="expanded-line-text">Insert line</span></button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedFontBtn" type="button">Larger font</button><button class="plain-btn" id="expandedCopyBtn" type="button">Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move note</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete note</button></span></span></div>
+      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="icon-btn" id="expandedWideBtn" type="button" title="Toggle wide note view">↔</button><button class="icon-btn" id="expandedLineBtn" type="button" title="Insert horizontal line"><span class="expanded-line-icon" aria-hidden="true">─</span><span class="expanded-line-text">Insert line</span></button><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedFontBtn" type="button">Larger font</button><button class="plain-btn" id="expandedCopyBtn" type="button">Copy note</button><button class="plain-btn" id="expandedLabelsBtn" type="button">Labels</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move note</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete note</button></span></span></div>
+      <div class="note-label-chips expanded-label-chips" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
         <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" title="Focus on Tasks">⛶</button><button class="plain-btn" id="sortTasksBtn" type="button">Sort</button><span> · </span><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button></span></div>
@@ -2143,6 +2284,17 @@
         <div id="activityLog"></div>
       </div>
       <div class="link-preview expanded-links" id="expandedLinks"></div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="labelModal" aria-hidden="true">
+    <section class="label-panel" role="dialog" aria-modal="true" aria-label="Note labels">
+      <div class="label-panel-head"><p class="label-panel-title">Labels</p><button class="plain-btn" id="closeLabelBtn" type="button">Close</button></div>
+      <div class="label-panel-body">
+        <div class="label-current" id="labelCurrent"></div>
+        <div class="label-add-row"><input id="labelInput" type="text" maxlength="30" placeholder="Add a label..." autocomplete="off" /><button class="plain-btn label-add-btn" id="labelAddBtn" type="button">Add</button></div>
+        <div class="label-existing" id="labelExisting"></div>
+      </div>
     </section>
   </div>
 
@@ -2237,6 +2389,7 @@
         const notesFocusScope = el("notesFocusScope");
         const notesScopeDateBtn = el("notesScopeDateBtn");
         const notesScopeAllBtn = el("notesScopeAllBtn");
+        const notesLabelFilter = el("notesLabelFilter");
         const moveAllNotesBtn = el("moveAllNotesBtn");
         const notesBinBtn = el("notesBinBtn");
         const notesBinBackBtn = el("notesBinBackBtn");
@@ -2255,6 +2408,9 @@
         const expandedMoreMenu = el("expandedMoreMenu");
         const expandedMoveBtn = el("expandedMoveBtn");
         const expandedCopyBtn = el("expandedCopyBtn");
+        const expandedLabelsBtn = el("expandedLabelsBtn");
+        const expandedShareBtn = el("expandedShareBtn");
+        const expandedLabelChips = el("expandedLabelChips");
         const expandedFontBtn = el("expandedFontBtn");
         const expandedDeleteBtn = el("expandedDeleteBtn");
         const closeExpandedNote = el("closeExpandedNote");
@@ -2274,6 +2430,12 @@
         const activityFilterBtn = el("activityFilterBtn");
       const exportActivityBtn = el("exportActivityBtn");
         const activityLog = el("activityLog");
+        const labelModal = el("labelModal");
+        const closeLabelBtn = el("closeLabelBtn");
+        const labelInput = el("labelInput");
+        const labelAddBtn = el("labelAddBtn");
+        const labelCurrent = el("labelCurrent");
+        const labelExisting = el("labelExisting");
         const moveModal = el("moveModal");
         const moveModalTitle = el("moveModalTitle");
         const moveDateLabel = el("moveDateLabel");
@@ -2297,6 +2459,7 @@
         let notesBinOpen = false;
         let notesFocusView = localStorage.getItem(NOTE_FOCUS_KEY) === "true";
         let notesFocusAll = false;
+        let notesLabelFilterValue = "";
         let notesPinnedOnly = localStorage.getItem(NOTES_PINNED_ONLY_KEY) === "true";
         let threeMonthCalendar = localStorage.getItem(CALENDAR_RANGE_KEY) === "true";
         let desktopCalendarCollapsed = localStorage.getItem(CALENDAR_COLLAPSED_KEY) === "true";
@@ -2398,19 +2561,32 @@
             });
             container.append(title, list);
         }
+        function normalizeNoteLabels(rawLabels) {
+            if (!Array.isArray(rawLabels))
+                return [];
+            const seen = new Set();
+            return rawLabels.map(label => String(label || "").trim()).filter(label => {
+                const key = label.toLowerCase();
+                if (!label || seen.has(key))
+                    return false;
+                seen.add(key);
+                return true;
+            });
+        }
         function normalizeNotes(rawNotes) {
             if (Array.isArray(rawNotes)) {
                 return rawNotes.map(note => ({
                     id: note.id || createId(),
                     title: note.title || "Untitled",
                     body: note.body || "",
+                    labels: normalizeNoteLabels(note.labels),
                     pinned: Boolean(note.pinned),
                     deleted: Boolean(note.deleted),
                     deletedAt: note.deletedAt || null
                 }));
             }
             if (typeof rawNotes === "string" && rawNotes.trim()) {
-                return [{ id: createId(), title: "Note", body: rawNotes, pinned: false, deleted: false, deletedAt: null }];
+                return [{ id: createId(), title: "Note", body: rawNotes, labels: [], pinned: false, deleted: false, deletedAt: null }];
             }
             return [];
         }
@@ -2423,9 +2599,9 @@
             const query = notesSearchQuery.trim().toLowerCase();
             if (!query)
                 return true;
-            return `${note.title || ""} ${note.body || ""}`.toLowerCase().includes(query);
+            return `${note.title || ""} ${note.body || ""} ${(note.labels || []).join(" ")}`.toLowerCase().includes(query);
         }
-        function noteMatchesGlobalSearch(note, query) { return `${note.title || ""} ${note.body || ""}`.toLowerCase().includes(query); }
+        function noteMatchesGlobalSearch(note, query) { return `${note.title || ""} ${note.body || ""} ${(note.labels || []).join(" ")}`.toLowerCase().includes(query); }
         function allDateKeys() {
             const keys = [];
             for (let index = 0; index < localStorage.length; index += 1) {
@@ -3094,9 +3270,173 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             compactNotesBtn.title = notesCompact ? "Show note previews" : "Hide note previews";
         }
 
+        function createLabelChip(label, removable = false, onRemove = null) {
+            const chip = document.createElement(removable ? "button" : "span");
+            if (removable)
+                chip.type = "button";
+            chip.className = "note-label-chip" + (removable ? " removable" : "");
+            chip.textContent = removable ? `${label} ×` : label;
+            chip.title = removable ? `Remove ${label}` : label;
+            if (removable && onRemove)
+                chip.addEventListener("click", onRemove);
+            return chip;
+        }
+        function renderLabelChips(container, labels, removable = false, onRemove = null) {
+            container.innerHTML = "";
+            const cleanLabels = normalizeNoteLabels(labels);
+            container.hidden = cleanLabels.length === 0;
+            cleanLabels.forEach(label => container.appendChild(createLabelChip(label, removable, onRemove ? () => onRemove(label) : null)));
+        }
+        function getAllLabels() {
+            const labels = new Map();
+            allDateKeys().forEach(dateKey => {
+                normalizeNotes(readDateData(dateKey).notes).forEach(note => {
+                    if (!note.deleted)
+                        note.labels.forEach(label => labels.set(label.toLowerCase(), label));
+                });
+            });
+            return Array.from(labels.values()).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+        }
+        function updateLabelFilterOptions() {
+            const labels = getAllLabels();
+            const current = notesLabelFilterValue;
+            notesLabelFilter.innerHTML = '<option value="">All labels</option>';
+            labels.forEach(label => {
+                const option = document.createElement("option");
+                option.value = label;
+                option.textContent = label;
+                notesLabelFilter.appendChild(option);
+            });
+            notesLabelFilterValue = labels.some(label => label.toLowerCase() === current.toLowerCase()) ? current : "";
+            notesLabelFilter.value = notesLabelFilterValue;
+        }
+        function renderExpandedLabels() {
+            const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            renderLabelChips(expandedLabelChips, note ? note.labels : []);
+        }
+        function removeCurrentNoteLabel(label) {
+            const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            if (!note || note.deleted)
+                return;
+            note.labels = note.labels.filter(item => item.toLowerCase() !== label.toLowerCase());
+            save();
+            renderExpandedLabels();
+            renderLabelSelector();
+            renderNotes();
+        }
+        function toggleCurrentNoteLabel(label) {
+            const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            if (!note || note.deleted)
+                return;
+            const exists = note.labels.some(item => item.toLowerCase() === label.toLowerCase());
+            note.labels = exists
+                ? note.labels.filter(item => item.toLowerCase() !== label.toLowerCase())
+                : normalizeNoteLabels(note.labels.concat(label));
+            save();
+            renderExpandedLabels();
+            renderLabelSelector();
+            renderNotes();
+        }
+        function renderLabelSelector() {
+            const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            labelCurrent.innerHTML = "";
+            labelExisting.innerHTML = "";
+            if (!note || note.deleted)
+                return;
+            const currentTitle = document.createElement("div");
+            currentTitle.className = "label-section-title";
+            currentTitle.textContent = "Current labels";
+            labelCurrent.appendChild(currentTitle);
+            if (!note.labels.length) {
+                const empty = document.createElement("div");
+                empty.className = "label-empty";
+                empty.textContent = "No labels";
+                labelCurrent.appendChild(empty);
+            }
+            else {
+                const chips = document.createElement("div");
+                chips.className = "note-label-chips";
+                renderLabelChips(chips, note.labels, true, removeCurrentNoteLabel);
+                labelCurrent.appendChild(chips);
+            }
+            const allLabels = getAllLabels();
+            if (allLabels.length) {
+                const existingTitle = document.createElement("div");
+                existingTitle.className = "label-section-title";
+                existingTitle.textContent = "Existing labels";
+                labelExisting.appendChild(existingTitle);
+                const options = document.createElement("div");
+                options.className = "label-options";
+                allLabels.forEach(label => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "plain-btn label-option";
+                    button.textContent = label;
+                    button.classList.toggle("active", note.labels.some(item => item.toLowerCase() === label.toLowerCase()));
+                    button.addEventListener("click", () => toggleCurrentNoteLabel(label));
+                    options.appendChild(button);
+                });
+                labelExisting.appendChild(options);
+            }
+        }
+        function openLabelSelector() {
+            const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            if (!note || note.deleted || expandedBody.readOnly)
+                return;
+            closeExpandedMoreMenu();
+            labelInput.value = "";
+            renderLabelSelector();
+            labelModal.classList.add("open");
+            labelModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => labelInput.focus(), 0);
+        }
+        function closeLabelSelector() {
+            labelModal.classList.remove("open");
+            labelModal.setAttribute("aria-hidden", "true");
+            labelInput.value = "";
+            if (expandedNoteId && noteModal.classList.contains("open"))
+                expandedBody.focus();
+        }
+        function addLabelFromInput() {
+            const label = labelInput.value.trim();
+            if (!label)
+                return;
+            toggleCurrentNoteLabel(label);
+            labelInput.value = "";
+            labelInput.focus();
+        }
+        function shareExpandedNote() {
+            const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            if (!isMobileViewport() || !note || note.deleted)
+                return;
+            const title = note.title || "Untitled";
+            const body = note.body || "";
+            const shareData = { title, text: body ? `${title}
+
+${body}` : title };
+            const markCopied = () => {
+                const original = expandedShareBtn.textContent;
+                expandedShareBtn.textContent = "✓";
+                setTimeout(() => { expandedShareBtn.textContent = original; }, 900);
+            };
+            const copyNote = () => {
+                const text = shareData.text;
+                if (navigator.clipboard && navigator.clipboard.writeText)
+                    navigator.clipboard.writeText(text).then(markCopied).catch(() => fallbackCopy(text, markCopied));
+                else
+                    fallbackCopy(text, markCopied);
+            };
+            if (navigator.share)
+                navigator.share(shareData).catch(error => { if (error && error.name !== "AbortError") copyNote(); });
+            else
+                copyNote();
+        }
         function applyNotesFocusScope() {
             const allActive = !isMobileViewport() && notesFocusView && notesFocusAll;
             notesFocusScope.classList.toggle("show", !isMobileViewport() && notesFocusView && !notesBinOpen);
+            notesLabelFilter.classList.toggle("show", allActive);
+            if (allActive)
+                updateLabelFilterOptions();
             notesScopeDateBtn.classList.toggle("active", !allActive);
             notesScopeAllBtn.classList.toggle("active", allActive);
             notesScopeDateBtn.setAttribute("aria-pressed", String(!allActive));
@@ -3114,7 +3454,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             allDateKeys().forEach(dateKey => {
                 const data = readDateData(dateKey);
                 normalizeNotes(data.notes).forEach(note => {
-                    if (!note.deleted && (!notesPinnedOnly || note.pinned) && noteMatchesSearch(note))
+                    if (!note.deleted && (!notesPinnedOnly || note.pinned) && (!notesLabelFilterValue || note.labels.some(label => label.toLowerCase() === notesLabelFilterValue.toLowerCase())) && noteMatchesSearch(note))
                         results.push({ dateKey, note });
                 });
             });
@@ -3174,6 +3514,9 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             open.type = "button";
             open.textContent = "⤢";
             open.title = "Open note";
+            const labelChips = document.createElement("div");
+            labelChips.className = "note-label-chips";
+            renderLabelChips(labelChips, note.labels);
             const body = document.createElement("div");
             body.className = "note-body all-notes-preview";
             body.textContent = note.body || "No note body";
@@ -3181,7 +3524,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             open.addEventListener("click", () => openAllFocusNote(dateKey, note.id));
             titleArea.append(title, date);
             tools.append(pin, open);
-            card.append(titleArea, tools, body);
+            card.append(titleArea, tools, labelChips, body);
             return card;
         }
         function renderAllFocusNotes() {
@@ -3388,6 +3731,9 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             body.className = "note-body";
             body.value = note.body || "";
             body.placeholder = "Write note...";
+            const labelChips = document.createElement("div");
+            labelChips.className = "note-label-chips";
+            renderLabelChips(labelChips, note.labels);
             const linkPreview = document.createElement("div");
             linkPreview.className = "link-preview";
             renderLinks(linkPreview, body.value);
@@ -3414,7 +3760,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             deleteButton.addEventListener("click", () => deleteNoteById(note.id));
             titleArea.append(title, compactExpandButton);
             toolsRow.append(pinButton, expandButton, moveButton, deleteButton);
-            card.append(titleArea, toolsRow, body, linkPreview);
+            card.append(titleArea, toolsRow, labelChips, body, linkPreview);
             return card;
         }
         function createTrashCard(note) {
@@ -3511,6 +3857,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             expandedPinBtn.title = note.pinned ? "Unpin note" : "Pin note";
             expandedPinBtn.classList.toggle("pinned", Boolean(note.pinned));
             applyExpandedNoteWide();
+            renderExpandedLabels();
         }
         function togglePin(id) {
             const note = findNoteById(id);
@@ -3534,6 +3881,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             expandedBody.value = note.body || "";
             expandedBody.readOnly = isDeletedPreview;
             expandedNoteTools.hidden = isDeletedPreview;
+            expandedLabelChips.hidden = isDeletedPreview;
             renderLinks(expandedLinks, expandedBody.value);
             if (!isDeletedPreview)
                 updateExpandedToolbar();
@@ -3641,7 +3989,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 return;
             selectDate(today, true);
             notesBinOpen = false;
-            const newNote = { id: createId(), title: "Quick note", body: "", pinned: false, deleted: false, deletedAt: null };
+            const newNote = { id: createId(), title: "Quick note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
             notes.unshift(newNote);
             renderNotes();
             save();
@@ -4144,6 +4492,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
       function handleEscapeKey() {
   clearShortcutPrefix();
 
+  if (labelModal.classList.contains("open")) {
+    closeLabelSelector();
+    return;
+  }
   if (helpModal.classList.contains("open")) {
     closeHelp();
     return;
@@ -4269,6 +4621,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         notesFocusBtn.addEventListener("click", toggleNotesFocusView);
         notesScopeDateBtn.addEventListener("click", () => setNotesFocusScope(false));
         notesScopeAllBtn.addEventListener("click", () => setNotesFocusScope(true));
+        notesLabelFilter.addEventListener("change", () => { notesLabelFilterValue = notesLabelFilter.value; renderNotes(); });
         notesPinnedBtn.addEventListener("click", toggleNotesPinnedFilter);
         moveAllNotesBtn.addEventListener("click", () => { closeNotesMoreMenu(); openMoveAllNotes(); });
         notesBinBtn.addEventListener("click", toggleNotesBin);
@@ -4276,7 +4629,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         addNoteBtn.addEventListener("click", () => {
             closeNotesMoreMenu();
             notesBinOpen = false;
-            const newNote = { id: createId(), title: "New Note", body: "", pinned: false, deleted: false, deletedAt: null };
+            const newNote = { id: createId(), title: "New Note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
             notes.unshift(newNote);
             renderNotes();
             save();
@@ -4318,6 +4671,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             openMoveNote(expandedNoteId);
         } });
         expandedCopyBtn.addEventListener("click", copyExpandedNote);
+        expandedLabelsBtn.addEventListener("click", openLabelSelector);
+        expandedShareBtn.addEventListener("click", shareExpandedNote);
         expandedFontBtn.addEventListener("click", toggleExpandedNoteFont);
         expandedDeleteBtn.addEventListener("click", () => { if (expandedNoteId) {
             closeExpandedMoreMenu();
@@ -4326,6 +4681,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         closeExpandedNote.addEventListener("click", closeExpandedEditor);
         noteModal.addEventListener("click", event => { if (event.target === noteModal)
             closeExpandedEditor(); });
+        closeLabelBtn.addEventListener("click", closeLabelSelector);
+        labelAddBtn.addEventListener("click", addLabelFromInput);
+        labelInput.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); addLabelFromInput(); } });
+        labelModal.addEventListener("click", event => { if (event.target === labelModal) closeLabelSelector(); });
         cancelMoveTop.addEventListener("click", closeMoveNote);
         cancelMoveBtn.addEventListener("click", closeMoveNote);
         confirmMoveBtn.addEventListener("click", moveNoteToDate);
@@ -4407,7 +4766,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         loadSelectedDate();
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
         setInterval(highlightCurrentTimeBlock, 60000);
-      /* Keyboard shortcuts: G then F/T/I/A */
+      /* Keyboard shortcuts: G then F/T/I/A/N/S/L */
 let shortcutPrefixActive = false;
 let shortcutTimer = null;
 
@@ -4485,6 +4844,11 @@ document.addEventListener("keydown", event => {
 if (key === "s") {
   globalSearchInput.focus();
   globalSearchInput.select();
+}
+if (key === "l") {
+  const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+  if (noteModal.classList.contains("open") && note && !note.deleted && !expandedBody.readOnly)
+    openLabelSelector();
 }
 });
     })();
