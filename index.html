@@ -2500,6 +2500,20 @@ button.note-label-chip {
   }
 }
 
+
+/* Expanded note main-toolbar font control */
+.expanded-font-toolbar-btn {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.expanded-font-toolbar-btn.active {
+  color: var(--ink);
+  background: var(--selected);
+  font-weight: 800;
+}
+
   </style>
 </head>
 <body>
@@ -2602,7 +2616,7 @@ button.note-label-chip {
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" id="expandedNoteShell" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
-      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="icon-btn" id="expandedWideBtn" type="button" title="Toggle wide note view">↔</button><button class="icon-btn" id="expandedLineBtn" type="button" title="Insert horizontal line"><span class="expanded-line-icon" aria-hidden="true">─</span><span class="expanded-line-text">Insert line</span></button><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedFontBtn" type="button">Larger font</button><button class="plain-btn" id="expandedCopyBtn" type="button">Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move note</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete note</button></span></span></div>
+      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="icon-btn expanded-font-toolbar-btn" id="expandedFontBtn" type="button" title="Use larger note font" aria-pressed="false">Aa</button><button class="icon-btn" id="expandedWideBtn" type="button" title="Toggle wide note view">↔</button><button class="icon-btn" id="expandedLineBtn" type="button" title="Insert horizontal line"><span class="expanded-line-icon" aria-hidden="true">─</span><span class="expanded-line-text">Insert line</span></button><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedCopyBtn" type="button">Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move note</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete note</button></span></span></div>
       <div class="note-label-chips expanded-label-chips" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
@@ -3276,8 +3290,9 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         function applyExpandedNoteFont() {
             noteModal.classList.toggle("large-note-font", expandedNoteLargeFont);
             expandedFontBtn.classList.toggle("active", expandedNoteLargeFont);
-            expandedFontBtn.textContent = expandedNoteLargeFont ? "Standard font" : "Larger font";
+            expandedFontBtn.textContent = "Aa";
             expandedFontBtn.title = expandedNoteLargeFont ? "Use standard note font" : "Use larger note font";
+            expandedFontBtn.setAttribute("aria-pressed", String(expandedNoteLargeFont));
         }
         function toggleExpandedNoteFont() {
             expandedNoteLargeFont = !expandedNoteLargeFont;
