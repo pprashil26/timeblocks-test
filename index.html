@@ -107,7 +107,11 @@
     .note-label { color: var(--muted); font-size: var(--font-xs); text-align: right; }
     .timeline { display: grid; gap: 3px; padding: 5px 10px 6px; }
     .time-pair-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; border-bottom: 1px solid var(--line); padding-bottom: 3px; }
-    .slot { position: relative; display: grid; grid-template-columns: 42px 16px 1fr; min-height: 24px; border-radius: 8px; background: #fffdf8; }
+    .slot { position: relative; display: grid; grid-template-columns: 42px 16px 24px 1fr; min-height: 24px; border-radius: 8px; background: #fffdf8; }
+    .timeblock-status { width: 22px; height: 22px; margin: 1px 0; padding: 0; border-radius: 7px; font-size: 11px; font-weight: 700; line-height: 1; }
+    .timeblock-status-planned { color: var(--muted); }
+    .timeblock-status-in-progress { color: #526b7a; background: #eaf1f4; }
+    .timeblock-status-done { color: #4f6f5f; background: #e7f1eb; }
     .slot.current-slot { background: #fff3c7; }
     .slot.current-slot::after {
       content: "";
@@ -259,7 +263,8 @@
       .calendar-wrap { max-height: 45vh; }
       .timeline { padding: 6px 10px; }
       .time-pair-row { grid-template-columns: 1fr; border-bottom: 0; }
-      .slot { grid-template-columns: 50px 1fr; min-height: 32px; border-bottom: 1px solid var(--line); }
+      .slot { grid-template-columns: 50px 28px 1fr; min-height: 32px; border-bottom: 1px solid var(--line); }
+      .timeblock-status { width: 26px; height: 30px; margin: 1px 0; font-size: 13px; }
       .drag-handle { display: none; }
       input[type="text"], input[type="date"], textarea { font-size: 16px; }
       textarea { min-height: 34px; height: 34px; }
@@ -2952,6 +2957,11 @@ button.note-label-chip {
         const EVENTS_KEY = "timeblocks:events";
         const ACTIVITY_KEY = "timeblocks:activityLog";
         const ACTIVITY_HIDE_COMPLETED_KEY = "timeblocks:activityHideCompleted";
+        const TIMEBLOCK_STATUSES = [
+            { id: "planned", icon: "○", label: "Planned" },
+            { id: "in-progress", icon: "▶", label: "In progress" },
+            { id: "done", icon: "✓", label: "Done" }
+        ];
         const ACTIVITY_STATUSES = [
             { id: "started", icon: "▶", label: "Started" },
             { id: "waiting", icon: "◷", label: "Waiting" },
@@ -4130,7 +4140,19 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 entries[box.dataset.time] = box.value; });
             return entries;
         }
-        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries() }; }
+        function normalizeTimeblockStatus(status) {
+            return TIMEBLOCK_STATUSES.some(item => item.id === status) ? status : "planned";
+        }
+        function collectTimeblockStatuses() {
+            const statuses = {};
+            document.querySelectorAll(".timeblock-status[data-time]").forEach(button => {
+                const status = normalizeTimeblockStatus(button.dataset.status);
+                if (status !== "planned")
+                    statuses[button.dataset.time] = status;
+            });
+            return statuses;
+        }
+        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses() }; }
         function save() { const data = currentDateDataFromState(); notes = data.notes; writeDateData(toKey(selectedDate), data); markDateHasData(toKey(selectedDate)); }
         function markDateHasData(key) {
             const button = document.querySelector(`.day-btn[data-date="${key}"]`);
@@ -4539,6 +4561,25 @@ ${body}` : title };
             handle.textContent = "⋮⋮";
             handle.title = "Drag entry";
             handle.draggable = true;
+            const statusButton = document.createElement("button");
+            statusButton.type = "button";
+            statusButton.className = "plain-btn timeblock-status";
+            statusButton.dataset.time = timeId;
+            statusButton.dataset.status = normalizeTimeblockStatus(saved.timeblockStatuses && saved.timeblockStatuses[timeId]);
+            function applyTimeblockStatus() {
+                const details = TIMEBLOCK_STATUSES.find(item => item.id === statusButton.dataset.status) || TIMEBLOCK_STATUSES[0];
+                statusButton.textContent = details.icon;
+                statusButton.title = `Status: ${details.label}. Click to change.`;
+                statusButton.setAttribute("aria-label", statusButton.title);
+                TIMEBLOCK_STATUSES.forEach(item => statusButton.classList.toggle(`timeblock-status-${item.id}`, item.id === details.id));
+            }
+            applyTimeblockStatus();
+            statusButton.addEventListener("click", () => {
+                const currentIndex = TIMEBLOCK_STATUSES.findIndex(item => item.id === statusButton.dataset.status);
+                statusButton.dataset.status = TIMEBLOCK_STATUSES[(currentIndex + 1) % TIMEBLOCK_STATUSES.length].id;
+                applyTimeblockStatus();
+                save();
+            });
             const box = document.createElement("textarea");
             box.dataset.time = timeId;
             box.value = (saved.entries && saved.entries[timeId]) || saved[timeId] || "";
@@ -4573,8 +4614,19 @@ ${body}` : title };
                     return;
                 }
                 event.preventDefault();
+                const sourceStatus = document.querySelector(`.timeblock-status[data-time="${draggedBox.dataset.time}"]`);
                 box.value = draggedBox.value;
                 draggedBox.value = "";
+                if (sourceStatus) {
+                    statusButton.dataset.status = normalizeTimeblockStatus(sourceStatus.dataset.status);
+                    sourceStatus.dataset.status = "planned";
+                    applyTimeblockStatus();
+                    const sourceDetails = TIMEBLOCK_STATUSES[0];
+                    sourceStatus.textContent = sourceDetails.icon;
+                    sourceStatus.title = `Status: ${sourceDetails.label}. Click to change.`;
+                    sourceStatus.setAttribute("aria-label", sourceStatus.title);
+                    TIMEBLOCK_STATUSES.forEach(item => sourceStatus.classList.toggle(`timeblock-status-${item.id}`, item.id === sourceDetails.id));
+                }
                 autoGrow(draggedBox);
                 autoGrow(box);
                 save();
@@ -4590,7 +4642,7 @@ ${body}` : title };
                         boxes[index + 1].focus();
                 }
             });
-            slot.append(label, handle, box);
+            slot.append(label, handle, statusButton, box);
             return slot;
         }
         function buildTimeline() {
@@ -5768,6 +5820,13 @@ ${body}` : title };
             notes = [];
             renderNotes();
             document.querySelectorAll("textarea[data-time]").forEach(box => { box.value = ""; autoGrow(box); });
+            document.querySelectorAll(".timeblock-status[data-time]").forEach(button => {
+                button.dataset.status = "planned";
+                button.textContent = TIMEBLOCK_STATUSES[0].icon;
+                button.title = `Status: ${TIMEBLOCK_STATUSES[0].label}. Click to change.`;
+                button.setAttribute("aria-label", button.title);
+                TIMEBLOCK_STATUSES.forEach(item => button.classList.toggle(`timeblock-status-${item.id}`, item.id === "planned"));
+            });
             markDateHasData(toKey(selectedDate));
             highlightCurrentTimeBlock();
         });
