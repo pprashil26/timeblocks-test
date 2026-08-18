@@ -2427,6 +2427,79 @@ button.note-label-chip {
   }
 }
 
+
+/* Mobile Notes unified toolbar and compact-card open behaviour */
+@media (max-width: 759px) {
+  .mobile-notes-toolbar {
+    grid-template-columns: minmax(148px, 1fr) auto 36px 36px 36px;
+    gap: 4px;
+  }
+
+  .mobile-notes-scope-slot {
+    min-width: 0;
+  }
+
+  .mobile-notes-scope-slot .notes-focus-scope.mobile-scope {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    margin: 0;
+    padding: 2px;
+    border-radius: 10px;
+  }
+
+  .mobile-notes-scope-slot .notes-focus-scope.mobile-scope .notes-scope-btn {
+    min-width: 0;
+    min-height: 32px;
+    padding: 5px 6px;
+    font-size: 10.5px;
+    white-space: nowrap;
+  }
+
+  .mobile-notes-scope-slot .notes-label-filter {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    z-index: 25;
+    width: calc(100% - 16px);
+    margin-top: 39px;
+    box-shadow: 0 10px 24px rgba(46, 57, 50, .13);
+  }
+
+  #mobileNotesLabelsBtn {
+    min-width: 52px;
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .mobile-notes-pinned,
+  .mobile-notes-add,
+  .mobile-notes-more-btn {
+    width: 36px;
+    min-width: 36px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .notes-sidebar.notes-compact .note-card,
+  .notes-sidebar.notes-compact .note-title-area {
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 380px) {
+  .mobile-notes-toolbar {
+    grid-template-columns: minmax(132px, 1fr) 49px 34px 34px 34px;
+    gap: 3px;
+  }
+
+  .mobile-notes-scope-slot .notes-focus-scope.mobile-scope .notes-scope-btn {
+    padding-left: 4px;
+    padding-right: 4px;
+    font-size: 10px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -2519,7 +2592,7 @@ button.note-label-chip {
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
         <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn icon-btn notes-toolbar-icon" id="notesPinnedBtn" type="button" title="Show pinned notes only" aria-pressed="false">☆</button><button class="plain-btn icon-btn notes-toolbar-icon compact-btn" id="compactNotesBtn" type="button" title="Hide note previews">▤</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
         <div class="notes-focus-scope" id="notesFocusScope" aria-label="Notes scope"><button class="plain-btn notes-scope-btn active" id="notesScopeDateBtn" type="button">This date</button><button class="plain-btn notes-scope-btn" id="notesScopeAllBtn" type="button">All notes</button><select class="notes-label-filter" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
-        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><button class="plain-btn mobile-notes-tool" id="mobileNotesSearchBtn" type="button">Search</button><button class="plain-btn mobile-notes-tool" id="mobileNotesLabelsBtn" type="button">Labels</button><button class="plain-btn mobile-notes-tool" id="mobileNotesPinnedBtn" type="button">☆ Pinned</button><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note to selected date">＋</button><span class="mobile-notes-more-wrap"><button class="plain-btn mobile-notes-more-btn" id="mobileNotesMoreBtn" type="button" aria-expanded="false">⋯</button><span class="mobile-notes-more-menu" id="mobileNotesMoreMenu"><button class="plain-btn" id="mobileNotesCompactBtn" type="button">Compact view</button><button class="plain-btn" id="mobileNotesSortBtn" type="button">Sort A–Z</button><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button></span></span></div>
+        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-tool" id="mobileNotesLabelsBtn" type="button">Labels</button><button class="plain-btn mobile-notes-tool mobile-notes-pinned" id="mobileNotesPinnedBtn" type="button" title="Show pinned notes only" aria-label="Show pinned notes only">☆</button><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note to selected date">＋</button><span class="mobile-notes-more-wrap"><button class="plain-btn mobile-notes-more-btn" id="mobileNotesMoreBtn" type="button" aria-expanded="false">⋯</button><span class="mobile-notes-more-menu" id="mobileNotesMoreMenu"><button class="plain-btn" id="mobileNotesCompactBtn" type="button">Compact view</button><button class="plain-btn" id="mobileNotesSortBtn" type="button">Sort A–Z</button><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button></span></span></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
       <div class="workspace-panel-host" id="workspacePanelHost"></div>
@@ -2659,7 +2732,7 @@ button.note-label-chip {
         const notesScopeAllBtn = el("notesScopeAllBtn");
         const notesLabelFilter = el("notesLabelFilter");
         const mobileNotesToolbar = el("mobileNotesToolbar");
-        const mobileNotesSearchBtn = el("mobileNotesSearchBtn");
+        const mobileNotesScopeSlot = el("mobileNotesScopeSlot");
         const mobileNotesLabelsBtn = el("mobileNotesLabelsBtn");
         const mobileNotesPinnedBtn = el("mobileNotesPinnedBtn");
         const mobileNotesAddBtn = el("mobileNotesAddBtn");
@@ -3730,6 +3803,10 @@ ${body}` : title };
             notesFocusScope.classList.toggle("show", !notesBinOpen && (mobileMode || (!isMobileViewport() && (notesFocusView || labelsMode))));
             notesFocusScope.classList.toggle("labels-mode", labelsMode);
             notesFocusScope.classList.toggle("mobile-scope", mobileMode);
+            if (mobileMode && notesFocusScope.parentElement !== mobileNotesScopeSlot)
+                mobileNotesScopeSlot.appendChild(notesFocusScope);
+            else if (!mobileMode && notesFocusScope.parentElement !== notesWorkspacePanel)
+                notesWorkspacePanel.insertBefore(notesFocusScope, mobileNotesToolbar);
             notesLabelFilter.classList.toggle("show", (allActive && labelsMode) || mobileMode);
             if (allActive || mobileMode)
                 updateLabelFilterOptions();
@@ -3739,7 +3816,9 @@ ${body}` : title };
             notesScopeAllBtn.setAttribute("aria-pressed", String(allActive));
             mobileNotesToolbar.hidden = !mobileMode || notesBinOpen;
             mobileNotesPinnedBtn.classList.toggle("active", notesPinnedOnly);
-            mobileNotesPinnedBtn.textContent = notesPinnedOnly ? "★ Pinned" : "☆ Pinned";
+            mobileNotesPinnedBtn.textContent = notesPinnedOnly ? "★" : "☆";
+            mobileNotesPinnedBtn.title = notesPinnedOnly ? "Show all notes" : "Show pinned notes only";
+            mobileNotesPinnedBtn.setAttribute("aria-label", mobileNotesPinnedBtn.title);
             mobileNotesCompactBtn.textContent = notesCompact ? "Show previews" : "Compact view";
         }
         function setNotesFocusScope(showAll) {
@@ -3833,8 +3912,12 @@ ${body}` : title };
             const body = document.createElement("div");
             body.className = "note-body all-notes-preview";
             body.textContent = note.body || "No note body";
-            pin.addEventListener("click", () => updateAllFocusNotePin(dateKey, note.id));
-            open.addEventListener("click", () => openAllFocusNote(dateKey, note.id));
+            pin.addEventListener("click", event => { event.stopPropagation(); updateAllFocusNotePin(dateKey, note.id); });
+            open.addEventListener("click", event => { event.stopPropagation(); openAllFocusNote(dateKey, note.id); });
+            card.addEventListener("click", event => {
+                if (notesCompact && !event.target.closest("button"))
+                    openAllFocusNote(dateKey, note.id);
+            });
             titleArea.append(title, date);
             tools.append(pin, open);
             card.append(titleArea, tools, labelChips, body);
@@ -4077,7 +4160,11 @@ ${body}` : title };
             });
             pinButton.addEventListener("click", () => togglePin(note.id));
             expandButton.addEventListener("click", () => openExpandedNote(note.id));
-            compactExpandButton.addEventListener("click", () => openExpandedNote(note.id));
+            compactExpandButton.addEventListener("click", event => { event.stopPropagation(); openExpandedNote(note.id); });
+            titleArea.addEventListener("click", event => {
+                if (notesCompact && event.target !== compactExpandButton)
+                    openExpandedNote(note.id);
+            });
             moveButton.addEventListener("click", () => openMoveNote(note.id));
             deleteButton.addEventListener("click", () => deleteNoteById(note.id));
             titleArea.append(title, compactExpandButton);
@@ -4998,7 +5085,6 @@ ${body}` : title };
         helpModal.addEventListener("click", event => { if (event.target === helpModal)
             closeHelp(); });
         notesSearchBtn.addEventListener("click", openSearch);
-        mobileNotesSearchBtn.addEventListener("click", openSearch);
         mobileNotesLabelsBtn.addEventListener("click", () => {
             applyNotesFocusScope();
             notesLabelFilter.focus();
