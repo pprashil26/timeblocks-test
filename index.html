@@ -859,12 +859,7 @@
     }
   
     /* Calendar highlight colour refinement */
-    .day-btn.has-events {
-      background: #dceaf7;
-      border-color: #a9c9e5;
-      color: #35566f;
-      font-weight: 700;
-    }
+    .day-btn.has-events { background: #dceaf7; border-color: #a9c9e5; color: #35566f; font-weight: 700; }
     .day-btn.today {
       background: #f5d98f;
       border-color: #c8a947;
@@ -879,18 +874,14 @@
       box-shadow: inset 0 0 0 1px rgba(84, 124, 105, .10);
     }
     .day-btn.has-events.today,
-    .day-btn.has-events.selected {
-      box-shadow: inset 0 0 0 2px rgba(102, 160, 205, .55);
-    }
+    .day-btn.has-events.selected { box-shadow: inset 0 0 0 2px rgba(102, 160, 205, .55); }
     .day-btn.today.selected {
       background: #c9ded2;
       border-color: #8fb3a1;
       color: #2f493e;
       box-shadow: 0 0 0 2px rgba(200, 169, 71, .38), inset 0 0 0 1px rgba(84, 124, 105, .10);
     }
-    .day-btn.has-events.today.selected {
-      box-shadow: 0 0 0 2px rgba(200, 169, 71, .38), inset 0 0 0 2px rgba(102, 160, 205, .55);
-    }
+    .day-btn.has-events.today.selected { box-shadow: 0 0 0 2px rgba(200, 169, 71, .38), inset 0 0 0 2px rgba(102, 160, 205, .55); }
     /* Activity page: compact A6 portrait proportion */
 #noteModal:has(#activityPanel.open) .expanded-note {
   width: min(420px, 92vw, calc(88vh * 105 / 148));
@@ -2563,24 +2554,12 @@ button.note-label-chip {
   scrollbar-width: none;
 }
 .events-strip-list::-webkit-scrollbar { display: none; }
-.events-strip.has-events {
-  background: #f4f8fc;
-  border-bottom-color: #c9dceb;
-}
+.events-strip.has-events { background: #f4f8fc; border-bottom-color: #c9dceb; }
 .events-strip.has-events .events-strip-title,
-.events-strip.has-events .event-add-link {
-  color: #35566f;
-}
-.events-strip.has-events .event-strip-item {
-  background: #dceaf7;
-  border-color: #a9c9e5;
-  color: #35566f;
-}
+.events-strip.has-events .event-add-link { color: #35566f; }
+.events-strip.has-events .event-strip-item { background: #dceaf7; border-color: #a9c9e5; color: #35566f; }
 .events-strip.has-events .event-strip-item:hover,
-.events-strip.has-events .event-strip-item:focus-visible {
-  background: #cfe2f3;
-  border-color: #8fb8db;
-}
+.events-strip.has-events .event-strip-item:focus-visible { background: #cfe2f3; border-color: #8fb8db; }
 .event-strip-item {
   flex: 0 0 auto;
   max-width: 280px;
@@ -2750,20 +2729,9 @@ button.note-label-chip {
     box-shadow: 0 3px 10px rgba(122, 106, 42, .12);
   }
 
-  .mobile-quick-event-btn {
-    border-color: #a9c9e5;
-    background: #dceaf7;
-    color: #35566f;
-    box-shadow: 0 3px 10px rgba(53, 86, 111, .10);
-  }
-
+  .mobile-quick-event-btn { border-color: #a9c9e5; background: #dceaf7; color: #35566f; box-shadow: 0 3px 10px rgba(53, 86, 111, .10); }
   .mobile-quick-event-btn:hover,
-  .mobile-quick-event-btn:focus-visible {
-    background: #cfe2f3;
-    border-color: #8fb8db;
-    color: #29485f;
-    text-decoration: none;
-  }
+  .mobile-quick-event-btn:focus-visible { background: #cfe2f3; border-color: #8fb8db; color: #29485f; text-decoration: none; }
 
   .mobile-all-events-btn {
     display: inline-flex;
@@ -3321,29 +3289,29 @@ button.note-label-chip {
             return keys.sort();
         }
         function globalPreview(text) { return (text || "").replace(/\s+/g, " ").trim() || "No note body"; }
+        function parseGlobalSearch(query) {
+            const validTypes = new Set(["notes", "tasks", "events"]);
+            const included = new Set();
+            const excluded = new Set();
+            const terms = [];
+            String(query || "").trim().split(/\s+/).filter(Boolean).forEach(token => {
+                const match = /^(include|exclude):([^:]+)$/i.exec(token);
+                if (!match || !validTypes.has(match[2].toLowerCase())) { terms.push(token); return; }
+                const type = match[2].toLowerCase();
+                if (match[1].toLowerCase() === "include") included.add(type); else excluded.add(type);
+            });
+            const types = included.size ? new Set(included) : new Set(validTypes);
+            excluded.forEach(type => types.delete(type));
+            return { cleanQuery: terms.join(" ").trim().toLowerCase(), displayQuery: terms.join(" ").trim(), types };
+        }
         function searchAllContent(query) {
-            const cleanQuery = query.trim().toLowerCase();
-            if (!cleanQuery)
-                return [];
+            const parsed = parseGlobalSearch(query);
+            if (!parsed.cleanQuery || !parsed.types.size) return { results: [], parsed };
             const results = [];
-            allDateKeys().forEach(dateKey => {
-                const data = readDateData(dateKey);
-                normalizeNotes(data.notes).filter(note => !note.deleted).forEach(note => {
-                    if (noteMatchesGlobalSearch(note, cleanQuery))
-                        results.push({ type: "note", dateKey, note });
-                });
-            });
-            events.forEach(event => {
-                if (event.title.toLowerCase().includes(cleanQuery))
-                    results.push({ type: "event", event });
-            });
-            TASK_CONTEXTS.forEach(context => {
-                (globalTasks[context] || []).forEach(task => {
-                    if ((task.text || "").toLowerCase().includes(cleanQuery))
-                        results.push({ type: "task", context, task });
-                });
-            });
-            return results;
+            if (parsed.types.has("notes")) allDateKeys().forEach(dateKey => { const data = readDateData(dateKey); normalizeNotes(data.notes).filter(note => !note.deleted).forEach(note => { if (noteMatchesGlobalSearch(note, parsed.cleanQuery)) results.push({ type: "note", dateKey, note }); }); });
+            if (parsed.types.has("events")) events.forEach(event => { if (event.title.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "event", event }); });
+            if (parsed.types.has("tasks")) TASK_CONTEXTS.forEach(context => { (globalTasks[context] || []).forEach(task => { if ((task.text || "").toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "task", context, task }); }); });
+            return { results, parsed };
         }
         function normalizeEvents(raw) {
             if (!Array.isArray(raw))
@@ -4028,53 +3996,28 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 globalResultsHead.textContent = "Search results";
                 return;
             }
-            const results = searchAllContent(query);
-            globalResultsHead.textContent = results.length ? `Search results for "${query}"` : `No results for "${query}"`;
+            const search = searchAllContent(query);
+            const results = search.results;
+            if (!search.parsed.types.size) globalResultsHead.textContent = "No search types selected";
+            else if (!search.parsed.cleanQuery) globalResultsHead.textContent = "Enter search text";
+            else globalResultsHead.textContent = results.length ? `Search results for "${search.parsed.displayQuery}"` : `No results for "${search.parsed.displayQuery}"`;
             if (!results.length) {
                 const empty = document.createElement("div");
                 empty.className = "no-results show";
-                empty.textContent = "No matching notes, tasks or events found";
+                empty.textContent = !search.parsed.types.size ? "No search types selected" : !search.parsed.cleanQuery ? "Enter search text before the search commands" : "No matching notes, tasks or events found";
                 globalResultsList.appendChild(empty);
                 return;
             }
             results.forEach(result => {
-                const button = document.createElement("button");
-                button.className = "global-result-card";
-                button.type = "button";
-                const typeLine = document.createElement("div");
-                typeLine.className = "global-result-type";
-                const dateLine = document.createElement("div");
-                dateLine.className = "global-result-date";
-                const titleLine = document.createElement("div");
-                titleLine.className = "global-result-title";
-                const preview = document.createElement("div");
-                preview.className = "global-result-preview";
-                if (result.type === "note") {
-                    const resultDate = fromKey(result.dateKey);
-                    typeLine.textContent = "Note";
-                    dateLine.textContent = resultDate ? displayDate(resultDate) : result.dateKey;
-                    titleLine.textContent = `${result.note.pinned ? "★ " : ""}${result.note.title || "Untitled"}`;
-                    preview.textContent = globalPreview(result.note.body);
-                    button.addEventListener("click", () => openGlobalResult(result.dateKey, result.note.id));
-                }
-                else if (result.type === "event") {
-                    const resultDate = fromKey(result.event.date);
-                    typeLine.textContent = "Event";
-                    dateLine.textContent = `${resultDate ? displayDate(resultDate) : result.event.date} · ${eventTimeLabel(result.event)}`;
-                    titleLine.textContent = result.event.title;
-                    const phase = eventPhase(result.event);
-                    preview.textContent = phase === "today" ? "Today" : phase.charAt(0).toUpperCase() + phase.slice(1);
-                    button.addEventListener("click", () => openGlobalEventResult(result.event.id));
-                }
-                else {
-                    typeLine.textContent = `Task · ${result.context}`;
-                    dateLine.textContent = result.task.done ? "Completed" : "Open";
-                    titleLine.textContent = `${result.task.highlighted ? "★ " : ""}${result.task.text || "Task"}`;
-                    preview.textContent = `Open ${result.context} tasks`;
-                    button.addEventListener("click", () => openGlobalTaskResult(result.context));
-                }
-                button.append(typeLine, dateLine, titleLine, preview);
-                globalResultsList.appendChild(button);
+                const button = document.createElement("button"); button.className = "global-result-card"; button.type = "button";
+                const typeLine = document.createElement("div"); typeLine.className = "global-result-type";
+                const dateLine = document.createElement("div"); dateLine.className = "global-result-date";
+                const titleLine = document.createElement("div"); titleLine.className = "global-result-title";
+                const preview = document.createElement("div"); preview.className = "global-result-preview";
+                if (result.type === "note") { const d = fromKey(result.dateKey); typeLine.textContent = "Note"; dateLine.textContent = d ? displayDate(d) : result.dateKey; titleLine.textContent = `${result.note.pinned ? "★ " : ""}${result.note.title || "Untitled"}`; preview.textContent = globalPreview(result.note.body); button.addEventListener("click", () => openGlobalResult(result.dateKey, result.note.id)); }
+                else if (result.type === "event") { const d = fromKey(result.event.date); const phase = eventPhase(result.event); typeLine.textContent = "Event"; dateLine.textContent = `${d ? displayDate(d) : result.event.date} · ${eventTimeLabel(result.event)}`; titleLine.textContent = result.event.title; preview.textContent = phase === "today" ? "Today" : phase.charAt(0).toUpperCase() + phase.slice(1); button.addEventListener("click", () => openGlobalEventResult(result.event.id)); }
+                else { typeLine.textContent = `Task · ${result.context}`; dateLine.textContent = result.task.done ? "Completed" : "Open"; titleLine.textContent = `${result.task.highlighted ? "★ " : ""}${result.task.text || "Task"}`; preview.textContent = `Open ${result.context} tasks`; button.addEventListener("click", () => openGlobalTaskResult(result.context)); }
+                button.append(typeLine, dateLine, titleLine, preview); globalResultsList.appendChild(button);
             });
         }
         function clearGlobalSearch() { globalSearchQuery = ""; globalSearchInput.value = ""; renderGlobalResults(); }
@@ -4088,25 +4031,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 setMobileSection("notes");
             setTimeout(() => openExpandedNote(noteId), 0);
         }
-        function openGlobalEventResult(eventId) {
-            const event = events.find(item => item.id === eventId);
-            if (!event)
-                return;
-            const targetDate = fromKey(event.date);
-            clearGlobalSearch();
-            if (targetDate)
-                selectDate(targetDate, true);
-            setTimeout(() => openEventEditor(event.id), 0);
-        }
-        function openGlobalTaskResult(context) {
-            if (!TASK_CONTEXTS.includes(context))
-                return;
-            clearGlobalSearch();
-            openTasks();
-            activeTaskContext = context;
-            localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext);
-            renderGlobalTasks();
-        }
+        function openGlobalEventResult(eventId) { const event = events.find(item => item.id === eventId); if (!event) return; const targetDate = fromKey(event.date); clearGlobalSearch(); if (targetDate) selectDate(targetDate, true); setTimeout(() => openEventEditor(event.id), 0); }
+        function openGlobalTaskResult(context) { if (!TASK_CONTEXTS.includes(context)) return; clearGlobalSearch(); openTasks(); activeTaskContext = context; localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext); renderGlobalTasks(); }
         function readDateData(key) {
             try {
                 return JSON.parse(localStorage.getItem(dateStorageKey(key))) || {};
@@ -4216,16 +4142,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 entries[box.dataset.time] = box.value; });
             return entries;
         }
-        function normalizeTimeblockStatus(status) {
-            return TIMEBLOCK_STATUSES.some(item => item.id === status) ? status : "planned";
-        }
+        function normalizeTimeblockStatus(status) { return TIMEBLOCK_STATUSES.some(item => item.id === status) ? status : "planned"; }
         function collectTimeblockStatuses() {
             const statuses = {};
-            document.querySelectorAll(".timeblock-status[data-time]").forEach(button => {
-                const status = normalizeTimeblockStatus(button.dataset.status);
-                if (status !== "planned")
-                    statuses[button.dataset.time] = status;
-            });
+            document.querySelectorAll(".timeblock-status[data-time]").forEach(button => { const status = normalizeTimeblockStatus(button.dataset.status); if (status !== "planned") statuses[button.dataset.time] = status; });
             return statuses;
         }
         function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses() }; }
@@ -4650,12 +4570,7 @@ ${body}` : title };
                 TIMEBLOCK_STATUSES.forEach(item => statusButton.classList.toggle(`timeblock-status-${item.id}`, item.id === details.id));
             }
             applyTimeblockStatus();
-            statusButton.addEventListener("click", () => {
-                const currentIndex = TIMEBLOCK_STATUSES.findIndex(item => item.id === statusButton.dataset.status);
-                statusButton.dataset.status = TIMEBLOCK_STATUSES[(currentIndex + 1) % TIMEBLOCK_STATUSES.length].id;
-                applyTimeblockStatus();
-                save();
-            });
+            statusButton.addEventListener("click", () => { const i = TIMEBLOCK_STATUSES.findIndex(item => item.id === statusButton.dataset.status); statusButton.dataset.status = TIMEBLOCK_STATUSES[(i + 1) % TIMEBLOCK_STATUSES.length].id; applyTimeblockStatus(); save(); });
             const box = document.createElement("textarea");
             box.dataset.time = timeId;
             box.value = (saved.entries && saved.entries[timeId]) || saved[timeId] || "";
@@ -4694,14 +4609,8 @@ ${body}` : title };
                 box.value = draggedBox.value;
                 draggedBox.value = "";
                 if (sourceStatus) {
-                    statusButton.dataset.status = normalizeTimeblockStatus(sourceStatus.dataset.status);
-                    sourceStatus.dataset.status = "planned";
-                    applyTimeblockStatus();
-                    const sourceDetails = TIMEBLOCK_STATUSES[0];
-                    sourceStatus.textContent = sourceDetails.icon;
-                    sourceStatus.title = `Status: ${sourceDetails.label}. Click to change.`;
-                    sourceStatus.setAttribute("aria-label", sourceStatus.title);
-                    TIMEBLOCK_STATUSES.forEach(item => sourceStatus.classList.toggle(`timeblock-status-${item.id}`, item.id === sourceDetails.id));
+                    statusButton.dataset.status = normalizeTimeblockStatus(sourceStatus.dataset.status); sourceStatus.dataset.status = "planned"; applyTimeblockStatus();
+                    const d = TIMEBLOCK_STATUSES[0]; sourceStatus.textContent = d.icon; sourceStatus.title = `Status: ${d.label}. Click to change.`; sourceStatus.setAttribute("aria-label", sourceStatus.title); TIMEBLOCK_STATUSES.forEach(item => sourceStatus.classList.toggle(`timeblock-status-${item.id}`, item.id === d.id));
                 }
                 autoGrow(draggedBox);
                 autoGrow(box);
@@ -5897,13 +5806,7 @@ ${body}` : title };
             notes = [];
             renderNotes();
             document.querySelectorAll("textarea[data-time]").forEach(box => { box.value = ""; autoGrow(box); });
-            document.querySelectorAll(".timeblock-status[data-time]").forEach(button => {
-                button.dataset.status = "planned";
-                button.textContent = TIMEBLOCK_STATUSES[0].icon;
-                button.title = `Status: ${TIMEBLOCK_STATUSES[0].label}. Click to change.`;
-                button.setAttribute("aria-label", button.title);
-                TIMEBLOCK_STATUSES.forEach(item => button.classList.toggle(`timeblock-status-${item.id}`, item.id === "planned"));
-            });
+            document.querySelectorAll(".timeblock-status[data-time]").forEach(button => { button.dataset.status = "planned"; button.textContent = TIMEBLOCK_STATUSES[0].icon; button.title = `Status: ${TIMEBLOCK_STATUSES[0].label}. Click to change.`; button.setAttribute("aria-label", button.title); TIMEBLOCK_STATUSES.forEach(item => button.classList.toggle(`timeblock-status-${item.id}`, item.id === "planned")); });
             markDateHasData(toKey(selectedDate));
             highlightCurrentTimeBlock();
         });
