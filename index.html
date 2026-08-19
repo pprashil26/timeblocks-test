@@ -2781,7 +2781,133 @@ button.note-label-chip {
   }
 }
 
-  </style>
+  
+/* Mobile homepage capture-first redesign */
+@media (max-width: 759px) {
+  .mobile-home-brand {
+    gap: 7px;
+  }
+  .mobile-home-capture-grid {
+    display: grid;
+    width: min(318px, 94%);
+    gap: 6px;
+    margin-top: 9px;
+  }
+  .mobile-home-capture-row {
+    display: grid;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 6px;
+    margin: 0;
+  }
+  .mobile-home-capture-row-bottom {
+    width: 93%;
+    margin-inline: auto;
+  }
+  .mobile-capture-pill,
+  .mobile-home-capture-row .mobile-quick-note-btn,
+  .mobile-home-capture-row .mobile-quick-event-btn {
+    display: inline-flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 36px;
+    margin: 0;
+    padding: 6px 8px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 11.75px;
+    font-weight: 700;
+    line-height: 1.15;
+    text-decoration: none !important;
+  }
+  .mobile-task-capture-btn {
+    border: 1px solid #e7baba;
+    background: #f8e2e2;
+    color: #754545;
+    box-shadow: 0 3px 9px rgba(117, 69, 69, .09);
+  }
+  .mobile-task-capture-btn:hover,
+  .mobile-task-capture-btn:focus-visible {
+    background: #f3d4d4;
+    border-color: #dbaaaa;
+    color: #663a3a;
+  }
+  .mobile-activity-capture-btn {
+    border: 1px solid #b8d8c3;
+    background: #e2f1e7;
+    color: #41634d;
+    box-shadow: 0 3px 9px rgba(65, 99, 77, .09);
+  }
+  .mobile-activity-capture-btn:hover,
+  .mobile-activity-capture-btn:focus-visible {
+    background: #d4e9dc;
+    border-color: #a4ccb2;
+    color: #365541;
+  }
+  .mobile-home-brand .mobile-home-nav {
+    display: grid;
+    width: min(318px, 94%);
+    grid-template-columns: 1.35fr 1fr 1fr 34px;
+    gap: 3px;
+    margin-top: 3px;
+    padding: 3px 0 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 0;
+  }
+  .mobile-home-brand .mobile-home-link {
+    min-height: 32px;
+    padding: 5px 3px;
+    font-size: 11.25px;
+    font-weight: 600;
+  }
+  .mobile-home-brand .mobile-home-help {
+    width: 34px;
+    min-width: 34px;
+    font-size: 14px;
+  }
+  .mobile-all-events-btn {
+    display: inline-flex;
+    margin: 0;
+    text-decoration: none;
+    text-underline-offset: initial;
+  }
+}
+@media (max-width: 360px) {
+  .mobile-home-capture-row-bottom {
+    width: 100%;
+  }
+  .mobile-home-brand .mobile-home-nav {
+    grid-template-columns: 1.3fr 1fr 1fr 32px;
+    gap: 2px;
+  }
+  .mobile-home-brand .mobile-home-link {
+    padding-left: 2px;
+    padding-right: 2px;
+    font-size: 10.75px;
+  }
+  .mobile-home-brand .mobile-home-help {
+    width: 32px;
+    min-width: 32px;
+  }
+}
+@media (max-width: 759px) and (max-height: 650px) {
+  .mobile-home-capture-grid {
+    gap: 4px;
+    margin-top: 5px;
+  }
+  .mobile-capture-pill,
+  .mobile-home-capture-row .mobile-quick-note-btn,
+  .mobile-home-capture-row .mobile-quick-event-btn {
+    min-height: 34px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  .mobile-home-brand .mobile-home-nav {
+    margin-top: 1px;
+  }
+}
+</style>
 </head>
 <body>
   <div class="global-search-wrap">
@@ -2797,22 +2923,26 @@ button.note-label-chip {
   </section>
 
   <section class="mobile-home" id="mobileHome" aria-label="Mobile home">
-    <nav class="mobile-home-nav" aria-label="Quick actions">
-      <button class="plain-btn mobile-home-link primary" id="mobileAddTaskBtn" type="button">+ Inbox</button>
-      <button class="plain-btn mobile-home-link primary" id="mobileActivityBtn" type="button">+ Activity</button>
-      <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Planner</button>
-      <button class="plain-btn mobile-home-link" id="mobileNotesBtn" type="button">Notes</button>
-      <button class="plain-btn mobile-home-link mobile-home-help" id="mobileHelpBtn" type="button" title="Help" aria-label="Help">?</button>
-    </nav>
     <div class="mobile-home-brand" aria-label="Timeblocks">
       <img class="mobile-home-logo" src="logo.png" alt="Timeblocks logo" />
       <p class="mobile-home-brand-motto">Finish Actions, Save Time</p>
       <p class="mobile-home-brand-tagline">A lightweight GTD app · empty your mind</p>
-      <div class="mobile-home-capture-row" aria-label="Quick capture">
-        <button class="plain-btn mobile-quick-note-btn" id="mobileQuickNoteBtn" type="button" title="Add a quick note for today">＋ Quick note</button>
-        <button class="plain-btn mobile-quick-event-btn" id="mobileQuickEventBtn" type="button" title="Add an event for today">＋ Event</button>
+      <div class="mobile-home-capture-grid" aria-label="Quick capture">
+        <div class="mobile-home-capture-row mobile-home-capture-row-top">
+          <button class="plain-btn mobile-capture-pill mobile-task-capture-btn" id="mobileAddTaskBtn" type="button">＋ Task</button>
+          <button class="plain-btn mobile-capture-pill mobile-activity-capture-btn" id="mobileActivityBtn" type="button">＋ Activity</button>
+        </div>
+        <div class="mobile-home-capture-row mobile-home-capture-row-bottom">
+          <button class="plain-btn mobile-quick-note-btn" id="mobileQuickNoteBtn" type="button" title="Add a quick note for today">＋ Quick note</button>
+          <button class="plain-btn mobile-quick-event-btn" id="mobileQuickEventBtn" type="button" title="Add an event for today">＋ Event</button>
+        </div>
       </div>
-      <button class="plain-btn mobile-all-events-btn" id="mobileAllEventsBtn" type="button">All events</button>
+      <nav class="mobile-home-nav" aria-label="Navigation">
+        <button class="plain-btn mobile-home-link" id="mobileAllEventsBtn" type="button">All events</button>
+        <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Planner</button>
+        <button class="plain-btn mobile-home-link" id="mobileNotesBtn" type="button">Notes</button>
+        <button class="plain-btn mobile-home-link mobile-home-help" id="mobileHelpBtn" type="button" title="Help" aria-label="Help">?</button>
+      </nav>
     </div>
     <div class="mobile-home-bottom">
       <div class="mobile-home-data-row">
@@ -5339,33 +5469,18 @@ ${body}` : title };
         }
         function collectGlobalPinnedNotes() {
             const results = [];
-            allDateKeys().forEach(dateKey => normalizeNotes(readDateData(dateKey).notes).forEach(note => {
-                if (!note.deleted && note.pinned && noteMatchesSearch(note)) results.push({ dateKey, note });
-            }));
+            allDateKeys().forEach(dateKey => normalizeNotes(readDateData(dateKey).notes).forEach(note => { if (!note.deleted && note.pinned && noteMatchesSearch(note)) results.push({ dateKey, note }); }));
             return results.sort((a, b) => b.dateKey.localeCompare(a.dateKey) || (a.note.title || "").localeCompare(b.note.title || "", undefined, { sensitivity: "base" }));
         }
         function renderGlobalPinnedSection() {
             if (isMobileViewport() || notesBinOpen || notesFocusView || isLabelsWorkspace() || notesPinnedOnly) return new Set();
-            const pinned = collectGlobalPinnedNotes();
-            if (!pinned.length) return new Set();
+            const pinned = collectGlobalPinnedNotes(); if (!pinned.length) return new Set();
             const section = document.createElement("section"); section.className = "global-pinned-section";
-            const head = document.createElement("div"); head.className = "global-pinned-head";
-            const title = document.createElement("div"); title.className = "global-pinned-title"; title.textContent = `Pinned · ${pinned.length}`; head.appendChild(title);
-            if (pinned.length > 3) {
-                const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "plain-btn global-pinned-toggle";
-                toggle.textContent = globalPinnedExpanded ? "Show less" : `Show all pinned (${pinned.length})`;
-                toggle.addEventListener("click", () => { globalPinnedExpanded = !globalPinnedExpanded; renderNotes(); }); head.appendChild(toggle);
-            }
+            const head = document.createElement("div"); head.className = "global-pinned-head"; const title = document.createElement("div"); title.className = "global-pinned-title"; title.textContent = `Pinned · ${pinned.length}`; head.appendChild(title);
+            if (pinned.length > 3) { const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "plain-btn global-pinned-toggle"; toggle.textContent = globalPinnedExpanded ? "Show less" : `Show all pinned (${pinned.length})`; toggle.addEventListener("click", () => { globalPinnedExpanded = !globalPinnedExpanded; renderNotes(); }); head.appendChild(toggle); }
             const list = document.createElement("div"); list.className = "global-pinned-list";
-            (globalPinnedExpanded ? pinned : pinned.slice(0, 3)).forEach(result => {
-                const button = document.createElement("button"); button.type = "button"; button.className = "global-pinned-note";
-                const noteTitle = document.createElement("span"); noteTitle.className = "global-pinned-note-title"; noteTitle.textContent = `★ ${result.note.title || "Untitled"}`;
-                const noteDate = document.createElement("span"); noteDate.className = "global-pinned-note-date"; const parsed = fromKey(result.dateKey);
-                noteDate.textContent = parsed ? parsed.toLocaleDateString(undefined, { day: "numeric", month: "short" }) : result.dateKey;
-                button.append(noteTitle, noteDate); button.addEventListener("click", () => openAllFocusNote(result.dateKey, result.note.id)); list.appendChild(button);
-            });
-            section.append(head, list); notesList.appendChild(section);
-            return new Set(pinned.filter(result => result.dateKey === toKey(selectedDate)).map(result => result.note.id));
+            (globalPinnedExpanded ? pinned : pinned.slice(0, 3)).forEach(result => { const button = document.createElement("button"); button.type = "button"; button.className = "global-pinned-note"; const noteTitle = document.createElement("span"); noteTitle.className = "global-pinned-note-title"; noteTitle.textContent = `★ ${result.note.title || "Untitled"}`; const noteDate = document.createElement("span"); noteDate.className = "global-pinned-note-date"; const parsed = fromKey(result.dateKey); noteDate.textContent = parsed ? parsed.toLocaleDateString(undefined, { day: "numeric", month: "short" }) : result.dateKey; button.append(noteTitle, noteDate); button.addEventListener("click", () => openAllFocusNote(result.dateKey, result.note.id)); list.appendChild(button); });
+            section.append(head, list); notesList.appendChild(section); return new Set(pinned.filter(result => result.dateKey === toKey(selectedDate)).map(result => result.note.id));
         }
         function renderNotes() {
             notesList.innerHTML = "";
@@ -5781,12 +5896,7 @@ ${body}` : title };
         cancelEventBtn.addEventListener("click", closeEventEditor);
         saveEventBtn.addEventListener("click", saveEventFromEditor);
         deleteEventBtn.addEventListener("click", deleteEditingEvent);
-        eventModal.addEventListener("keydown", event => {
-            if (event.key === "Enter" && !event.shiftKey && event.target instanceof HTMLInputElement) {
-                event.preventDefault();
-                saveEventFromEditor();
-            }
-        });
+        eventModal.addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && event.target instanceof HTMLInputElement) { event.preventDefault(); saveEventFromEditor(); } });
         eventModal.addEventListener("click", event => { if (event.target === eventModal) closeEventEditor(); });
         activityBtn.addEventListener("click", openActivity);
         addTaskInboxBtn.addEventListener("click", openTasksInboxShortcut);
