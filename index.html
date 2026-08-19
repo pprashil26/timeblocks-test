@@ -2861,6 +2861,32 @@ textarea.event-timeblock:focus {
   cursor: default;
   opacity: .3;
 }
+
+/* Optional Task scheduling editor and linked Planner entries */
+.task-schedule-btn { color: #704a2d; font-size: 13px; }
+.task-schedule-btn.scheduled { background: #fbe7d3; color: #704a2d; font-weight: 750; }
+.task-editor-panel { width: min(410px, 94vw); overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--page); box-shadow: 0 18px 50px rgba(50,40,28,.22); }
+.task-editor-head { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; min-height: 44px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.task-editor-title { margin: 0; font-size: var(--font-lg); font-weight: 700; }
+.task-editor-body { display: grid; gap: 7px; padding: 12px 14px; }
+.task-editor-body label { color: var(--muted); font-size: 11px; font-weight: 650; }
+.task-editor-body select { width: 100%; height: 32px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--page); color: var(--ink); }
+.task-editor-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 3px; }
+.task-editor-date-row > div { display: grid; gap: 5px; }
+.task-editor-actions { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px; padding: 0 14px 12px; }
+.task-save-btn { min-height: 31px; padding: 5px 12px; border: 1px solid #e5b98d; border-radius: 10px; background: #fbe7d3; color: #704a2d; font-weight: 700; }
+textarea.task-timeblock { background: #fbe7d3 !important; border-left: 3px solid #e5b98d !important; color: #704a2d; font-weight: 650; cursor: pointer; }
+textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5dac0 !important; outline: 2px solid rgba(229,185,141,.55); outline-offset: -2px; }
+.slot:has(textarea.task-timeblock) .drag-handle { cursor: default; opacity: .3; }
+@media (max-width: 759px) { .task-editor-date-row { grid-template-columns: 1fr; } }
+
+/* Task row column alignment with optional schedule control */
+.task-row { grid-template-columns: auto auto minmax(0, 1fr) auto auto auto; }
+.task-row.no-move { grid-template-columns: auto auto minmax(0, 1fr) auto auto; }
+@media (max-width: 759px) {
+  .task-row { grid-template-columns: auto auto minmax(0, 1fr) auto auto auto; }
+  .task-row.no-move { grid-template-columns: auto auto minmax(0, 1fr) auto auto; }
+}
 </style>
 </head>
 <body>
@@ -3024,6 +3050,17 @@ textarea.event-timeblock:focus {
     </section>
   </div>
 
+  <div class="modal-backdrop" id="taskModal" aria-hidden="true">
+    <section class="task-editor-panel" role="dialog" aria-modal="true" aria-label="Task editor">
+      <div class="task-editor-head"><p class="task-editor-title">Edit Task</p><button class="plain-btn" id="closeTaskEditorBtn" type="button">Close</button></div>
+      <div class="task-editor-body">
+        <label for="taskEditorText">Task</label><input id="taskEditorText" type="text" maxlength="240" autocomplete="off" />
+        <label for="taskEditorContext">List</label><select id="taskEditorContext"></select>
+        <div class="task-editor-date-row"><div><label for="taskEditorDate">Date <span class="event-optional">optional</span></label><input id="taskEditorDate" type="date" /></div><div><label for="taskEditorTime">Time <span class="event-optional">optional</span></label><input id="taskEditorTime" type="time" /></div></div>
+      </div>
+      <div class="task-editor-actions"><button class="plain-btn delete-note-btn" id="deleteTaskEditorBtn" type="button">Delete</button><span></span><button class="plain-btn" id="cancelTaskEditorBtn" type="button">Cancel</button><button class="plain-btn task-save-btn" id="saveTaskEditorBtn" type="button">Save</button></div>
+    </section>
+  </div>
   <div class="modal-backdrop" id="moveModal" aria-hidden="true">
     <section class="move-note-panel" role="dialog" aria-modal="true"><div class="move-note-head"><p class="move-note-title" id="moveModalTitle">Move Note</p><button class="plain-btn" id="cancelMoveTop" type="button">Close</button></div><div class="move-note-body"><label for="moveDateInput" id="moveDateLabel">Move to date</label><input id="moveDateInput" type="date" /></div><div class="move-note-actions"><button class="plain-btn" id="cancelMoveBtn" type="button">Cancel</button><button class="plain-btn" id="confirmMoveBtn" type="button">Move</button></div></section>
   </div>
@@ -3172,6 +3209,15 @@ textarea.event-timeblock:focus {
         const globalTaskList = el("globalTaskList");
         const globalTaskInput = el("globalTaskInput");
         const taskAddBtn = el("taskAddBtn");
+        const taskModal = el("taskModal");
+        const taskEditorText = el("taskEditorText");
+        const taskEditorContext = el("taskEditorContext");
+        const taskEditorDate = el("taskEditorDate");
+        const taskEditorTime = el("taskEditorTime");
+        const closeTaskEditorBtn = el("closeTaskEditorBtn");
+        const cancelTaskEditorBtn = el("cancelTaskEditorBtn");
+        const saveTaskEditorBtn = el("saveTaskEditorBtn");
+        const deleteTaskEditorBtn = el("deleteTaskEditorBtn");
         const sortTasksBtn = el("sortTasksBtn");
         const clearDoneTasksBtn = el("clearDoneTasksBtn");
         const tasksFocusBtn = el("tasksFocusBtn");
@@ -3238,6 +3284,8 @@ textarea.event-timeblock:focus {
         let globalTasks = normalizeTaskLists(loadJson(TASKS_KEY, null));
         let events = normalizeEvents(loadJson(EVENTS_KEY, []));
         let editingEventId = null;
+        let editingTaskId = null;
+        let editingTaskContext = null;
         let showPastEvents = false;
         let activityEntries = normalizeActivityEntries(loadJson(ACTIVITY_KEY, []));
         let activityHideCompleted = localStorage.getItem(ACTIVITY_HIDE_COMPLETED_KEY) === "true";
@@ -3493,6 +3541,77 @@ textarea.event-timeblock:focus {
             data.eventTimeblocks = links;
             writeDateData(event.date, data);
             return true;
+        }
+        function taskTimeblockTime(task) {
+            if (!task || !task.date || !task.time) return "";
+            const [hour, minute] = task.time.split(":").map(Number);
+            const total = hour * 60 + minute;
+            if (total < 8 * 60 || total >= 24 * 60) return "";
+            const blockMinutes = Math.floor(total / 30) * 30;
+            return `${pad(Math.floor(blockMinutes / 60))}:${pad(blockMinutes % 60)}`;
+        }
+        function taskTimeblockText(task) { return `Task: ${task.text}`; }
+        function normalizeTaskTimeblocks(raw) {
+            if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+            const clean = {};
+            Object.entries(raw).forEach(([taskId, link]) => { if (link && typeof link.time === "string" && typeof link.text === "string") clean[taskId] = { time: link.time, text: link.text }; });
+            return clean;
+        }
+        function findTaskLocation(taskId) {
+            for (const context of TASK_CONTEXTS) { const task = (globalTasks[context] || []).find(item => item.id === taskId); if (task) return { context, task }; }
+            return null;
+        }
+        function removeLinkedTaskTimeblock(task) {
+            if (!task || !task.date) return;
+            const data = readDateData(task.date); const links = normalizeTaskTimeblocks(data.taskTimeblocks); const link = links[task.id]; if (!link) return;
+            data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+            if (data.entries[link.time] === link.text) delete data.entries[link.time];
+            if (data.timeblockStatuses && typeof data.timeblockStatuses === "object") delete data.timeblockStatuses[link.time];
+            delete links[task.id]; data.taskTimeblocks = links; writeDateData(task.date, data);
+        }
+        function populateTaskTimeblock(task, showOccupiedMessage = true) {
+            const time = taskTimeblockTime(task); if (!time) return false;
+            const data = readDateData(task.date); data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+            const links = normalizeTaskTimeblocks(data.taskTimeblocks);
+            if ((data.entries[time] || "").trim()) { if (showOccupiedMessage) alert(`Task scheduled, but ${task.time} is in an occupied 30-minute block.`); return false; }
+            const text = taskTimeblockText(task); data.entries[time] = text;
+            data.timeblockStatuses = data.timeblockStatuses && typeof data.timeblockStatuses === "object" ? data.timeblockStatuses : {};
+            if (task.done) data.timeblockStatuses[time] = "done"; else delete data.timeblockStatuses[time];
+            links[task.id] = { time, text }; data.taskTimeblocks = links; writeDateData(task.date, data); return true;
+        }
+        function setLinkedTaskBlockDone(task) {
+            if (!task || !task.date) return; const data = readDateData(task.date); const link = normalizeTaskTimeblocks(data.taskTimeblocks)[task.id]; if (!link) return;
+            data.timeblockStatuses = data.timeblockStatuses && typeof data.timeblockStatuses === "object" ? data.timeblockStatuses : {};
+            if (task.done) data.timeblockStatuses[link.time] = "done"; else delete data.timeblockStatuses[link.time];
+            writeDateData(task.date, data);
+        }
+        function openTaskEditor(taskId, context = null) {
+            const found = context && (globalTasks[context] || []).find(item => item.id === taskId) ? { context, task: globalTasks[context].find(item => item.id === taskId) } : findTaskLocation(taskId);
+            if (!found) return;
+            editingTaskId = found.task.id; editingTaskContext = found.context;
+            taskEditorText.value = found.task.text; taskEditorContext.innerHTML = "";
+            TASK_CONTEXTS.forEach(name => { const option = document.createElement("option"); option.value = name; option.textContent = name; taskEditorContext.appendChild(option); });
+            taskEditorContext.value = found.context; taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = found.task.date || ""; taskEditorTime.value = found.task.time || "";
+            taskModal.classList.add("open"); taskModal.setAttribute("aria-hidden", "false"); setTimeout(() => taskEditorText.focus(), 0);
+        }
+        function closeTaskEditor() { taskModal.classList.remove("open"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; }
+        function saveTaskFromEditor() {
+            const found = findTaskLocation(editingTaskId); if (!found) return closeTaskEditor();
+            const text = taskEditorText.value.trim(); if (!text) { alert("Please enter a task."); taskEditorText.focus(); return; }
+            const date = taskEditorDate.value; const time = taskEditorTime.value;
+            if (date && (!fromKey(date) || !isWithinRange(fromKey(date)))) { alert("Please select a valid task date."); return; }
+            if (time && !date) { alert("Please select a date for the task time."); return; }
+            const previous = { ...found.task }; removeLinkedTaskTimeblock(previous);
+            found.task.text = text; found.task.date = date; found.task.time = time;
+            const targetContext = TASK_CONTEXTS.includes(taskEditorContext.value) ? taskEditorContext.value : found.context;
+            if (targetContext !== found.context) { globalTasks[found.context] = globalTasks[found.context].filter(item => item.id !== found.task.id); globalTasks[targetContext].unshift(found.task); activeTaskContext = targetContext; localStorage.setItem(TASK_CONTEXT_KEY, targetContext); }
+            saveTasks(); populateTaskTimeblock(found.task); closeTaskEditor(); renderGlobalTasks();
+            if (toKey(selectedDate) === previous.date || toKey(selectedDate) === found.task.date) loadSelectedDate();
+        }
+        function deleteTaskFromEditor() {
+            const found = findTaskLocation(editingTaskId); if (!found || !confirm("Delete this task?")) return;
+            removeLinkedTaskTimeblock(found.task); globalTasks[found.context] = globalTasks[found.context].filter(item => item.id !== found.task.id); saveTasks(); closeTaskEditor(); renderGlobalTasks();
+            if (found.task.date === toKey(selectedDate)) loadSelectedDate();
         }
         function renderSelectedDateEvents() {
             const selectedKey = toKey(selectedDate);
@@ -3905,7 +4024,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             return empty;
         }
         function normalizeTask(task) {
-            return { id: task.id || createId("task"), text: task.text || "", done: Boolean(task.done), highlighted: Boolean(task.highlighted) };
+            return { id: task.id || createId("task"), text: task.text || "", done: Boolean(task.done), highlighted: Boolean(task.highlighted), date: fromKey(task.date) ? task.date : "", time: /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "" };
         }
         function orderTasks(taskList) {
             const list = (taskList || []).map(task => {
@@ -3915,6 +4034,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                     task.text = "";
                 task.done = Boolean(task.done);
                 task.highlighted = Boolean(task.highlighted);
+                task.date = fromKey(task.date) ? task.date : "";
+                task.time = /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "";
                 return task;
             });
             return list.filter(task => task.highlighted).concat(list.filter(task => !task.highlighted));
@@ -4036,6 +4157,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 text.rows = 1;
                 text.value = task.text;
                 text.placeholder = "Task";
+                if (task.date && task.time) {
+                    text.readOnly = true;
+                    text.title = `Open scheduled task: ${task.text}`;
+                    text.addEventListener("click", () => openTaskEditor(task.id, activeTaskContext));
+                }
                 setTimeout(() => autoGrowTaskText(text), 0);
                 const canMoveTask = TASK_CONTEXTS.includes(activeTaskContext);
                 const moveTargets = activeTaskContext === "Inbox" || activeTaskContext === "Today"
@@ -4048,6 +4174,12 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 move.textContent = "Move";
                 move.title = "Move task to another list";
                 move.hidden = !canMoveTask;
+                const schedule = document.createElement("button");
+                schedule.type = "button";
+                schedule.className = "plain-btn icon-btn task-schedule-btn";
+                schedule.textContent = task.date && task.time ? "◷" : "＋";
+                schedule.title = task.date && task.time ? `Scheduled ${task.date} ${task.time}. Edit task.` : "Schedule or edit task";
+                schedule.classList.toggle("scheduled", Boolean(task.date && task.time));
                 const del = document.createElement("button");
                 del.type = "button";
                 del.className = "plain-btn icon-btn task-delete";
@@ -4066,12 +4198,17 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 checkbox.addEventListener("change", () => {
                     task.done = checkbox.checked;
                     saveTasks();
+                    setLinkedTaskBlockDone(task);
+                    if (task.date === toKey(selectedDate)) loadSelectedDate();
                     renderGlobalTasks();
                 });
                 highlight.addEventListener("click", () => toggleTaskHighlight(task.id));
+                schedule.addEventListener("click", () => openTaskEditor(task.id, activeTaskContext));
                 text.addEventListener("input", () => {
+                    const previous = { ...task };
                     task.text = text.value;
                     autoGrowTaskText(text);
+                    if (task.date && task.time) { removeLinkedTaskTimeblock(previous); populateTaskTimeblock(task, false); }
                     saveTasks();
                 });
                 text.addEventListener("keydown", event => {
@@ -4089,12 +4226,14 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 del.addEventListener("click", () => {
                     if (!confirm("Delete this task?"))
                         return;
+                    removeLinkedTaskTimeblock(task);
                     globalTasks[activeTaskContext] = activeTasks().filter(item => item.id !== task.id);
                     saveTasks();
+                    if (task.date === toKey(selectedDate)) loadSelectedDate();
                     renderGlobalTasks();
                 });
-                if (canMoveTask) row.append(checkbox, highlight, text, move, del, moveMenu);
-                else row.append(checkbox, highlight, text, del);
+                if (canMoveTask) row.append(checkbox, highlight, text, schedule, move, del, moveMenu);
+                else row.append(checkbox, highlight, text, schedule, del);
                 globalTaskList.appendChild(row);
             });
         }
@@ -4102,7 +4241,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             const text = globalTaskInput.value.trim();
             if (!text)
                 return;
-            globalTasks[activeTaskContext].push({ id: createId("task"), text, done: false, highlighted: false });
+            globalTasks[activeTaskContext].push({ id: createId("task"), text, done: false, highlighted: false, date: "", time: "" });
             globalTaskInput.value = "";
             saveTasks();
             renderGlobalTasks();
@@ -4119,8 +4258,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             renderGlobalTasks();
         }
         function clearDoneTasks() {
+            const cleared = activeTasks().filter(task => task.done);
+            cleared.forEach(removeLinkedTaskTimeblock);
             globalTasks[activeTaskContext] = activeTasks().filter(task => !task.done);
             saveTasks();
+            if (cleared.some(task => task.date === toKey(selectedDate))) loadSelectedDate();
             renderGlobalTasks();
         }
         function isMobileViewport() { return window.matchMedia("(max-width: 759px)").matches; }
@@ -4304,7 +4446,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             document.querySelectorAll(".timeblock-status[data-time]").forEach(button => { const status = normalizeTimeblockStatus(button.dataset.status); if (status !== "planned") statuses[button.dataset.time] = status; });
             return statuses;
         }
-        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses(), eventTimeblocks: normalizeEventTimeblocks(saved.eventTimeblocks) }; }
+        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses(), eventTimeblocks: normalizeEventTimeblocks(saved.eventTimeblocks), taskTimeblocks: normalizeTaskTimeblocks(saved.taskTimeblocks) }; }
         function save() { const data = currentDateDataFromState(); notes = data.notes; writeDateData(toKey(selectedDate), data); markDateHasData(toKey(selectedDate)); }
         function markDateHasData(key) {
             const button = document.querySelector(`.day-btn[data-date="${key}"]`);
@@ -4749,10 +4891,20 @@ ${body}` : title };
                     }
                 });
             }
+            const taskLink = Object.entries(normalizeTaskTimeblocks(saved.taskTimeblocks)).find(([, link]) => link.time === timeId && link.text === box.value);
+            const linkedTask = taskLink ? findTaskLocation(taskLink[0]) : null;
+            if (!linkedEvent && linkedTask) {
+                box.classList.add("task-timeblock"); box.dataset.taskId = linkedTask.task.id; box.readOnly = true;
+                box.title = `Open Task: ${linkedTask.task.text}`; box.setAttribute("aria-label", box.title); handle.draggable = false; handle.title = "Edit this time in the Task editor";
+                const openLinkedTask = () => openTaskEditor(linkedTask.task.id, linkedTask.context);
+                box.addEventListener("click", openLinkedTask);
+                box.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openLinkedTask(); } });
+            }
             box.placeholder = "Add...";
-            box.setAttribute("aria-label", `Entry for ${label.textContent}`);
+            if (!linkedEvent && !linkedTask)
+                box.setAttribute("aria-label", `Entry for ${label.textContent}`);
             handle.addEventListener("dragstart", event => {
-                if (!isDesktopDragEnabled() || box.classList.contains("event-timeblock") || !box.value.trim()) {
+                if (!isDesktopDragEnabled() || box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock") || !box.value.trim()) {
                     event.preventDefault();
                     return;
                 }
@@ -4794,7 +4946,7 @@ ${body}` : title };
             });
             box.addEventListener("input", () => { autoGrow(box); save(); });
             box.addEventListener("keydown", event => {
-                if (event.defaultPrevented || box.classList.contains("event-timeblock")) return;
+                if (event.defaultPrevented || (box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock"))) return;
                 if (event.key === "Enter" && !event.shiftKey) {
                     event.preventDefault();
                     const boxes = Array.from(document.querySelectorAll("textarea[data-time]"));
@@ -5738,6 +5890,10 @@ ${body}` : title };
       function handleEscapeKey() {
   clearShortcutPrefix();
 
+  if (taskModal.classList.contains("open")) {
+    closeTaskEditor();
+    return;
+  }
   if (eventModal.classList.contains("open")) {
     closeEventEditor();
     return;
@@ -5939,6 +6095,12 @@ ${body}` : title };
         sortTasksBtn.addEventListener("click", sortTasks);
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
         taskAddBtn.addEventListener("click", addGlobalTask);
+        closeTaskEditorBtn.addEventListener("click", closeTaskEditor);
+        cancelTaskEditorBtn.addEventListener("click", closeTaskEditor);
+        saveTaskEditorBtn.addEventListener("click", saveTaskFromEditor);
+        deleteTaskEditorBtn.addEventListener("click", deleteTaskFromEditor);
+        taskModal.addEventListener("click", event => { if (event.target === taskModal) closeTaskEditor(); });
+        taskModal.addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && event.target instanceof HTMLInputElement) { event.preventDefault(); saveTaskFromEditor(); } });
         activityAddBtn.addEventListener("click", addActivityEntry);
         activityFilterBtn.addEventListener("click", toggleActivityFilter);
       exportActivityBtn.addEventListener("click", exportActivityLog);  
