@@ -3007,6 +3007,13 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
   .task-tag-filter { min-height: 34px; font-size: 13px; }
   .task-tag-chip, .task-tag-more { font-size: 9.5px; }
 }
+
+/* Task editor-first capture and compact card actions */
+.task-add-link { color: #536b60; font-weight: 700; }
+.task-tag-btn { color: #5d675f; font-size: 13px; font-weight: 750; }
+.task-text[readonly] { cursor: pointer; }
+.task-text[readonly]:hover, .task-text[readonly]:focus { color: #41594d; background: var(--soft) !important; border-radius: 6px; outline: 0; }
+.task-row-actions .task-tag-btn { margin-top: 0; }
 </style>
 </head>
 <body>
@@ -3123,11 +3130,10 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
       <div class="note-label-chips expanded-label-chips" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
-        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" title="Focus on Tasks">⛶</button><button class="plain-btn" id="sortTasksBtn" type="button">Sort</button><span> · </span><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button></span></div>
+        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" title="Focus on Tasks">⛶</button><button class="plain-btn task-add-link" id="newTaskBtn" type="button">+ Task</button><button class="plain-btn" id="sortTasksBtn" type="button">Sort</button><span> · </span><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button></span></div>
         <div class="task-contexts" id="taskContexts"></div>
         <div class="task-filter-row"><label class="task-filter-label" for="taskTagFilter">Tags</label><select class="task-tag-filter" id="taskTagFilter" aria-label="Filter current task list by tag"><option value="">All tags</option></select></div>
         <div class="task-list" id="globalTaskList"></div>
-        <div class="task-input"><input id="globalTaskInput" type="text" placeholder="+ Add task..." autocomplete="off" /><button class="plain-btn task-add-btn" id="taskAddBtn" type="button">Add</button></div>
       </div>
       <div class="activity-panel" id="activityPanel" hidden>
         <div class="activity-toolbar"><span class="activity-title">Daily Activity Log</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="activityFocusBtn" type="button" title="Focus on Activity">⛶</button><button class="plain-btn icon-btn activity-filter-btn" id="activityFilterBtn" type="button" title="Hide completed activities" aria-pressed="false">✓</button><button
@@ -3173,7 +3179,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
 
   <div class="modal-backdrop" id="taskModal" aria-hidden="true">
     <section class="task-editor-panel" role="dialog" aria-modal="true" aria-label="Task editor">
-      <div class="task-editor-head"><p class="task-editor-title">Edit Task</p><button class="plain-btn" id="closeTaskEditorBtn" type="button">Close</button></div>
+      <div class="task-editor-head"><p class="task-editor-title" id="taskEditorTitle">Edit Task</p><button class="plain-btn" id="closeTaskEditorBtn" type="button">Close</button></div>
       <div class="task-editor-body">
         <label for="taskEditorText">Task</label><input id="taskEditorText" type="text" maxlength="240" autocomplete="off" />
         <label for="taskEditorContext">List</label><select id="taskEditorContext"></select>
@@ -3188,7 +3194,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
   </div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true">
-    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by time horizon and filter them with Task tags.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Use Compact to show more notes and the star to show pinned notes only.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Today, This month, and Someday. Add Task tags such as Home, Work, or Waiting for context.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>How to use</h3><ol><li>Use + Inbox to capture a task and open the Tasks panel.</li><li>Use + Activity to record an Activity entry.</li><li>Use Planner to open Calendar and Today’s plan.</li><li>Use Notes to open notes for the selected date.</li><li>Use ? to open Help at any time.</li><li>Use Export in the homepage footer regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>In Tasks, switch between Inbox, Today, This month, and Someday, then filter the current list by tag.</li><li>In Notes, use the star to show pinned notes only and Compact to show more entries.</li><li>Select the required date in Planner before opening date-specific Notes.</li><li>Import and Last import are available in the homepage footer.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></div></section>
+    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by time horizon and filter them with Task tags.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Use Compact to show more notes and the star to show pinned notes only.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Today, This month, and Someday. Add Task tags such as Home, Work, or Waiting for context.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>How to use</h3><ol><li>Use + Task to open the full Task editor in Inbox.</li><li>Use + Activity to record an Activity entry.</li><li>Use Planner to open Calendar and Today’s plan.</li><li>Use Notes to open notes for the selected date.</li><li>Use ? to open Help at any time.</li><li>Use Export in the homepage footer regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>In Tasks, switch between Inbox, Today, This month, and Someday, then filter the current list by tag.</li><li>In Notes, use the star to show pinned notes only and Compact to show more entries.</li><li>Select the required date in Planner before opening date-specific Notes.</li><li>Import and Last import are available in the homepage footer.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></div></section>
   </div>
 
   <script>
@@ -3331,9 +3337,9 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         const taskContexts = el("taskContexts");
         const taskTagFilter = el("taskTagFilter");
         const globalTaskList = el("globalTaskList");
-        const globalTaskInput = el("globalTaskInput");
-        const taskAddBtn = el("taskAddBtn");
+        const newTaskBtn = el("newTaskBtn");
         const taskModal = el("taskModal");
+        const taskEditorTitle = el("taskEditorTitle");
         const taskEditorText = el("taskEditorText");
         const taskEditorContext = el("taskEditorContext");
         const taskEditorTags = el("taskEditorTags");
@@ -3412,6 +3418,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         let editingEventId = null;
         let editingTaskId = null;
         let editingTaskContext = null;
+        let taskEditorFocusTarget = "text";
         let showPastEvents = false;
         let activityEntries = normalizeActivityEntries(loadJson(ACTIVITY_KEY, []));
         let activityHideCompleted = localStorage.getItem(ACTIVITY_HIDE_COMPLETED_KEY) === "true";
@@ -3713,26 +3720,53 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             if (task.done) data.timeblockStatuses[link.time] = "done"; else delete data.timeblockStatuses[link.time];
             writeDateData(task.date, data);
         }
-        function openTaskEditor(taskId, context = null) {
+        function populateTaskEditorLists(selectedContext) {
+            taskEditorContext.innerHTML = "";
+            TASK_CONTEXTS.forEach(name => { const option = document.createElement("option"); option.value = name; option.textContent = name; taskEditorContext.appendChild(option); });
+            taskEditorContext.value = TASK_CONTEXTS.includes(selectedContext) ? selectedContext : "Inbox";
+        }
+        function focusTaskEditorField(target = "text") {
+            const field = target === "tags" ? taskEditorTags : target === "date" ? taskEditorDate : taskEditorText;
+            setTimeout(() => { field.focus(); if (field === taskEditorText) field.select(); }, 0);
+        }
+        function openTaskEditor(taskId, context = null, focusTarget = "text") {
             const found = context && (globalTasks[context] || []).find(item => item.id === taskId) ? { context, task: globalTasks[context].find(item => item.id === taskId) } : findTaskLocation(taskId);
             if (!found) return;
-            editingTaskId = found.task.id; editingTaskContext = found.context;
-            taskEditorText.value = found.task.text; taskEditorContext.innerHTML = "";
-            TASK_CONTEXTS.forEach(name => { const option = document.createElement("option"); option.value = name; option.textContent = name; taskEditorContext.appendChild(option); });
-            taskEditorContext.value = found.context; taskEditorTags.value = normalizeTaskTags(found.task.tags).join(", "); updateTaskTagSuggestions(); taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = found.task.date || ""; taskEditorTime.value = found.task.time || "";
-            taskModal.classList.add("open"); taskModal.setAttribute("aria-hidden", "false"); setTimeout(() => taskEditorText.focus(), 0);
+            editingTaskId = found.task.id; editingTaskContext = found.context; taskEditorFocusTarget = focusTarget;
+            taskEditorTitle.textContent = "Edit Task";
+            taskEditorText.value = found.task.text; populateTaskEditorLists(found.context);
+            taskEditorTags.value = normalizeTaskTags(found.task.tags).join(", "); updateTaskTagSuggestions();
+            taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = found.task.date || ""; taskEditorTime.value = found.task.time || "";
+            deleteTaskEditorBtn.hidden = false;
+            taskModal.classList.add("open"); taskModal.setAttribute("aria-hidden", "false"); focusTaskEditorField(focusTarget);
         }
-        function closeTaskEditor() { taskModal.classList.remove("open"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; }
+        function openNewTaskEditor(context = activeTaskContext, focusTarget = "text") {
+            editingTaskId = null; editingTaskContext = TASK_CONTEXTS.includes(context) ? context : "Inbox"; taskEditorFocusTarget = focusTarget;
+            taskEditorTitle.textContent = "New Task";
+            taskEditorText.value = ""; populateTaskEditorLists(editingTaskContext);
+            taskEditorTags.value = ""; updateTaskTagSuggestions();
+            taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = ""; taskEditorTime.value = "";
+            deleteTaskEditorBtn.hidden = true;
+            taskModal.classList.add("open"); taskModal.setAttribute("aria-hidden", "false"); focusTaskEditorField(focusTarget);
+        }
+        function closeTaskEditor() { taskModal.classList.remove("open"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; taskEditorFocusTarget = "text"; }
         function saveTaskFromEditor() {
-            const found = findTaskLocation(editingTaskId); if (!found) return closeTaskEditor();
             const text = taskEditorText.value.trim(); if (!text) { alert("Please enter a task."); taskEditorText.focus(); return; }
             const date = taskEditorDate.value; const time = taskEditorTime.value;
             if (date && (!fromKey(date) || !isWithinRange(fromKey(date)))) { alert("Please select a valid task date."); return; }
             if (time && !date) { alert("Please select a date for the task time."); return; }
+            const targetContext = TASK_CONTEXTS.includes(taskEditorContext.value) ? taskEditorContext.value : (editingTaskContext || activeTaskContext);
+            if (!editingTaskId) {
+                const task = { id: createId("task"), text, done: false, highlighted: false, tags: normalizeTaskTags(taskEditorTags.value.split(",")), date, time };
+                globalTasks[targetContext].unshift(task); activeTaskContext = targetContext; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, targetContext);
+                saveTasks(); populateTaskTimeblock(task); closeTaskEditor(); renderGlobalTasks();
+                if (task.date === toKey(selectedDate)) loadSelectedDate();
+                return;
+            }
+            const found = findTaskLocation(editingTaskId); if (!found) return closeTaskEditor();
             const previous = { ...found.task }; removeLinkedTaskTimeblock(previous);
             found.task.text = text; found.task.tags = normalizeTaskTags(taskEditorTags.value.split(",")); found.task.date = date; found.task.time = time;
-            const targetContext = TASK_CONTEXTS.includes(taskEditorContext.value) ? taskEditorContext.value : found.context;
-            if (targetContext !== found.context) { globalTasks[found.context] = globalTasks[found.context].filter(item => item.id !== found.task.id); globalTasks[targetContext].unshift(found.task); activeTaskContext = targetContext; localStorage.setItem(TASK_CONTEXT_KEY, targetContext); }
+            if (targetContext !== found.context) { globalTasks[found.context] = globalTasks[found.context].filter(item => item.id !== found.task.id); globalTasks[targetContext].unshift(found.task); activeTaskContext = targetContext; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, targetContext); }
             saveTasks(); populateTaskTimeblock(found.task); closeTaskEditor(); renderGlobalTasks();
             if (toKey(selectedDate) === previous.date || toKey(selectedDate) === found.task.date) loadSelectedDate();
         }
@@ -4315,11 +4349,9 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 text.rows = 1;
                 text.value = task.text;
                 text.placeholder = "Task";
-                if (task.date && task.time) {
-                    text.readOnly = true;
-                    text.title = `Open scheduled task: ${task.text}`;
-                    text.addEventListener("click", () => openTaskEditor(task.id, activeTaskContext));
-                }
+                text.readOnly = true;
+                text.title = `Open task: ${task.text}`;
+                text.setAttribute("aria-label", text.title);
                 const content = document.createElement("div");
                 content.className = "task-content";
                 content.appendChild(text);
@@ -4350,11 +4382,18 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 move.title = "Move task to another list";
                 move.setAttribute("aria-label", move.title);
                 move.hidden = !canMoveTask;
+                const tags = document.createElement("button");
+                tags.type = "button";
+                tags.className = "plain-btn icon-btn task-tag-btn";
+                tags.textContent = "#";
+                tags.title = "Edit task tags";
+                tags.setAttribute("aria-label", tags.title);
                 const schedule = document.createElement("button");
                 schedule.type = "button";
                 schedule.className = "plain-btn icon-btn task-schedule-btn";
-                schedule.textContent = task.date && task.time ? "◷" : "＋";
-                schedule.title = task.date && task.time ? `Scheduled ${task.date} ${task.time}. Edit task.` : "Schedule or edit task";
+                schedule.textContent = "▣";
+                schedule.title = task.date ? `Edit schedule: ${task.date}${task.time ? " " + task.time : ""}` : "Schedule task";
+                schedule.setAttribute("aria-label", schedule.title);
                 schedule.classList.toggle("scheduled", Boolean(task.date && task.time));
                 const del = document.createElement("button");
                 del.type = "button";
@@ -4379,20 +4418,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                     renderGlobalTasks();
                 });
                 highlight.addEventListener("click", () => toggleTaskHighlight(task.id));
-                schedule.addEventListener("click", () => openTaskEditor(task.id, activeTaskContext));
-                text.addEventListener("input", () => {
-                    const previous = { ...task };
-                    task.text = text.value;
-                    autoGrowTaskText(text);
-                    if (task.date && task.time) { removeLinkedTaskTimeblock(previous); populateTaskTimeblock(task, false); }
-                    saveTasks();
-                });
-                text.addEventListener("keydown", event => {
-                    if (event.key === "Enter" && !event.shiftKey) {
-                        event.preventDefault();
-                        text.blur();
-                    }
-                });
+                const openTaskTextEditor = () => openTaskEditor(task.id, activeTaskContext, "text");
+                text.addEventListener("click", openTaskTextEditor);
+                text.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openTaskTextEditor(); } });
+                tags.addEventListener("click", () => openTaskEditor(task.id, activeTaskContext, "tags"));
+                schedule.addEventListener("click", () => openTaskEditor(task.id, activeTaskContext, "date"));
                 move.addEventListener("click", event => {
                     event.stopPropagation();
                     const isOpen = moveMenu.classList.contains("open");
@@ -4410,22 +4440,13 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 });
                 const rowActions = document.createElement("div");
                 rowActions.className = "task-row-actions";
-                if (canMoveTask) rowActions.append(schedule, move, del);
-                else rowActions.append(schedule, del);
+                if (canMoveTask) rowActions.append(tags, schedule, move, del);
+                else rowActions.append(tags, schedule, del);
                 if (canMoveTask) row.append(checkbox, highlight, content, rowActions, moveMenu);
                 else row.append(checkbox, highlight, content, rowActions);
                 globalTaskList.appendChild(row);
             });
             if (!tasksToRender.length) { const empty = document.createElement("div"); empty.className = "task-empty"; empty.textContent = activeTaskTagFilter ? `No tasks tagged “${activeTaskTagFilter}” in ${activeTaskContext}` : `No tasks in ${activeTaskContext}`; globalTaskList.appendChild(empty); }
-        }
-        function addGlobalTask() {
-            const text = globalTaskInput.value.trim();
-            if (!text)
-                return;
-            globalTasks[activeTaskContext].push({ id: createId("task"), text, done: false, highlighted: false, tags: [], date: "", time: "" });
-            globalTaskInput.value = "";
-            saveTasks();
-            renderGlobalTasks();
         }
         function sortTasks() {
             globalTasks[activeTaskContext] = orderTasks(activeTasks()).sort((a, b) => {
@@ -5312,7 +5333,6 @@ ${body}` : title };
             if (globalTasksPanel.parentElement === expandedNoteShell) {
                 globalTasksPanel.hidden = true;
                 globalTasksPanel.classList.remove("open");
-                globalTaskInput.value = "";
             }
             if (activityPanel.parentElement === expandedNoteShell) {
                 activityPanel.hidden = true;
@@ -5502,7 +5522,7 @@ ${body}` : title };
             applyWorkspaceFocusState();
             setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
             if (focusCapture)
-                setTimeout(() => panel === "tasks" ? globalTaskInput.focus() : panel === "activity" ? activityInput.focus() : eventTitleInput.focus(), 0);
+                setTimeout(() => panel === "tasks" ? newTaskBtn.focus() : panel === "activity" ? activityInput.focus() : eventTitleInput.focus(), 0);
         }
         function toggleWorkspacePanelFocus(panel) {
             if (isMobileViewport())
@@ -5558,14 +5578,14 @@ ${body}` : title };
             activeTaskContext = "Inbox";
             localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext);
             renderGlobalTasks();
-            setTimeout(() => globalTaskInput.focus(), 0);
+            openNewTaskEditor("Inbox");
         }
         function openTasksTodayShortcut() {
             openTasks();
             activeTaskContext = "Today";
             localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext);
             renderGlobalTasks();
-            setTimeout(() => globalTaskInput.focus(), 0);
+            openNewTaskEditor("Today");
         }
         function openTasks() {
             if (!isMobileViewport()) {
@@ -5590,7 +5610,6 @@ ${body}` : title };
             renderGlobalTasks();
             noteModal.classList.add("open");
             noteModal.setAttribute("aria-hidden", "false");
-            setTimeout(() => globalTaskInput.focus(), 0);
         }
         function syncExpandedToCard() {
             if (!expandedNoteId)
@@ -6275,7 +6294,7 @@ ${body}` : title };
         addTaskTodayBtn.addEventListener("click", openTasksTodayShortcut);
         sortTasksBtn.addEventListener("click", sortTasks);
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
-        taskAddBtn.addEventListener("click", addGlobalTask);
+        newTaskBtn.addEventListener("click", () => openNewTaskEditor(activeTaskContext));
         taskTagFilter.addEventListener("change", () => { activeTaskTagFilter = taskTagFilter.value; renderGlobalTasks(); });
         closeTaskEditorBtn.addEventListener("click", closeTaskEditor);
         cancelTaskEditorBtn.addEventListener("click", closeTaskEditor);
@@ -6289,10 +6308,6 @@ ${body}` : title };
         activityInput.addEventListener("keydown", event => { if (event.key === "Enter") {
             event.preventDefault();
             addActivityEntry();
-        } });
-        globalTaskInput.addEventListener("keydown", event => { if (event.key === "Enter") {
-            event.preventDefault();
-            addGlobalTask();
         } });
         expandedTitle.addEventListener("input", syncExpandedToCard);
         expandedBody.addEventListener("input", syncExpandedToCard);
