@@ -2921,6 +2921,77 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
   .task-schedule-meta { font-size: 10px; }
   .task-move { margin-top: 4px; }
 }
+
+/* Task cards: secondary actions beneath content */
+.task-row,
+.task-row.no-move {
+  grid-template-columns: auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "check highlight content"
+    ". . actions";
+  column-gap: 7px;
+  row-gap: 1px;
+  align-items: start;
+  min-height: 0;
+  padding: 4px 6px;
+}
+.task-checkbox { grid-area: check; }
+.task-highlight { grid-area: highlight; }
+.task-content { grid-area: content; }
+.task-row-actions {
+  grid-area: actions;
+  display: flex;
+  min-height: 24px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  margin-top: -1px;
+}
+.task-row-actions .task-schedule-btn,
+.task-row-actions .task-move,
+.task-row-actions .task-delete { margin-top: 0; }
+.task-move-menu,
+.task-row.no-move .task-move-menu {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  margin-top: 1px;
+  padding: 2px 0 0 48px;
+}
+.task-text {
+  min-height: 24px !important;
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
+  line-height: 1.25;
+}
+.task-list { gap: 4px; }
+@media (max-width: 759px) {
+  #noteModal:has(#globalTasksPanel.open) .task-list { gap: 5px; }
+  #noteModal:has(#globalTasksPanel.open) .task-row,
+  #noteModal:has(#globalTasksPanel.open) .task-row.no-move {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    grid-template-areas: "check highlight content" ". . actions";
+    column-gap: 6px;
+    row-gap: 1px;
+    min-height: 0;
+    padding: 4px 6px;
+    border-radius: 10px;
+  }
+  #noteModal:has(#globalTasksPanel.open) .task-text {
+    min-height: 24px !important;
+    padding-top: 1px !important;
+    padding-bottom: 1px !important;
+    line-height: 1.25;
+  }
+  #noteModal:has(#globalTasksPanel.open) .task-row-actions { min-height: 24px; gap: 3px; }
+  #noteModal:has(#globalTasksPanel.open) .task-move-menu,
+  #noteModal:has(#globalTasksPanel.open) .task-row.no-move .task-move-menu {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    padding-left: 46px;
+  }
+}
 </style>
 </head>
 <body>
@@ -4279,8 +4350,12 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                     if (task.date === toKey(selectedDate)) loadSelectedDate();
                     renderGlobalTasks();
                 });
-                if (canMoveTask) row.append(checkbox, highlight, content, schedule, move, del, moveMenu);
-                else row.append(checkbox, highlight, content, schedule, del);
+                const rowActions = document.createElement("div");
+                rowActions.className = "task-row-actions";
+                if (canMoveTask) rowActions.append(schedule, move, del);
+                else rowActions.append(schedule, del);
+                if (canMoveTask) row.append(checkbox, highlight, content, rowActions, moveMenu);
+                else row.append(checkbox, highlight, content, rowActions);
                 globalTaskList.appendChild(row);
             });
         }
