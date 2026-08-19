@@ -158,6 +158,15 @@
     .notes-more-menu.open { display: grid; gap: 3px; }
     .no-results { display: none; color: var(--muted); text-align: center; padding: 8px; }
     .no-results.show { display: block; }
+    .global-pinned-section { margin-bottom: 9px; padding: 7px; border: 1px solid #d8ca84; border-radius: 13px; background: #fffaf0; }
+    .global-pinned-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+    .global-pinned-title { color: #604f17; font-size: 10.5px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }
+    .global-pinned-toggle { color: #6f5b22; font-size: 10.5px; font-weight: 650; }
+    .global-pinned-list { display: grid; gap: 5px; }
+    .global-pinned-note { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; width: 100%; padding: 6px 8px; border: 1px solid #e3d79f; border-radius: 10px; background: #ffffff; color: var(--ink); text-align: left; cursor: pointer; }
+    .global-pinned-note:hover { background: #fff6d8; }
+    .global-pinned-note-title { min-width: 0; overflow: hidden; font-size: 12px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .global-pinned-note-date { color: var(--muted); font-size: 10px; white-space: nowrap; }
     .note-card { border: 1px solid var(--line); border-radius: var(--radius-card); background: #fffdf8; margin-bottom: 8px; overflow: hidden; }
     .note-card.is-pinned { border-color: #cdbf80; background: #fffaf0; box-shadow: inset 3px 0 0 rgba(122, 106, 42, .34); }
     .note-card.is-pinned .note-title-area,
@@ -244,6 +253,7 @@
     .help-body ol, .help-body ul { margin: 0 0 12px 18px; padding: 0; }
     .help-note { color: var(--muted); font-size: var(--font-sm); border-top: 1px solid var(--line); padding-top: 10px; }
     @media (max-width: 759px) {
+      .global-pinned-section { display: none; }
       body { padding: 8px 6px; }
       .mobile-home { background: var(--page); border: 1px solid var(--line); border-radius: var(--radius-panel); box-shadow: var(--shadow); padding: 10px; margin-bottom: 8px; }
       body:not(.mobile-section-active):not(.global-search-active) .mobile-home { display: block; }
@@ -3135,6 +3145,7 @@ button.note-label-chip {
         let mobileNotesAll = true;
         let notesLabelFilterValue = "";
         let notesPinnedOnly = localStorage.getItem(NOTES_PINNED_ONLY_KEY) === "true";
+        let globalPinnedExpanded = false;
         let threeMonthCalendar = localStorage.getItem(CALENDAR_RANGE_KEY) === "true";
         let desktopCalendarCollapsed = localStorage.getItem(CALENDAR_COLLAPSED_KEY) === "true";
         let desktopWorkspacePanel = "notes";
@@ -5326,17 +5337,49 @@ ${body}` : title };
             else
                 moveSingleNoteToDate(targetKey);
         }
+        function collectGlobalPinnedNotes() {
+            const results = [];
+            allDateKeys().forEach(dateKey => normalizeNotes(readDateData(dateKey).notes).forEach(note => {
+                if (!note.deleted && note.pinned && noteMatchesSearch(note)) results.push({ dateKey, note });
+            }));
+            return results.sort((a, b) => b.dateKey.localeCompare(a.dateKey) || (a.note.title || "").localeCompare(b.note.title || "", undefined, { sensitivity: "base" }));
+        }
+        function renderGlobalPinnedSection() {
+            if (isMobileViewport() || notesBinOpen || notesFocusView || isLabelsWorkspace() || notesPinnedOnly) return new Set();
+            const pinned = collectGlobalPinnedNotes();
+            if (!pinned.length) return new Set();
+            const section = document.createElement("section"); section.className = "global-pinned-section";
+            const head = document.createElement("div"); head.className = "global-pinned-head";
+            const title = document.createElement("div"); title.className = "global-pinned-title"; title.textContent = `Pinned · ${pinned.length}`; head.appendChild(title);
+            if (pinned.length > 3) {
+                const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "plain-btn global-pinned-toggle";
+                toggle.textContent = globalPinnedExpanded ? "Show less" : `Show all pinned (${pinned.length})`;
+                toggle.addEventListener("click", () => { globalPinnedExpanded = !globalPinnedExpanded; renderNotes(); }); head.appendChild(toggle);
+            }
+            const list = document.createElement("div"); list.className = "global-pinned-list";
+            (globalPinnedExpanded ? pinned : pinned.slice(0, 3)).forEach(result => {
+                const button = document.createElement("button"); button.type = "button"; button.className = "global-pinned-note";
+                const noteTitle = document.createElement("span"); noteTitle.className = "global-pinned-note-title"; noteTitle.textContent = `★ ${result.note.title || "Untitled"}`;
+                const noteDate = document.createElement("span"); noteDate.className = "global-pinned-note-date"; const parsed = fromKey(result.dateKey);
+                noteDate.textContent = parsed ? parsed.toLocaleDateString(undefined, { day: "numeric", month: "short" }) : result.dateKey;
+                button.append(noteTitle, noteDate); button.addEventListener("click", () => openAllFocusNote(result.dateKey, result.note.id)); list.appendChild(button);
+            });
+            section.append(head, list); notesList.appendChild(section);
+            return new Set(pinned.filter(result => result.dateKey === toKey(selectedDate)).map(result => result.note.id));
+        }
         function renderNotes() {
             notesList.innerHTML = "";
             notes = orderNotes(notes);
             applyNotesFocusScope();
-            if (!notesBinOpen && ((isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || (notesFocusView && notesFocusAll))))) {
+            const mobilePinnedGlobal = isMobileViewport() && notesPinnedOnly && notesSidebar.classList.contains("mobile-notes-open");
+            if (!notesBinOpen && (mobilePinnedGlobal || (isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || (notesFocusView && notesFocusAll))))) {
                 renderAllFocusNotes();
                 return;
             }
+            const pinnedIdsOnSelectedDate = renderGlobalPinnedSection();
             const visibleNotes = notesBinOpen
                 ? notes.filter(note => note.deleted)
-                : notes.filter(note => !note.deleted && (!notesPinnedOnly || note.pinned) && (!notesLabelFilterValue || note.labels.some(label => label.toLowerCase() === notesLabelFilterValue.toLowerCase())) && noteMatchesSearch(note));
+                : notes.filter(note => !note.deleted && !pinnedIdsOnSelectedDate.has(note.id) && (!notesPinnedOnly || note.pinned) && (!notesLabelFilterValue || note.labels.some(label => label.toLowerCase() === notesLabelFilterValue.toLowerCase())) && noteMatchesSearch(note));
             visibleNotes.forEach(note => notesList.appendChild(notesBinOpen ? createTrashCard(note) : createNoteCard(note)));
             if (notesBinOpen) {
                 notesNoResults.textContent = visibleNotes.length ? "" : "Recycle bin is empty";
@@ -5738,7 +5781,12 @@ ${body}` : title };
         cancelEventBtn.addEventListener("click", closeEventEditor);
         saveEventBtn.addEventListener("click", saveEventFromEditor);
         deleteEventBtn.addEventListener("click", deleteEditingEvent);
-        eventTitleInput.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); saveEventFromEditor(); } });
+        eventModal.addEventListener("keydown", event => {
+            if (event.key === "Enter" && !event.shiftKey && event.target instanceof HTMLInputElement) {
+                event.preventDefault();
+                saveEventFromEditor();
+            }
+        });
         eventModal.addEventListener("click", event => { if (event.target === eventModal) closeEventEditor(); });
         activityBtn.addEventListener("click", openActivity);
         addTaskInboxBtn.addEventListener("click", openTasksInboxShortcut);
