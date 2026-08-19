@@ -2655,7 +2655,7 @@ button.note-label-chip {
 .event-optional { font-weight: 400; }
 .event-editor-actions {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto auto 1fr auto auto;
   align-items: center;
   gap: 12px;
   padding: 0 14px 12px;
@@ -3021,41 +3021,26 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
 .task-row-actions { flex-wrap: wrap; }
 .task-row-actions .task-tags-meta { flex: 1 1 auto; margin: 0 auto 0 0; align-items: center; }
 .task-row-actions .task-tag-chip { min-height: 20px; }
-#newTaskBtn,
-#addEventBtn,
-#eventsPanelAddBtn,
-#addNoteBtn,
-#mobileNotesAddBtn,
-#labelAddBtn {
-  min-height: 28px;
-  padding: 4px 9px;
-  border: 1px solid #e2cd61;
-  border-radius: 9px;
-  background: #FFEE8C;
-  color: #4f4518;
-  font-weight: 750;
-  line-height: 1;
-  text-decoration: none !important;
-  box-shadow: 0 2px 7px rgba(122, 106, 42, .11);
-}
-#newTaskBtn:hover,
-#newTaskBtn:focus-visible,
-#addEventBtn:hover,
-#addEventBtn:focus-visible,
-#eventsPanelAddBtn:hover,
-#eventsPanelAddBtn:focus-visible,
-#addNoteBtn:hover,
-#addNoteBtn:focus-visible,
-#mobileNotesAddBtn:hover,
-#mobileNotesAddBtn:focus-visible,
-#labelAddBtn:hover,
-#labelAddBtn:focus-visible {
-  background: #f8e46f;
-  border-color: #d6bd42;
-  color: #3f3713;
-}
-#addNoteBtn,
-#mobileNotesAddBtn { padding: 0; }
+#newTaskBtn, #addEventBtn, #eventsPanelAddBtn, #addNoteBtn, #mobileNotesAddBtn, #labelAddBtn { min-height: 28px; padding: 4px 9px; border: 1px solid #e2cd61; border-radius: 9px; background: #FFEE8C; color: #4f4518; font-weight: 750; line-height: 1; text-decoration: none !important; box-shadow: 0 2px 7px rgba(122,106,42,.11); }
+#newTaskBtn:hover, #newTaskBtn:focus-visible, #addEventBtn:hover, #addEventBtn:focus-visible, #eventsPanelAddBtn:hover, #eventsPanelAddBtn:focus-visible, #addNoteBtn:hover, #addNoteBtn:focus-visible, #mobileNotesAddBtn:hover, #mobileNotesAddBtn:focus-visible, #labelAddBtn:hover, #labelAddBtn:focus-visible { background: #f8e46f; border-color: #d6bd42; color: #3f3713; }
+#addNoteBtn, #mobileNotesAddBtn { padding: 0; }
+
+/* Practical wide-range calendar and enhanced Event editor */
+.calendar-jump { display: grid; grid-template-columns: 1fr auto; gap: 5px; padding: 7px 8px 0; }
+.calendar-jump input { min-width: 0; height: 29px; font-size: 11px; }
+.calendar-jump-btn { min-width: 32px; padding: 3px 7px; border: 1px solid var(--line); border-radius: 9px; background: var(--soft); color: var(--ink); }
+.event-editor-body select, .event-editor-body input[type="number"] { width: 100%; height: 32px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--page); color: var(--ink); }
+.event-editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.event-editor-field { display: grid; gap: 5px; }
+.event-recurrence-options { display: grid; gap: 7px; padding: 8px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel); }
+.event-weekdays { display: flex; flex-wrap: wrap; gap: 4px; }
+.event-weekday { min-width: 32px; min-height: 28px; border: 1px solid var(--line); border-radius: 999px; background: var(--page); color: var(--muted); cursor: pointer; }
+.event-weekday.active { background: var(--selected); border-color: var(--entry-border); color: var(--ink); font-weight: 700; }
+.event-copy-btn { color: #526b7a; font-weight: 700; }
+.event-series-scope { display: grid; gap: 5px; padding: 0 14px 10px; }
+.event-series-scope label { color: var(--muted); font-size: 11px; font-weight: 650; }
+.event-series-scope select { height: 31px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--page); color: var(--ink); }
+@media (max-width: 759px) { .event-editor-grid { grid-template-columns: 1fr; } .calendar-jump { padding-bottom: 2px; } }
 </style>
 </head>
 <body>
@@ -3115,6 +3100,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
   <div class="shell" id="shell">
     <aside class="sidebar" id="sidebar" aria-label="Compact calendar sidebar">
       <div class="sidebar-head"><div class="sidebar-title">Calendar</div><div class="calendar-head-actions"><button class="plain-btn icon-btn calendar-range-btn" id="calendarRangeBtn" type="button" title="Show three-month calendar" aria-pressed="false">3</button><button class="plain-btn" id="sidebarToggle" type="button">Hide</button></div></div>
+      <div class="calendar-jump"><input id="calendarMonthInput" type="month" aria-label="Jump to month" /><button class="plain-btn calendar-jump-btn" id="calendarJumpBtn" type="button">Go</button></div>
       <div class="calendar-wrap" id="calendarWrap"></div>
     </aside>
 
@@ -3213,9 +3199,13 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
       <div class="event-editor-head"><p class="event-editor-title" id="eventEditorTitle">New Event</p><button class="plain-btn" id="closeEventBtn" type="button">Close</button></div>
       <div class="event-editor-body">
         <label for="eventTitleInput">Event</label><input id="eventTitleInput" type="text" maxlength="120" placeholder="Event title" autocomplete="off" />
-        <div class="event-editor-date-row"><div><label for="eventDateInput">Date</label><input id="eventDateInput" type="date" /></div><div><label for="eventTimeInput">Time <span class="event-optional">optional</span></label><input id="eventTimeInput" type="time" /></div></div>
+        <div class="event-editor-grid"><div class="event-editor-field"><label for="eventDateInput">Date</label><input id="eventDateInput" type="date" /></div><div class="event-editor-field"><label for="eventTimeInput">Time <span class="event-optional">optional</span></label><input id="eventTimeInput" type="time" /></div></div>
+        <div class="event-editor-grid"><div class="event-editor-field"><label for="eventDurationInput">Duration</label><select id="eventDurationInput"><option value="30">30 minutes</option><option value="60">1 hour</option><option value="90">1 hour 30 minutes</option><option value="120">2 hours</option><option value="150">2 hours 30 minutes</option><option value="180">3 hours</option><option value="custom">Custom</option></select></div><div class="event-editor-field" id="eventCustomDurationField" hidden><label for="eventCustomDurationInput">Minutes</label><input id="eventCustomDurationInput" type="number" min="30" max="1440" step="30" value="30" /></div></div>
+        <label for="eventRepeatInput">Repeat</label><select id="eventRepeatInput"><option value="none">Does not repeat</option><option value="daily">Daily</option><option value="weekdays">Weekdays</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="custom">Custom</option></select>
+        <div class="event-recurrence-options" id="eventRecurrenceOptions" hidden><div class="event-editor-grid"><div class="event-editor-field"><label for="eventRepeatIntervalInput">Repeat every</label><input id="eventRepeatIntervalInput" type="number" min="1" max="99" value="1" /></div><div class="event-editor-field"><label for="eventRepeatUnitInput">Unit</label><select id="eventRepeatUnitInput"><option value="day">Day</option><option value="week">Week</option><option value="month">Month</option><option value="year">Year</option></select></div></div><div class="event-editor-field" id="eventWeekdaysField" hidden><label>On days</label><div class="event-weekdays" id="eventWeekdays"></div></div><div class="event-editor-grid"><div class="event-editor-field"><label for="eventRepeatEndInput">Ends</label><select id="eventRepeatEndInput"><option value="never">Never</option><option value="date">On date</option><option value="count">After occurrences</option></select></div><div class="event-editor-field" id="eventRepeatEndValueField" hidden><label for="eventRepeatEndValue">End value</label><input id="eventRepeatEndValue" type="date" /></div></div></div>
       </div>
-      <div class="event-editor-actions"><button class="plain-btn delete-note-btn" id="deleteEventBtn" type="button" hidden>Delete</button><span></span><button class="plain-btn" id="cancelEventBtn" type="button">Cancel</button><button class="plain-btn event-save-btn" id="saveEventBtn" type="button">Save</button></div>
+      <div class="event-series-scope" id="eventSeriesScope" hidden><label for="eventSeriesScopeInput">Apply changes to</label><select id="eventSeriesScopeInput"><option value="this">This event</option><option value="future">This and future events</option><option value="all">All events in the series</option></select></div>
+      <div class="event-editor-actions"><button class="plain-btn delete-note-btn" id="deleteEventBtn" type="button" hidden>Delete</button><button class="plain-btn event-copy-btn" id="copyEventBtn" type="button" hidden>Copy</button><span></span><button class="plain-btn" id="cancelEventBtn" type="button">Cancel</button><button class="plain-btn event-save-btn" id="saveEventBtn" type="button">Save</button></div>
     </section>
   </div>
 
@@ -3244,8 +3234,10 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
 
 
     (function () {
-        const START_DATE = new Date(2026, 6, 1);
-        const END_DATE = new Date(2027, 11, 31);
+        const START_DATE = new Date(1970, 0, 1);
+        const END_DATE = new Date(2099, 11, 31);
+        const CALENDAR_MONTHS_BEFORE = 3;
+        const CALENDAR_MONTHS_AFTER = 12;
         const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
         const COMPACT_KEY = "timeblocks:notesCompact";
         const TASKS_KEY = "timeblocks:globalTasks";
@@ -3305,6 +3297,8 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         const workspaceEventsTab = el("workspaceEventsTab");
         const notesToggle = el("notesToggle");
         const calendarWrap = el("calendarWrap");
+        const calendarMonthInput = el("calendarMonthInput");
+        const calendarJumpBtn = el("calendarJumpBtn");
         const timeline = el("timeline");
         const eventsStrip = el("eventsStrip");
         const eventsStripList = el("eventsStripList");
@@ -3412,6 +3406,21 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         const eventTitleInput = el("eventTitleInput");
         const eventDateInput = el("eventDateInput");
         const eventTimeInput = el("eventTimeInput");
+        const eventDurationInput = el("eventDurationInput");
+        const eventCustomDurationField = el("eventCustomDurationField");
+        const eventCustomDurationInput = el("eventCustomDurationInput");
+        const eventRepeatInput = el("eventRepeatInput");
+        const eventRecurrenceOptions = el("eventRecurrenceOptions");
+        const eventRepeatIntervalInput = el("eventRepeatIntervalInput");
+        const eventRepeatUnitInput = el("eventRepeatUnitInput");
+        const eventWeekdaysField = el("eventWeekdaysField");
+        const eventWeekdays = el("eventWeekdays");
+        const eventRepeatEndInput = el("eventRepeatEndInput");
+        const eventRepeatEndValueField = el("eventRepeatEndValueField");
+        const eventRepeatEndValue = el("eventRepeatEndValue");
+        const eventSeriesScope = el("eventSeriesScope");
+        const eventSeriesScopeInput = el("eventSeriesScopeInput");
+        const copyEventBtn = el("copyEventBtn");
         const closeEventBtn = el("closeEventBtn");
         const cancelEventBtn = el("cancelEventBtn");
         const saveEventBtn = el("saveEventBtn");
@@ -3458,6 +3467,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         let globalTasks = normalizeTaskLists(loadJson(TASKS_KEY, null));
         let events = normalizeEvents(loadJson(EVENTS_KEY, []));
         let editingEventId = null;
+        let editingEventOccurrenceDate = "";
         let editingTaskId = null;
         let editingTaskContext = null;
         let taskEditorFocusTarget = "text";
@@ -3629,96 +3639,89 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             if (!parsed.cleanQuery || !parsed.types.size) return { results: [], parsed };
             const results = [];
             if (parsed.types.has("notes")) allDateKeys().forEach(dateKey => { const data = readDateData(dateKey); normalizeNotes(data.notes).filter(note => !note.deleted).forEach(note => { if (noteMatchesGlobalSearch(note, parsed.cleanQuery)) results.push({ type: "note", dateKey, note }); }); });
-            if (parsed.types.has("events")) events.forEach(event => { if (event.title.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "event", event }); });
+            if (parsed.types.has("events")) events.filter(event => !event.cancelled).forEach(event => { if (event.title.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "event", event }); });
             if (parsed.types.has("tasks")) TASK_CONTEXTS.forEach(context => { (globalTasks[context] || []).forEach(task => { if (`${task.text || ""} ${normalizeTaskTags(task.tags).join(" ")}`.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "task", context, task }); }); });
             return { results, parsed };
         }
+        function normalizeRecurrence(raw) {
+            if (!raw || typeof raw !== "object" || raw.type === "none") return null;
+            const validTypes = ["daily", "weekdays", "weekly", "monthly", "yearly", "custom"];
+            const type = validTypes.includes(raw.type) ? raw.type : "weekly";
+            const unit = ["day", "week", "month", "year"].includes(raw.unit) ? raw.unit : (type === "daily" || type === "weekdays" ? "day" : type.replace("ly", ""));
+            return { type, interval: Math.max(1, Math.min(99, Number(raw.interval) || 1)), unit, weekdays: Array.isArray(raw.weekdays) ? raw.weekdays.filter(day => Number.isInteger(day) && day >= 0 && day <= 6) : [], endType: ["never", "date", "count"].includes(raw.endType) ? raw.endType : "never", endDate: fromKey(raw.endDate) ? raw.endDate : "", count: Math.max(1, Math.min(9999, Number(raw.count) || 1)) };
+        }
         function normalizeEvents(raw) {
-            if (!Array.isArray(raw))
-                return [];
+            if (!Array.isArray(raw)) return [];
             return raw.map(item => ({
-                id: item.id || createId("event"),
-                title: typeof item.title === "string" ? item.title.trim() : "",
+                id: item.id || createId("event"), title: typeof item.title === "string" ? item.title.trim() : "",
                 date: fromKey(item.date) ? item.date : toKey(getToday()),
                 time: /^([01]\d|2[0-3]):[0-5]\d$/.test(item.time || "") ? item.time : "",
+                durationMinutes: Math.max(30, Math.min(1440, Math.round((Number(item.durationMinutes) || 30) / 30) * 30)),
+                recurrence: normalizeRecurrence(item.recurrence),
+                seriesId: typeof item.seriesId === "string" ? item.seriesId : "",
+                originalDate: fromKey(item.originalDate) ? item.originalDate : "",
+                cancelled: Boolean(item.cancelled),
                 createdAt: item.createdAt && !Number.isNaN(new Date(item.createdAt).getTime()) ? item.createdAt : new Date().toISOString()
-            })).filter(item => item.title).sort(compareEvents);
+            })).filter(item => item.title || item.cancelled).sort(compareEvents);
         }
-        function compareEvents(a, b) {
-            const aValue = `${a.date}T${a.time || "23:59"}`;
-            const bValue = `${b.date}T${b.time || "23:59"}`;
-            return aValue.localeCompare(bValue) || a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
+        function compareEvents(a, b) { const av = `${a.date}T${a.time || "23:59"}`; const bv = `${b.date}T${b.time || "23:59"}`; return av.localeCompare(bv) || a.title.localeCompare(b.title, undefined, { sensitivity: "base" }); }
+        function saveEvents() { events = normalizeEvents(events); localStorage.setItem(EVENTS_KEY, JSON.stringify(events)); }
+        function eventPhase(event) { const todayKey = toKey(getToday()); return event.date < todayKey ? "past" : event.date > todayKey ? "upcoming" : "today"; }
+        function eventTimeLabel(event) { if (!event.time) return "All day"; const [hour, minute] = event.time.split(":").map(Number); return new Date(2000,0,1,hour,minute).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}); }
+        function addMonthsClamped(date, months) { const day = date.getDate(); const result = new Date(date.getFullYear(), date.getMonth() + months, 1); const last = new Date(result.getFullYear(), result.getMonth() + 1, 0).getDate(); result.setDate(Math.min(day,last)); return result; }
+        function recurrenceMatches(master, dateKey) {
+            const rule = master.recurrence; if (!rule || dateKey < master.date) return false;
+            if (rule.endType === "date" && rule.endDate && dateKey > rule.endDate) return false;
+            const start = fromKey(master.date), date = fromKey(dateKey); if (!start || !date) return false;
+            const days = Math.floor((date-start)/86400000); let match=false;
+            if (rule.type === "weekdays") match = date.getDay() >= 1 && date.getDay() <= 5;
+            else if (rule.type === "daily") match = days % rule.interval === 0;
+            else if (rule.type === "weekly") match = days >= 0 && Math.floor(days/7) % rule.interval === 0 && (rule.weekdays.length ? rule.weekdays.includes(date.getDay()) : date.getDay() === start.getDay());
+            else if (rule.type === "monthly") match = date.getDate() === start.getDate() && ((date.getFullYear()-start.getFullYear())*12 + date.getMonth()-start.getMonth()) % rule.interval === 0;
+            else if (rule.type === "yearly") match = date.getMonth() === start.getMonth() && date.getDate() === start.getDate() && (date.getFullYear()-start.getFullYear()) % rule.interval === 0;
+            else { const interval=rule.interval; if(rule.unit==="day") match=days%interval===0; else if(rule.unit==="week") match=Math.floor(days/7)%interval===0 && (rule.weekdays.length?rule.weekdays.includes(date.getDay()):date.getDay()===start.getDay()); else if(rule.unit==="month") match=date.getDate()===start.getDate() && ((date.getFullYear()-start.getFullYear())*12+date.getMonth()-start.getMonth())%interval===0; else match=date.getMonth()===start.getMonth()&&date.getDate()===start.getDate()&&(date.getFullYear()-start.getFullYear())%interval===0; }
+            if (!match) return false;
+            if (rule.endType === "count") {
+                let ordinal = 1;
+                if (rule.type === "daily" || (rule.type === "custom" && rule.unit === "day")) ordinal = Math.floor(days / rule.interval) + 1;
+                else if (rule.type === "weekdays") { ordinal = 0; const wholeWeeks = Math.floor(days / 7); ordinal = wholeWeeks * 5; const cursor = new Date(start); cursor.setDate(cursor.getDate() + wholeWeeks * 7); while (cursor <= date) { if (cursor.getDay() >= 1 && cursor.getDay() <= 5) ordinal += 1; cursor.setDate(cursor.getDate() + 1); } }
+                else if (rule.type === "monthly" || (rule.type === "custom" && rule.unit === "month")) ordinal = Math.floor(((date.getFullYear() - start.getFullYear()) * 12 + date.getMonth() - start.getMonth()) / rule.interval) + 1;
+                else if (rule.type === "yearly" || (rule.type === "custom" && rule.unit === "year")) ordinal = Math.floor((date.getFullYear() - start.getFullYear()) / rule.interval) + 1;
+                else { const selected = (rule.weekdays.length ? rule.weekdays : [start.getDay()]).slice().sort((a,b)=>a-b); const elapsedWeeks = Math.floor(days / 7); const activeWeeks = Math.floor(elapsedWeeks / rule.interval); ordinal = activeWeeks * selected.length; const weekStart = new Date(start); weekStart.setDate(weekStart.getDate() + activeWeeks * rule.interval * 7); selected.forEach(day => { const candidate = new Date(weekStart); candidate.setDate(candidate.getDate() + ((day - weekStart.getDay() + 7) % 7)); if (candidate >= start && candidate <= date) ordinal += 1; }); }
+                return ordinal <= rule.count;
+            }
+            return true;
         }
-        function saveEvents() {
-            events = normalizeEvents(events);
-            localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
-        }
-        function eventPhase(event) {
-            const todayKey = toKey(getToday());
-            if (event.date < todayKey)
-                return "past";
-            if (event.date > todayKey)
-                return "upcoming";
-            return "today";
-        }
-        function eventTimeLabel(event) {
-            if (!event.time)
-                return "All day";
-            const [hour, minute] = event.time.split(":").map(Number);
-            return new Date(2000, 0, 1, hour, minute).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
-        }
+        function occurrenceId(masterId,dateKey){ return `${masterId}@${dateKey}`; }
+        function eventForOccurrence(master,dateKey){ return {...master,id:occurrenceId(master.id,dateKey),date:dateKey,seriesId:master.id,originalDate:dateKey,isOccurrence:true,recurrence:null}; }
         function eventsForDate(dateKey) {
-            return events.filter(event => event.date === dateKey).sort(compareEvents);
+            const regular = events.filter(event => !event.cancelled && !event.recurrence && !event.seriesId && event.date === dateKey);
+            const exceptions = events.filter(event => event.seriesId && event.originalDate === dateKey);
+            const exceptionSeries = new Set(exceptions.map(event => event.seriesId));
+            const generated = events.filter(event => event.recurrence && recurrenceMatches(event,dateKey) && !exceptionSeries.has(event.id)).map(master => eventForOccurrence(master,dateKey));
+            return regular.concat(exceptions.filter(event=>!event.cancelled),generated).sort(compareEvents);
         }
-        function eventTimeblockTime(event) {
-            if (!event || !event.time) return "";
-            const [hour, minute] = event.time.split(":").map(Number);
-            const total = hour * 60 + minute;
-            if (total < 8 * 60 || total >= 24 * 60) return "";
-            const blockMinutes = Math.floor(total / 30) * 30;
-            return `${pad(Math.floor(blockMinutes / 60))}:${pad(blockMinutes % 60)}`;
+        function eventTimeblockTimes(event) {
+            if (!event || !event.time) return [];
+            const [hour,minute]=event.time.split(":").map(Number); const total=hour*60+minute; if(total<480||total>=1440)return [];
+            const start=Math.floor(total/30)*30; const blocks=Math.max(1,Math.ceil((event.durationMinutes||30)/30)); const times=[];
+            for(let i=0;i<blocks;i++){const value=start+i*30;if(value>=1440)break;times.push(`${pad(Math.floor(value/60))}:${pad(value%60)}`);} return times;
         }
         function eventTimeblockText(event) { return `Event: ${event.title}`; }
         function normalizeEventTimeblocks(raw) {
             if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-            const clean = {};
-            Object.entries(raw).forEach(([eventId, link]) => {
-                if (link && typeof link.time === "string" && typeof link.text === "string")
-                    clean[eventId] = { time: link.time, text: link.text };
-            });
-            return clean;
+            const clean={}; Object.entries(raw).forEach(([eventId,link])=>{if(!link||typeof link.text!=="string")return; const times=Array.isArray(link.times)?link.times.filter(t=>typeof t==="string"):(typeof link.time==="string"?[link.time]:[]); if(times.length)clean[eventId]={times,text:link.text};}); return clean;
         }
         function removeLinkedEventTimeblock(event) {
-            if (!event) return;
-            const data = readDateData(event.date);
-            const links = normalizeEventTimeblocks(data.eventTimeblocks);
-            const link = links[event.id];
-            if (!link) return;
-            data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
-            if (data.entries[link.time] === link.text) delete data.entries[link.time];
-            if (data.timeblockStatuses && typeof data.timeblockStatuses === "object") delete data.timeblockStatuses[link.time];
-            delete links[event.id];
-            data.eventTimeblocks = links;
-            writeDateData(event.date, data);
+            if(!event)return; const data=readDateData(event.date); const links=normalizeEventTimeblocks(data.eventTimeblocks); const link=links[event.id]; if(!link)return;
+            data.entries=data.entries&&typeof data.entries==="object"?data.entries:{}; link.times.forEach(time=>{if(data.entries[time]===link.text)delete data.entries[time];if(data.timeblockStatuses&&typeof data.timeblockStatuses==="object")delete data.timeblockStatuses[time];}); delete links[event.id]; data.eventTimeblocks=links; writeDateData(event.date,data);
         }
-        function populateEventTimeblock(event, showOccupiedMessage = true) {
-            const time = eventTimeblockTime(event);
-            if (!time) return false;
-            const data = readDateData(event.date);
-            data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
-            const links = normalizeEventTimeblocks(data.eventTimeblocks);
-            if ((data.entries[time] || "").trim()) {
-                if (showOccupiedMessage) alert(`Event saved, but ${eventTimeLabel(event)} is in an occupied 30-minute block.`);
-                return false;
-            }
-            const text = eventTimeblockText(event);
-            data.entries[time] = text;
-            if (data.timeblockStatuses && typeof data.timeblockStatuses === "object") delete data.timeblockStatuses[time];
-            links[event.id] = { time, text };
-            data.eventTimeblocks = links;
-            writeDateData(event.date, data);
-            return true;
+        function populateEventTimeblock(event,showOccupiedMessage=true) {
+            const times=eventTimeblockTimes(event); if(!times.length)return false; const data=readDateData(event.date); data.entries=data.entries&&typeof data.entries==="object"?data.entries:{}; const links=normalizeEventTimeblocks(data.eventTimeblocks);
+            if(times.some(time=>(data.entries[time]||"").trim())){if(showOccupiedMessage)alert("Event saved, but it was not added to Planner because one or more required timeblocks are occupied.");return false;}
+            const text=eventTimeblockText(event); times.forEach(time=>{data.entries[time]=text;if(data.timeblockStatuses&&typeof data.timeblockStatuses==="object")delete data.timeblockStatuses[time];}); links[event.id]={times,text}; data.eventTimeblocks=links; writeDateData(event.date,data); return true;
         }
+        function ensureRecurringEventBlocks(dateKey){ eventsForDate(dateKey).filter(event=>event.isOccurrence&&event.time).forEach(event=>{const data=readDateData(dateKey);if(!normalizeEventTimeblocks(data.eventTimeblocks)[event.id])populateEventTimeblock(event,false);}); }
         function taskTimeblockTime(task) {
             if (!task || !task.date || !task.time) return "";
             const [hour, minute] = task.time.split(":").map(Number);
@@ -3856,10 +3859,13 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         }
         function renderEvents() {
             eventsList.innerHTML = "";
+            const today = getToday();
+            const windowEvents = [];
+            for (let offset = -365; offset <= 730; offset += 1) { const date = new Date(today); date.setDate(date.getDate() + offset); if (isWithinRange(date)) windowEvents.push(...eventsForDate(toKey(date))); }
             const groups = [
-                ["Today", events.filter(event => eventPhase(event) === "today")],
-                ["Upcoming", events.filter(event => eventPhase(event) === "upcoming")],
-                ["Past", events.filter(event => eventPhase(event) === "past").sort((a, b) => compareEvents(b, a))]
+                ["Today", windowEvents.filter(event => eventPhase(event) === "today")],
+                ["Upcoming", windowEvents.filter(event => eventPhase(event) === "upcoming")],
+                ["Past", windowEvents.filter(event => eventPhase(event) === "past").sort((a, b) => compareEvents(b, a))]
             ];
             groups.forEach(([label, items]) => {
                 if (label === "Past" && !showPastEvents)
@@ -3886,77 +3892,53 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             eventsPastBtn.textContent = showPastEvents ? "Hide past" : "Show past";
             eventsPastBtn.setAttribute("aria-expanded", String(showPastEvents));
         }
-        function openEventEditor(eventId = null) {
-            const event = eventId ? events.find(item => item.id === eventId) : null;
-            editingEventId = event ? event.id : null;
-            eventEditorTitle.textContent = event ? "Edit Event" : "New Event";
-            eventTitleInput.value = event ? event.title : "";
-            eventDateInput.min = toKey(START_DATE);
-            eventDateInput.max = toKey(END_DATE);
-            eventDateInput.value = event ? event.date : toKey(selectedDate);
-            eventTimeInput.value = event ? event.time : "";
-            deleteEventBtn.hidden = !event;
-            eventModal.classList.add("open");
-            eventModal.setAttribute("aria-hidden", "false");
-            setTimeout(() => eventTitleInput.focus(), 0);
+        function renderEventWeekdays(selected=[]) { eventWeekdays.innerHTML=""; ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach((label,index)=>{const button=document.createElement("button");button.type="button";button.className="event-weekday";button.textContent=label;button.dataset.day=String(index);button.classList.toggle("active",selected.includes(index));button.addEventListener("click",()=>button.classList.toggle("active"));eventWeekdays.appendChild(button);}); }
+        function updateEventEditorOptions(){
+            eventCustomDurationField.hidden=eventDurationInput.value!=="custom"; const repeated=eventRepeatInput.value!=="none"; eventRecurrenceOptions.hidden=!repeated;
+            const custom=eventRepeatInput.value==="custom"; eventRepeatIntervalInput.closest(".event-editor-field").hidden=!custom; eventRepeatUnitInput.closest(".event-editor-field").hidden=!custom;
+            const weekly=eventRepeatInput.value==="weekly"||(custom&&eventRepeatUnitInput.value==="week"); eventWeekdaysField.hidden=!weekly;
+            eventRepeatEndValueField.hidden=eventRepeatEndInput.value==="never"; eventRepeatEndValue.type=eventRepeatEndInput.value==="count"?"number":"date"; eventRepeatEndValue.min=eventRepeatEndInput.value==="count"?"1":toKey(START_DATE); eventRepeatEndValue.max=eventRepeatEndInput.value==="count"?"9999":toKey(END_DATE);
+            eventDurationInput.disabled=!eventTimeInput.value;
         }
-        function closeEventEditor() {
-            eventModal.classList.remove("open");
-            eventModal.setAttribute("aria-hidden", "true");
-            editingEventId = null;
+        function eventDurationValue(){return eventDurationInput.value==="custom"?Math.max(30,Math.min(1440,Math.round((Number(eventCustomDurationInput.value)||30)/30)*30)):Number(eventDurationInput.value)||30;}
+        function recurrenceFromEditor(){
+            const type=eventRepeatInput.value;if(type==="none")return null; let unit=eventRepeatUnitInput.value,interval=Number(eventRepeatIntervalInput.value)||1;
+            if(type!=="custom"){unit=type==="daily"||type==="weekdays"?"day":type.replace("ly","");interval=1;}
+            const weekdays=Array.from(eventWeekdays.querySelectorAll(".active")).map(button=>Number(button.dataset.day)); const endType=eventRepeatEndInput.value;
+            return normalizeRecurrence({type,unit,interval,weekdays,endType,endDate:endType==="date"?eventRepeatEndValue.value:"",count:endType==="count"?Number(eventRepeatEndValue.value)||1:1});
         }
-        function saveEventFromEditor() {
-            const title = eventTitleInput.value.trim();
-            const date = eventDateInput.value;
-            const previousEvent = editingEventId ? events.find(item => item.id === editingEventId) : null;
-            const previousSnapshot = previousEvent ? { ...previousEvent } : null;
-            if (!title) {
-                alert("Please enter an event title.");
-                eventTitleInput.focus();
-                return;
-            }
-            if (!fromKey(date) || !isWithinRange(fromKey(date))) {
-                alert("Please select a valid event date.");
-                return;
-            }
-            let savedEvent;
-            if (editingEventId) {
-                const current = events.find(item => item.id === editingEventId);
-                if (!current) return;
-                current.title = title;
-                current.date = date;
-                current.time = eventTimeInput.value || "";
-                savedEvent = current;
-            }
-            else {
-                savedEvent = { id: createId("event"), title, date, time: eventTimeInput.value || "", createdAt: new Date().toISOString() };
-                events.push(savedEvent);
-            }
-            saveEvents();
-            if (previousSnapshot) removeLinkedEventTimeblock(previousSnapshot);
-            populateEventTimeblock(savedEvent);
-            closeEventEditor();
-            if (toKey(selectedDate) === savedEvent.date || (previousSnapshot && toKey(selectedDate) === previousSnapshot.date))
-                loadSelectedDate();
-            renderSelectedDateEvents();
-            renderEvents();
-            buildCalendar();
+        function openEventEditor(eventId=null) {
+            let event=null, occurrenceDate="";
+            if(eventId&&eventId.includes("@")){const [masterId,dateKey]=eventId.split("@");const master=events.find(item=>item.id===masterId);if(master){event=eventForOccurrence(master,dateKey);occurrenceDate=dateKey;}}
+            else event=eventId?events.find(item=>item.id===eventId):null;
+            editingEventId=event?event.id:null;editingEventOccurrenceDate=occurrenceDate;
+            eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
+            const duration=event?event.durationMinutes||30:30;eventDurationInput.value=[30,60,90,120,150,180].includes(duration)?String(duration):"custom";eventCustomDurationInput.value=String(duration);
+            const master=event&&event.seriesId?events.find(item=>item.id===event.seriesId):event;const rule=master&&master.recurrence?master.recurrence:null;eventRepeatInput.value=rule?rule.type:"none";eventRepeatIntervalInput.value=String(rule?rule.interval:1);eventRepeatUnitInput.value=rule?rule.unit:"week";eventRepeatEndInput.value=rule?rule.endType:"never";eventRepeatEndValue.value=rule?(rule.endType==="date"?rule.endDate:String(rule.count)):"";renderEventWeekdays(rule?rule.weekdays:[]);
+            deleteEventBtn.hidden=!event;copyEventBtn.hidden=!event;eventSeriesScope.hidden=!(event&&(event.seriesId||event.recurrence));eventSeriesScopeInput.value="this";updateEventEditorOptions();eventModal.classList.add("open");eventModal.setAttribute("aria-hidden","false");setTimeout(()=>eventTitleInput.focus(),0);
         }
-        function deleteEditingEvent() {
-            if (!editingEventId)
-                return;
-            if (!confirm("Delete this event?"))
-                return;
-            const deletingEvent = events.find(event => event.id === editingEventId);
-            removeLinkedEventTimeblock(deletingEvent);
-            events = events.filter(event => event.id !== editingEventId);
-            saveEvents();
-            closeEventEditor();
-            if (deletingEvent && toKey(selectedDate) === deletingEvent.date)
-                loadSelectedDate();
-            renderSelectedDateEvents();
-            renderEvents();
-            buildCalendar();
+        function closeEventEditor(){eventModal.classList.remove("open");eventModal.setAttribute("aria-hidden","true");editingEventId=null;editingEventOccurrenceDate="";}
+        function copyEditingEvent(){const id=editingEventId;let event=id&&id.includes("@")?eventsForDate(editingEventOccurrenceDate).find(item=>item.id===id):events.find(item=>item.id===id);if(!event)return;editingEventId=null;editingEventOccurrenceDate="";eventEditorTitle.textContent="Copy Event";deleteEventBtn.hidden=true;copyEventBtn.hidden=true;eventSeriesScope.hidden=true;eventRepeatInput.value="none";renderEventWeekdays([]);updateEventEditorOptions();eventTitleInput.focus();}
+        function removeSeriesPlannerLinks(seriesId,predicate=()=>true){allDateKeys().forEach(dateKey=>{const data=readDateData(dateKey);const links=normalizeEventTimeblocks(data.eventTimeblocks);let changed=false;Object.keys(links).forEach(id=>{if(id.startsWith(seriesId+"@")&&predicate(id.split("@")[1])){const link=links[id];data.entries=data.entries||{};link.times.forEach(time=>{if(data.entries[time]===link.text)delete data.entries[time];if(data.timeblockStatuses)delete data.timeblockStatuses[time];});delete links[id];changed=true;}});if(changed){data.eventTimeblocks=links;writeDateData(dateKey,data);}});}
+        function saveEventFromEditor(){
+            const title=eventTitleInput.value.trim(),date=eventDateInput.value;if(!title){alert("Please enter an event title.");eventTitleInput.focus();return;}if(!fromKey(date)||!isWithinRange(fromKey(date))){alert("Please select a valid event date.");return;}
+            const draft={title,date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor()};
+            let savedEvent=null,previousSnapshot=null;
+            if(editingEventId&&editingEventId.includes("@")){
+                const [seriesId,originalDate]=editingEventId.split("@");const master=events.find(item=>item.id===seriesId);if(!master)return;const scope=eventSeriesScopeInput.value;
+                if(scope==="this"){removeLinkedEventTimeblock(eventForOccurrence(master,originalDate));events=events.filter(item=>!(item.seriesId===seriesId&&item.originalDate===originalDate));savedEvent={id:createId("event"),...draft,recurrence:null,seriesId,originalDate,cancelled:false,createdAt:new Date().toISOString()};events.push(savedEvent);}
+                else if(scope==="all"){removeSeriesPlannerLinks(seriesId);master.title=draft.title;master.time=draft.time;master.durationMinutes=draft.durationMinutes;master.recurrence=draft.recurrence||master.recurrence;savedEvent=eventForOccurrence(master,originalDate);}
+                else {removeSeriesPlannerLinks(seriesId,d=>d>=originalDate);if(master.recurrence){master.recurrence.endType="date";const before=fromKey(originalDate);before.setDate(before.getDate()-1);master.recurrence.endDate=toKey(before);}savedEvent={id:createId("event"),...draft,createdAt:new Date().toISOString(),seriesId:"",originalDate:"",cancelled:false};events.push(savedEvent);}
+            } else if(editingEventId){
+                const current=events.find(item=>item.id===editingEventId);if(!current)return;previousSnapshot={...current};removeLinkedEventTimeblock(previousSnapshot);Object.assign(current,draft);savedEvent=current;
+            } else {savedEvent={id:createId("event"),...draft,seriesId:"",originalDate:"",cancelled:false,createdAt:new Date().toISOString()};events.push(savedEvent);}
+            saveEvents();if(savedEvent.recurrence){const occ=eventForOccurrence(savedEvent,savedEvent.date);populateEventTimeblock(occ);}else populateEventTimeblock(savedEvent);closeEventEditor();if(toKey(selectedDate)===savedEvent.date||(previousSnapshot&&toKey(selectedDate)===previousSnapshot.date))loadSelectedDate();renderSelectedDateEvents();renderEvents();buildCalendar();
+        }
+        function deleteEditingEvent(){
+            if(!editingEventId||!confirm("Delete this event?"))return;
+            if(editingEventId.includes("@")){const [seriesId,originalDate]=editingEventId.split("@");const master=events.find(item=>item.id===seriesId);if(!master)return;const scope=eventSeriesScopeInput.value;removeLinkedEventTimeblock(eventForOccurrence(master,originalDate));if(scope==="this")events.push({id:createId("event"),title:"",date:originalDate,time:"",durationMinutes:30,recurrence:null,seriesId,originalDate,cancelled:true,createdAt:new Date().toISOString()});else if(scope==="all"){removeSeriesPlannerLinks(seriesId);events=events.filter(item=>item.id!==seriesId&&item.seriesId!==seriesId);}else{removeSeriesPlannerLinks(seriesId,d=>d>=originalDate);master.recurrence.endType="date";const before=fromKey(originalDate);before.setDate(before.getDate()-1);master.recurrence.endDate=toKey(before);}}
+            else {const deleting=events.find(event=>event.id===editingEventId);if(deleting&&deleting.recurrence)removeSeriesPlannerLinks(deleting.id);removeLinkedEventTimeblock(deleting);events=events.filter(event=>event.id!==editingEventId);}
+            saveEvents();closeEventEditor();loadSelectedDate();renderSelectedDateEvents();renderEvents();buildCalendar();
         }
         function openEvents() {
             if (!isMobileViewport()) {
@@ -4401,8 +4383,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 content.className = "task-content";
                 content.appendChild(text);
                 const taskTags = normalizeTaskTags(task.tags);
-                const tagsMeta = document.createElement("div");
-                tagsMeta.className = "task-tags-meta";
+                const tagsMeta = document.createElement("div"); tagsMeta.className = "task-tags-meta";
                 taskTags.slice(0, 2).forEach(tag => { const chip = document.createElement("span"); chip.className = "task-tag-chip"; chip.textContent = tag; tagsMeta.appendChild(chip); });
                 if (taskTags.length > 2) { const more = document.createElement("span"); more.className = "task-tag-more"; more.textContent = `+${taskTags.length - 2}`; more.title = taskTags.slice(2).join(", "); tagsMeta.appendChild(more); }
                 tagsMeta.hidden = taskTags.length === 0;
@@ -5119,7 +5100,7 @@ ${body}` : title };
             const box = document.createElement("textarea");
             box.dataset.time = timeId;
             box.value = (saved.entries && saved.entries[timeId]) || saved[timeId] || "";
-            const eventLink = Object.entries(normalizeEventTimeblocks(saved.eventTimeblocks)).find(([, link]) => link.time === timeId && link.text === box.value);
+            const eventLink = Object.entries(normalizeEventTimeblocks(saved.eventTimeblocks)).find(([, link]) => link.times.includes(timeId) && link.text === box.value);
             const linkedEvent = eventLink ? events.find(event => event.id === eventLink[0]) : null;
             if (linkedEvent) {
                 box.classList.add("event-timeblock");
@@ -5886,7 +5867,7 @@ ${body}` : title };
             const targetKey = moveDateInput.value;
             const targetDate = fromKey(targetKey);
             if (!targetDate || !isWithinRange(targetDate)) {
-                alert("Please select a date between 1 July 2026 and 31 December 2027.");
+                alert("Please select a date between 1 January 1970 and 31 December 2099.");
                 return;
             }
             const sourceKey = toKey(selectedDate);
@@ -5962,6 +5943,7 @@ ${body}` : title };
             currentSlot.title = `Current block: ${isFirstFifteen ? "first" : "last"} 15 minutes`;
         }
         function loadSelectedDate() {
+            ensureRecurringEventBlocks(toKey(selectedDate));
             readSavedData();
             selectedDateText.textContent = displayDate(selectedDate);
             mobileNotesDate.textContent = `Notes for ${displayDate(selectedDate)}`;
@@ -6024,69 +6006,20 @@ ${body}` : title };
             buildCalendar();
             updateSelectedCalendarDay();
         }
-        function isMonthInThreeMonthRange(date) {
-            if (!threeMonthCalendar)
-                return true;
-            const today = getToday();
-            const monthIndex = date.getFullYear() * 12 + date.getMonth();
-            const currentMonthIndex = today.getFullYear() * 12 + today.getMonth();
-            return monthIndex >= currentMonthIndex - 1 && monthIndex <= currentMonthIndex + 1;
+        function calendarWindowBounds() {
+            const anchor = selectedDate || getToday(); const before = threeMonthCalendar ? 1 : CALENDAR_MONTHS_BEFORE; const after = threeMonthCalendar ? 1 : CALENDAR_MONTHS_AFTER;
+            const start = new Date(anchor.getFullYear(), anchor.getMonth()-before, 1); const end = new Date(anchor.getFullYear(), anchor.getMonth()+after+1, 0);
+            return {start:start<START_DATE?new Date(START_DATE):start,end:end>END_DATE?new Date(END_DATE):end};
         }
+        function jumpCalendarToMonth(){const match=/^(\d{4})-(\d{2})$/.exec(calendarMonthInput.value||"");if(!match)return;const target=new Date(Number(match[1]),Number(match[2])-1,1);if(!isWithinRange(target)){alert("Please select a month from January 1970 to December 2099.");return;}selectDate(target,true);buildCalendar();}
         function buildCalendar() {
-            calendarWrap.innerHTML = "";
-            const todayKey = toKey(getToday());
-            let cursor = new Date(START_DATE.getFullYear(), START_DATE.getMonth(), 1);
-            while (cursor <= END_DATE) {
-                if (!isMonthInThreeMonthRange(cursor)) {
-                    cursor.setMonth(cursor.getMonth() + 1);
-                    continue;
-                }
-                const month = document.createElement("section");
-                month.className = "month";
-                const heading = document.createElement("div");
-                heading.className = "month-name";
-                heading.textContent = monthName(cursor);
-                const days = document.createElement("div");
-                days.className = "days";
-                const monthIndex = cursor.getMonth();
-                const year = cursor.getFullYear();
-                const firstDay = new Date(year, monthIndex, 1);
-                const day = new Date(year, monthIndex, 1);
-                for (let index = 0; index < mondayFirstIndex(firstDay); index += 1)
-                    addBlankDay(days);
-                while (day.getMonth() === monthIndex) {
-                    if (day >= START_DATE && day <= END_DATE) {
-                        const key = toKey(day);
-                        const button = document.createElement("button");
-                        button.className = "day-btn";
-                        button.type = "button";
-                        button.textContent = day.getDate();
-                        button.dataset.date = key;
-                        const eventCount = eventsForDate(key).length;
-                        button.classList.toggle("has-events", eventCount > 0);
-                        button.title = `${displayDate(day)}${eventCount ? ` · ${eventCount} event${eventCount === 1 ? "" : "s"}` : ""}`;
-                        if (day.getDay() === 0 || day.getDay() === 6)
-                            button.classList.add("weekend");
-                        if (hasSavedDataForDate(key))
-                            button.classList.add("has-data");
-                        if (key === todayKey)
-                            button.classList.add("today");
-                        if (key === toKey(selectedDate))
-                            button.classList.add("selected");
-                        button.addEventListener("click", function () { const clickedDate = fromKey(this.dataset.date); if (clickedDate)
-                            selectDate(clickedDate, true); });
-                        days.appendChild(button);
-                    }
-                    else {
-                        addBlankDay(days);
-                    }
-                    day.setDate(day.getDate() + 1);
-                }
-                month.appendChild(heading);
-                addWeekdayHeader(month);
-                month.appendChild(days);
-                calendarWrap.appendChild(month);
-                cursor.setMonth(cursor.getMonth() + 1);
+            calendarWrap.innerHTML = ""; const todayKey=toKey(getToday()); const bounds=calendarWindowBounds(); calendarMonthInput.min="1970-01";calendarMonthInput.max="2099-12";calendarMonthInput.value=`${selectedDate.getFullYear()}-${pad(selectedDate.getMonth()+1)}`;
+            let cursor=new Date(bounds.start.getFullYear(),bounds.start.getMonth(),1); const finalMonth=new Date(bounds.end.getFullYear(),bounds.end.getMonth(),1);
+            while(cursor<=finalMonth){
+                const month=document.createElement("section");month.className="month";const heading=document.createElement("div");heading.className="month-name";heading.textContent=monthName(cursor);const days=document.createElement("div");days.className="days";const monthIndex=cursor.getMonth(),year=cursor.getFullYear(),firstDay=new Date(year,monthIndex,1),day=new Date(year,monthIndex,1);
+                for(let index=0;index<mondayFirstIndex(firstDay);index+=1)addBlankDay(days);
+                while(day.getMonth()===monthIndex){const key=toKey(day);const button=document.createElement("button");button.className="day-btn";button.type="button";button.textContent=day.getDate();button.dataset.date=key;const eventCount=eventsForDate(key).length;button.classList.toggle("has-events",eventCount>0);button.title=`${displayDate(day)}${eventCount?` · ${eventCount} event${eventCount===1?"":"s"}`:""}`;if(day.getDay()===0||day.getDay()===6)button.classList.add("weekend");if(hasSavedDataForDate(key))button.classList.add("has-data");if(key===todayKey)button.classList.add("today");if(key===toKey(selectedDate))button.classList.add("selected");button.addEventListener("click",function(){const clickedDate=fromKey(this.dataset.date);if(clickedDate)selectDate(clickedDate,true);});days.appendChild(button);day.setDate(day.getDate()+1);}
+                month.appendChild(heading);addWeekdayHeader(month);month.appendChild(days);calendarWrap.appendChild(month);cursor.setMonth(cursor.getMonth()+1);
             }
         }
         function addWeekdayHeader(month) {
@@ -6332,6 +6265,12 @@ ${body}` : title };
         cancelEventBtn.addEventListener("click", closeEventEditor);
         saveEventBtn.addEventListener("click", saveEventFromEditor);
         deleteEventBtn.addEventListener("click", deleteEditingEvent);
+        copyEventBtn.addEventListener("click", copyEditingEvent);
+        eventDurationInput.addEventListener("change", updateEventEditorOptions);
+        eventTimeInput.addEventListener("input", updateEventEditorOptions);
+        eventRepeatInput.addEventListener("change", updateEventEditorOptions);
+        eventRepeatUnitInput.addEventListener("change", updateEventEditorOptions);
+        eventRepeatEndInput.addEventListener("change", updateEventEditorOptions);
         eventModal.addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && event.target instanceof HTMLInputElement) { event.preventDefault(); saveEventFromEditor(); } });
         eventModal.addEventListener("click", event => { if (event.target === eventModal) closeEventEditor(); });
         activityBtn.addEventListener("click", openActivity);
@@ -6424,6 +6363,8 @@ ${body}` : title };
             reader.readAsText(file);
         });
         calendarRangeBtn.addEventListener("click", toggleCalendarRangeView);
+        calendarJumpBtn.addEventListener("click", jumpCalendarToMonth);
+        calendarMonthInput.addEventListener("keydown", event => { if (event.key === "Enter") jumpCalendarToMonth(); });
         sidebarToggle.addEventListener("click", () => {
             const collapsed = !sidebar.classList.contains("collapsed");
             setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", collapsed);
@@ -6459,6 +6400,7 @@ ${body}` : title };
         if (!isMobileViewport())
             showDesktopWorkspacePanel("notes");
         applyCalendarRangeView();
+        renderEventWeekdays([]);
         buildCalendar();
         quoteInput.value = favouriteQuote;
         renderLastImportStatus();
