@@ -3025,6 +3025,34 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
 #newTaskBtn:hover, #newTaskBtn:focus-visible, #addEventBtn:hover, #addEventBtn:focus-visible, #eventsPanelAddBtn:hover, #eventsPanelAddBtn:focus-visible, #addNoteBtn:hover, #addNoteBtn:focus-visible, #mobileNotesAddBtn:hover, #mobileNotesAddBtn:focus-visible, #labelAddBtn:hover, #labelAddBtn:focus-visible { background: #f8e46f; border-color: #d6bd42; color: #3f3713; }
 #addNoteBtn, #mobileNotesAddBtn { padding: 0; }
 
+/* Desktop Today Tasks shortcut */
+.today-tasks-btn {
+  display: none;
+}
+@media (min-width: 760px) {
+  .today-tasks-btn {
+    display: inline-flex;
+    min-height: 28px;
+    align-items: center;
+    padding: 4px 9px;
+    border: 1px solid #e5b98d;
+    border-radius: 9px;
+    background: #fbe7d3;
+    color: #704a2d;
+    font-weight: 750;
+    line-height: 1;
+    text-decoration: none !important;
+    box-shadow: 0 2px 7px rgba(112, 74, 45, .10);
+  }
+  .today-tasks-btn:hover,
+  .today-tasks-btn:focus-visible {
+    background: #f5dac0;
+    border-color: #dbaa78;
+    color: #5f3e25;
+    text-decoration: none;
+  }
+}
+
 /* Practical wide-range calendar and enhanced Event editor */
 .calendar-jump { display: grid; grid-template-columns: 1fr auto; gap: 5px; padding: 7px 8px 0; }
 .calendar-jump input { min-width: 0; height: 29px; font-size: 11px; }
@@ -3114,7 +3142,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             <button class="plain-btn nav-day-btn" id="nextDayBtn" type="button">›</button>
           </div>
         </div>
-        <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
+        <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn today-tasks-btn" id="todayTasksBtn" type="button" title="Open Today tasks">Today tasks</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="events-strip" id="eventsStrip" aria-label="Events for selected date"><div class="events-strip-head"><span class="events-strip-title">Events</span><span class="events-strip-actions"><button class="plain-btn" id="viewEventsBtn" type="button">All events</button><button class="plain-btn event-add-link" id="addEventBtn" type="button">+ Event</button></span></div><div class="events-strip-list" id="eventsStripList"></div></section>
@@ -3307,6 +3335,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         const selectedDateText = el("selectedDateText");
         const clearBtn = el("clearBtn");
         const focusViewBtn = el("focusViewBtn");
+        const todayTasksBtn = el("todayTasksBtn");
         const activityBtn = el("activityBtn");
         const addTaskInboxBtn = el("addTaskInboxBtn");
         const addTaskTodayBtn = el("addTaskTodayBtn");
@@ -5550,6 +5579,16 @@ ${body}` : title };
             if (focusCapture)
                 setTimeout(() => panel === "tasks" ? newTaskBtn.focus() : panel === "activity" ? activityInput.focus() : eventTitleInput.focus(), 0);
         }
+        function openTodayTasksWorkspace() {
+            if (isMobileViewport()) return;
+            showDesktopWorkspacePanel("tasks");
+            activeTaskContext = "Today";
+            activeTaskTagFilter = "";
+            localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext);
+            renderGlobalTasks();
+            setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
+            updateFocusViewButton();
+        }
         function toggleWorkspacePanelFocus(panel) {
             if (isMobileViewport())
                 return;
@@ -6347,6 +6386,7 @@ ${body}` : title };
             highlightCurrentTimeBlock();
         });
         focusViewBtn.addEventListener("click", toggleFocusView);
+        todayTasksBtn.addEventListener("click", openTodayTasksWorkspace);
         todayBtn.addEventListener("click", () => { const today = getToday(); if (isWithinRange(today))
             selectDate(today, true); });
         prevDayBtn.addEventListener("click", () => shiftSelectedDate(-1));
