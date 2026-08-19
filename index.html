@@ -2816,6 +2816,69 @@ button.note-label-chip {
   .mobile-home-capture-row .mobile-quick-event-btn { min-height: 34px; padding-top: 5px; padding-bottom: 5px; }
   .mobile-home-brand .mobile-home-nav { margin-top: 1px; }
 }
+
+/* Compact Activity rows: single-line controls with expanding text */
+.activity-toolbar { margin-bottom: 5px; }
+.activity-input { gap: 6px; margin-bottom: 6px; }
+.activity-day { margin-top: 7px; }
+.activity-day-title { margin-bottom: 3px; }
+.activity-list { gap: 4px; }
+.activity-row {
+  grid-template-columns: 60px 24px 24px minmax(0, 1fr) 24px;
+  grid-template-rows: auto;
+  grid-template-areas: "time status highlight text delete";
+  align-items: start;
+  column-gap: 5px;
+  row-gap: 0;
+  min-height: 32px;
+  padding: 3px 5px;
+  border-radius: 10px;
+}
+.activity-time { grid-area: time; padding-top: 5px; font-size: 10px; }
+.activity-row-actions { display: contents; }
+.activity-status { grid-area: status; }
+.activity-highlight { grid-area: highlight; }
+.activity-text {
+  grid-area: text;
+  min-height: 24px !important;
+  padding: 2px 0 1px !important;
+  line-height: 1.25;
+}
+.activity-delete { grid-area: delete; }
+.activity-status,
+.activity-highlight,
+.activity-delete { margin-top: 1px; }
+@media (min-width: 760px) {
+  .workspace-panel-host .activity-row,
+  body.workspace-focus-active .workspace-panel-host .activity-row {
+    grid-template-columns: 54px 24px 24px minmax(0, 1fr) 24px;
+    column-gap: 5px;
+    padding: 3px 5px;
+  }
+  body.workspace-focus-active .workspace-panel-host .activity-row {
+    grid-template-columns: 68px 24px 24px minmax(0, 1fr) 24px;
+  }
+}
+@media (max-width: 759px) {
+  #noteModal:has(#activityPanel.open) .activity-panel { padding: 7px 8px 9px; }
+  #noteModal:has(#activityPanel.open) .activity-toolbar { margin-bottom: 5px; }
+  #noteModal:has(#activityPanel.open) .activity-input { gap: 6px; margin-bottom: 6px; }
+  #noteModal:has(#activityPanel.open) .activity-day { margin-top: 7px; }
+  #noteModal:has(#activityPanel.open) .activity-list { gap: 3px; }
+  #noteModal:has(#activityPanel.open) .activity-row {
+    grid-template-columns: 52px 24px 24px minmax(0, 1fr) 24px;
+    grid-template-rows: auto;
+    grid-template-areas: "time status highlight text delete";
+    column-gap: 4px;
+    row-gap: 0;
+    min-height: 31px;
+    padding: 3px 5px;
+    border-radius: 9px;
+  }
+  #noteModal:has(#activityPanel.open) .activity-time { padding-top: 5px; font-size: 10px; }
+  #noteModal:has(#activityPanel.open) .activity-text { min-height: 24px !important; padding: 1px 0 !important; line-height: 1.25; }
+  #noteModal:has(#activityPanel.open) .activity-row-actions { display: contents; }
+}
 </style>
 </head>
 <body>
