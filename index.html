@@ -2887,6 +2887,40 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
   .task-row { grid-template-columns: auto auto minmax(0, 1fr) auto auto auto; }
   .task-row.no-move { grid-template-columns: auto auto minmax(0, 1fr) auto auto; }
 }
+
+/* Compact Task actions and visible schedule metadata */
+.task-content {
+  min-width: 0;
+  display: grid;
+  gap: 0;
+}
+.task-schedule-meta {
+  min-height: 0;
+  margin-top: -1px;
+  color: #8a684a;
+  font-size: 9.5px;
+  font-weight: 600;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.task-move {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  margin-top: 1px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1;
+}
+@media (max-width: 759px) {
+  .task-schedule-meta { font-size: 10px; }
+  .task-move { margin-top: 4px; }
+}
 </style>
 </head>
 <body>
@@ -4162,6 +4196,18 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                     text.title = `Open scheduled task: ${task.text}`;
                     text.addEventListener("click", () => openTaskEditor(task.id, activeTaskContext));
                 }
+                const content = document.createElement("div");
+                content.className = "task-content";
+                content.appendChild(text);
+                if (task.date) {
+                    const scheduleMeta = document.createElement("div");
+                    scheduleMeta.className = "task-schedule-meta";
+                    const taskDate = fromKey(task.date);
+                    const dateLabel = taskDate ? taskDate.toLocaleDateString(undefined, { day: "numeric", month: "short", year: taskDate.getFullYear() === getToday().getFullYear() ? undefined : "numeric" }) : task.date;
+                    const timeLabel = task.time ? new Date(2000, 0, 1, ...task.time.split(":").map(Number)).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" }) : "";
+                    scheduleMeta.textContent = `${dateLabel}${timeLabel ? " · " + timeLabel : ""}`;
+                    content.appendChild(scheduleMeta);
+                }
                 setTimeout(() => autoGrowTaskText(text), 0);
                 const canMoveTask = TASK_CONTEXTS.includes(activeTaskContext);
                 const moveTargets = activeTaskContext === "Inbox" || activeTaskContext === "Today"
@@ -4170,9 +4216,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 row.classList.toggle("no-move", !canMoveTask);
                 const move = document.createElement("button");
                 move.type = "button";
-                move.className = "plain-btn task-move";
-                move.textContent = "Move";
+                move.className = "plain-btn icon-btn task-move";
+                move.textContent = "⇄";
                 move.title = "Move task to another list";
+                move.setAttribute("aria-label", move.title);
                 move.hidden = !canMoveTask;
                 const schedule = document.createElement("button");
                 schedule.type = "button";
@@ -4232,8 +4279,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                     if (task.date === toKey(selectedDate)) loadSelectedDate();
                     renderGlobalTasks();
                 });
-                if (canMoveTask) row.append(checkbox, highlight, text, schedule, move, del, moveMenu);
-                else row.append(checkbox, highlight, text, schedule, del);
+                if (canMoveTask) row.append(checkbox, highlight, content, schedule, move, del, moveMenu);
+                else row.append(checkbox, highlight, content, schedule, del);
                 globalTaskList.appendChild(row);
             });
         }
