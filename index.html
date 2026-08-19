@@ -3014,6 +3014,48 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
 .task-text[readonly] { cursor: pointer; }
 .task-text[readonly]:hover, .task-text[readonly]:focus { color: #41594d; background: var(--soft) !important; border-radius: 6px; outline: 0; }
 .task-row-actions .task-tag-btn { margin-top: 0; }
+
+/* Task card click target, aligned tags/actions and consistent add controls */
+.task-row { cursor: pointer; }
+.task-row:focus-visible { outline: 2px solid rgba(123, 146, 133, .48); outline-offset: 2px; }
+.task-row-actions { flex-wrap: wrap; }
+.task-row-actions .task-tags-meta { flex: 1 1 auto; margin: 0 auto 0 0; align-items: center; }
+.task-row-actions .task-tag-chip { min-height: 20px; }
+#newTaskBtn,
+#addEventBtn,
+#eventsPanelAddBtn,
+#addNoteBtn,
+#mobileNotesAddBtn,
+#labelAddBtn {
+  min-height: 28px;
+  padding: 4px 9px;
+  border: 1px solid #e2cd61;
+  border-radius: 9px;
+  background: #FFEE8C;
+  color: #4f4518;
+  font-weight: 750;
+  line-height: 1;
+  text-decoration: none !important;
+  box-shadow: 0 2px 7px rgba(122, 106, 42, .11);
+}
+#newTaskBtn:hover,
+#newTaskBtn:focus-visible,
+#addEventBtn:hover,
+#addEventBtn:focus-visible,
+#eventsPanelAddBtn:hover,
+#eventsPanelAddBtn:focus-visible,
+#addNoteBtn:hover,
+#addNoteBtn:focus-visible,
+#mobileNotesAddBtn:hover,
+#mobileNotesAddBtn:focus-visible,
+#labelAddBtn:hover,
+#labelAddBtn:focus-visible {
+  background: #f8e46f;
+  border-color: #d6bd42;
+  color: #3f3713;
+}
+#addNoteBtn,
+#mobileNotesAddBtn { padding: 0; }
 </style>
 </head>
 <body>
@@ -4332,6 +4374,9 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             tasksToRender.forEach(task => {
                 const row = document.createElement("div");
                 row.className = "task-row";
+                row.tabIndex = 0;
+                row.setAttribute("role", "button");
+                row.setAttribute("aria-label", `Open task: ${task.text}`);
                 row.classList.toggle("done", task.done);
                 row.classList.toggle("highlighted", task.highlighted);
                 const checkbox = document.createElement("input");
@@ -4356,12 +4401,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 content.className = "task-content";
                 content.appendChild(text);
                 const taskTags = normalizeTaskTags(task.tags);
-                if (taskTags.length) {
-                    const tagsMeta = document.createElement("div"); tagsMeta.className = "task-tags-meta";
-                    taskTags.slice(0, 2).forEach(tag => { const chip = document.createElement("span"); chip.className = "task-tag-chip"; chip.textContent = tag; tagsMeta.appendChild(chip); });
-                    if (taskTags.length > 2) { const more = document.createElement("span"); more.className = "task-tag-more"; more.textContent = `+${taskTags.length - 2}`; more.title = taskTags.slice(2).join(", "); tagsMeta.appendChild(more); }
-                    content.appendChild(tagsMeta);
-                }
+                const tagsMeta = document.createElement("div");
+                tagsMeta.className = "task-tags-meta";
+                taskTags.slice(0, 2).forEach(tag => { const chip = document.createElement("span"); chip.className = "task-tag-chip"; chip.textContent = tag; tagsMeta.appendChild(chip); });
+                if (taskTags.length > 2) { const more = document.createElement("span"); more.className = "task-tag-more"; more.textContent = `+${taskTags.length - 2}`; more.title = taskTags.slice(2).join(", "); tagsMeta.appendChild(more); }
+                tagsMeta.hidden = taskTags.length === 0;
                 if (task.date) {
                     const scheduleMeta = document.createElement("div");
                     scheduleMeta.className = "task-schedule-meta";
@@ -4419,8 +4463,9 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 });
                 highlight.addEventListener("click", () => toggleTaskHighlight(task.id));
                 const openTaskTextEditor = () => openTaskEditor(task.id, activeTaskContext, "text");
-                text.addEventListener("click", openTaskTextEditor);
-                text.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openTaskTextEditor(); } });
+                const isTaskCardControl = target => Boolean(target.closest("button, input, select, a, .task-move-menu"));
+                row.addEventListener("click", event => { if (!isTaskCardControl(event.target)) openTaskTextEditor(); });
+                row.addEventListener("keydown", event => { if ((event.key === "Enter" || event.key === " ") && event.target === row) { event.preventDefault(); openTaskTextEditor(); } });
                 tags.addEventListener("click", () => openTaskEditor(task.id, activeTaskContext, "tags"));
                 schedule.addEventListener("click", () => openTaskEditor(task.id, activeTaskContext, "date"));
                 move.addEventListener("click", event => {
@@ -4440,8 +4485,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 });
                 const rowActions = document.createElement("div");
                 rowActions.className = "task-row-actions";
-                if (canMoveTask) rowActions.append(tags, schedule, move, del);
-                else rowActions.append(tags, schedule, del);
+                if (canMoveTask) rowActions.append(tagsMeta, tags, schedule, move, del);
+                else rowActions.append(tagsMeta, tags, schedule, del);
                 if (canMoveTask) row.append(checkbox, highlight, content, rowActions, moveMenu);
                 else row.append(checkbox, highlight, content, rowActions);
                 globalTaskList.appendChild(row);
