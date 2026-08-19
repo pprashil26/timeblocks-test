@@ -2992,6 +2992,21 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
     padding-left: 46px;
   }
 }
+
+/* Time-based Task lists and Task-only tags */
+.task-filter-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 7px; align-items: center; margin: -1px 0 7px; }
+.task-filter-label { color: var(--muted); font-size: 10.5px; font-weight: 650; }
+.task-tag-filter { width: 100%; min-height: 29px; padding: 3px 26px 3px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--page); color: var(--ink); font-size: 11px; }
+.task-tags-meta { display: flex; min-width: 0; flex-wrap: wrap; gap: 3px; margin-top: 2px; }
+.task-tag-chip { display: inline-flex; min-height: 18px; align-items: center; padding: 1px 6px; border: 1px solid #d9dfda; border-radius: 999px; background: #f5f7f4; color: #5d675f; font-size: 9px; font-weight: 650; line-height: 1.1; }
+.task-tag-more { color: var(--muted); font-size: 9px; font-weight: 650; align-self: center; }
+.task-editor-tags-help { margin-top: -3px; color: var(--muted); font-size: 9.5px; line-height: 1.25; }
+.task-empty { color: var(--muted); text-align: center; padding: 15px 8px; font-size: var(--font-sm); }
+@media (max-width: 759px) {
+  .task-filter-row { margin-bottom: 6px; }
+  .task-tag-filter { min-height: 34px; font-size: 13px; }
+  .task-tag-chip, .task-tag-more { font-size: 9.5px; }
+}
 </style>
 </head>
 <body>
@@ -3110,6 +3125,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
       <div class="tasks-panel" id="globalTasksPanel" hidden>
         <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" title="Focus on Tasks">⛶</button><button class="plain-btn" id="sortTasksBtn" type="button">Sort</button><span> · </span><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button></span></div>
         <div class="task-contexts" id="taskContexts"></div>
+        <div class="task-filter-row"><label class="task-filter-label" for="taskTagFilter">Tags</label><select class="task-tag-filter" id="taskTagFilter" aria-label="Filter current task list by tag"><option value="">All tags</option></select></div>
         <div class="task-list" id="globalTaskList"></div>
         <div class="task-input"><input id="globalTaskInput" type="text" placeholder="+ Add task..." autocomplete="off" /><button class="plain-btn task-add-btn" id="taskAddBtn" type="button">Add</button></div>
       </div>
@@ -3161,6 +3177,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
       <div class="task-editor-body">
         <label for="taskEditorText">Task</label><input id="taskEditorText" type="text" maxlength="240" autocomplete="off" />
         <label for="taskEditorContext">List</label><select id="taskEditorContext"></select>
+        <label for="taskEditorTags">Tags <span class="event-optional">optional</span></label><input id="taskEditorTags" type="text" maxlength="240" list="taskTagSuggestions" placeholder="Work, Home, Waiting..." autocomplete="off" /><datalist id="taskTagSuggestions"></datalist><div class="task-editor-tags-help">Separate multiple tags with commas. Task tags are independent from Note labels.</div>
         <div class="task-editor-date-row"><div><label for="taskEditorDate">Date <span class="event-optional">optional</span></label><input id="taskEditorDate" type="date" /></div><div><label for="taskEditorTime">Time <span class="event-optional">optional</span></label><input id="taskEditorTime" type="time" /></div></div>
       </div>
       <div class="task-editor-actions"><button class="plain-btn delete-note-btn" id="deleteTaskEditorBtn" type="button">Delete</button><span></span><button class="plain-btn" id="cancelTaskEditorBtn" type="button">Cancel</button><button class="plain-btn task-save-btn" id="saveTaskEditorBtn" type="button">Save</button></div>
@@ -3171,7 +3188,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
   </div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true">
-    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by context.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Use Compact to show more notes and the star to show pinned notes only.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Home, Work, Projects, and Today.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>How to use</h3><ol><li>Use + Inbox to capture a task and open the Tasks panel.</li><li>Use + Activity to record an Activity entry.</li><li>Use Planner to open Calendar and Today’s plan.</li><li>Use Notes to open notes for the selected date.</li><li>Use ? to open Help at any time.</li><li>Use Export in the homepage footer regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>In Tasks, switch between Inbox, Home, Work, Projects, and Today.</li><li>In Notes, use the star to show pinned notes only and Compact to show more entries.</li><li>Select the required date in Planner before opening date-specific Notes.</li><li>Import and Last import are available in the homepage footer.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></div></section>
+    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by time horizon and filter them with Task tags.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Use Compact to show more notes and the star to show pinned notes only.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Today, This month, and Someday. Add Task tags such as Home, Work, or Waiting for context.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>How to use</h3><ol><li>Use + Inbox to capture a task and open the Tasks panel.</li><li>Use + Activity to record an Activity entry.</li><li>Use Planner to open Calendar and Today’s plan.</li><li>Use Notes to open notes for the selected date.</li><li>Use ? to open Help at any time.</li><li>Use Export in the homepage footer regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>In Tasks, switch between Inbox, Today, This month, and Someday, then filter the current list by tag.</li><li>In Notes, use the star to show pinned notes only and Compact to show more entries.</li><li>Select the required date in Planner before opening date-specific Notes.</li><li>Import and Last import are available in the homepage footer.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></div></section>
   </div>
 
   <script>
@@ -3207,7 +3224,8 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         const CALENDAR_COLLAPSED_KEY = "timeblocks:calendarCollapsed";
         const QUOTE_KEY = "timeblocks:favouriteQuote";
         const LAST_IMPORT_KEY = "timeblocks:lastImportAt";
-        const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects", "Today"];
+        const TASK_CONTEXTS = ["Inbox", "Today", "This month", "Someday"];
+        const LEGACY_TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects", "Today"];
         const el = id => document.getElementById(id);
         const globalSearchInput = el("globalSearchInput");
         const globalSearchClear = el("globalSearchClear");
@@ -3311,12 +3329,15 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         const expandedNoteShell = el("expandedNoteShell");
         const globalTasksPanel = el("globalTasksPanel");
         const taskContexts = el("taskContexts");
+        const taskTagFilter = el("taskTagFilter");
         const globalTaskList = el("globalTaskList");
         const globalTaskInput = el("globalTaskInput");
         const taskAddBtn = el("taskAddBtn");
         const taskModal = el("taskModal");
         const taskEditorText = el("taskEditorText");
         const taskEditorContext = el("taskEditorContext");
+        const taskEditorTags = el("taskEditorTags");
+        const taskTagSuggestions = el("taskTagSuggestions");
         const taskEditorDate = el("taskEditorDate");
         const taskEditorTime = el("taskEditorTime");
         const closeTaskEditorBtn = el("closeTaskEditorBtn");
@@ -3395,8 +3416,10 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         let activityEntries = normalizeActivityEntries(loadJson(ACTIVITY_KEY, []));
         let activityHideCompleted = localStorage.getItem(ACTIVITY_HIDE_COMPLETED_KEY) === "true";
         let activeTaskContext = localStorage.getItem(TASK_CONTEXT_KEY) || "Inbox";
-        if (!TASK_CONTEXTS.includes(activeTaskContext))
-            activeTaskContext = "Inbox";
+        if (activeTaskContext === "Home" || activeTaskContext === "Work" || activeTaskContext === "Projects") activeTaskContext = "This month";
+        if (!TASK_CONTEXTS.includes(activeTaskContext)) activeTaskContext = "Inbox";
+        let activeTaskTagFilter = "";
+        saveTasks();
         let expandedNoteLargeFont = localStorage.getItem(NOTE_FONT_KEY) === "true";
         let expandedNoteWide = localStorage.getItem(NOTE_WIDE_KEY) === "true";
         let favouriteQuote = localStorage.getItem(QUOTE_KEY) || "";
@@ -3558,7 +3581,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             const results = [];
             if (parsed.types.has("notes")) allDateKeys().forEach(dateKey => { const data = readDateData(dateKey); normalizeNotes(data.notes).filter(note => !note.deleted).forEach(note => { if (noteMatchesGlobalSearch(note, parsed.cleanQuery)) results.push({ type: "note", dateKey, note }); }); });
             if (parsed.types.has("events")) events.forEach(event => { if (event.title.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "event", event }); });
-            if (parsed.types.has("tasks")) TASK_CONTEXTS.forEach(context => { (globalTasks[context] || []).forEach(task => { if ((task.text || "").toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "task", context, task }); }); });
+            if (parsed.types.has("tasks")) TASK_CONTEXTS.forEach(context => { (globalTasks[context] || []).forEach(task => { if (`${task.text || ""} ${normalizeTaskTags(task.tags).join(" ")}`.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "task", context, task }); }); });
             return { results, parsed };
         }
         function normalizeEvents(raw) {
@@ -3696,7 +3719,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             editingTaskId = found.task.id; editingTaskContext = found.context;
             taskEditorText.value = found.task.text; taskEditorContext.innerHTML = "";
             TASK_CONTEXTS.forEach(name => { const option = document.createElement("option"); option.value = name; option.textContent = name; taskEditorContext.appendChild(option); });
-            taskEditorContext.value = found.context; taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = found.task.date || ""; taskEditorTime.value = found.task.time || "";
+            taskEditorContext.value = found.context; taskEditorTags.value = normalizeTaskTags(found.task.tags).join(", "); updateTaskTagSuggestions(); taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = found.task.date || ""; taskEditorTime.value = found.task.time || "";
             taskModal.classList.add("open"); taskModal.setAttribute("aria-hidden", "false"); setTimeout(() => taskEditorText.focus(), 0);
         }
         function closeTaskEditor() { taskModal.classList.remove("open"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; }
@@ -3707,7 +3730,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             if (date && (!fromKey(date) || !isWithinRange(fromKey(date)))) { alert("Please select a valid task date."); return; }
             if (time && !date) { alert("Please select a date for the task time."); return; }
             const previous = { ...found.task }; removeLinkedTaskTimeblock(previous);
-            found.task.text = text; found.task.date = date; found.task.time = time;
+            found.task.text = text; found.task.tags = normalizeTaskTags(taskEditorTags.value.split(",")); found.task.date = date; found.task.time = time;
             const targetContext = TASK_CONTEXTS.includes(taskEditorContext.value) ? taskEditorContext.value : found.context;
             if (targetContext !== found.context) { globalTasks[found.context] = globalTasks[found.context].filter(item => item.id !== found.task.id); globalTasks[targetContext].unshift(found.task); activeTaskContext = targetContext; localStorage.setItem(TASK_CONTEXT_KEY, targetContext); }
             saveTasks(); populateTaskTimeblock(found.task); closeTaskEditor(); renderGlobalTasks();
@@ -4114,22 +4137,31 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
 
   URL.revokeObjectURL(url);
 }
+        function normalizeTaskTags(rawTags) {
+            if (!Array.isArray(rawTags)) return [];
+            const seen = new Set();
+            return rawTags.map(tag => String(tag || "").trim()).filter(tag => { const key = tag.toLowerCase(); if (!tag || seen.has(key)) return false; seen.add(key); return true; });
+        }
         function normalizeTaskLists(raw) {
             const empty = Object.fromEntries(TASK_CONTEXTS.map(context => [context, []]));
-            if (Array.isArray(raw)) {
-                empty.Inbox = raw.map(task => normalizeTask(task));
+            if (Array.isArray(raw)) { empty.Inbox = raw.map(task => normalizeTask(task)); return empty; }
+            if (!raw || typeof raw !== "object") return empty;
+            const hasLegacyLists = ["Home", "Work", "Projects"].some(context => Array.isArray(raw[context]));
+            if (hasLegacyLists) {
+                empty.Inbox = (raw.Inbox || []).map(task => normalizeTask(task));
+                empty.Today = (raw.Today || []).map(task => normalizeTask(task));
+                ["Home", "Work", "Projects"].forEach(context => {
+                    (raw[context] || []).forEach(task => { const migrated = normalizeTask(task); migrated.tags = normalizeTaskTags(migrated.tags.concat(context)); empty["This month"].push(migrated); });
+                });
+                (raw["This month"] || []).forEach(task => empty["This month"].push(normalizeTask(task)));
+                (raw.Someday || []).forEach(task => empty.Someday.push(normalizeTask(task)));
                 return empty;
             }
-            if (raw && typeof raw === "object") {
-                TASK_CONTEXTS.forEach(context => {
-                    if (Array.isArray(raw[context]))
-                        empty[context] = raw[context].map(task => normalizeTask(task));
-                });
-            }
+            TASK_CONTEXTS.forEach(context => { if (Array.isArray(raw[context])) empty[context] = raw[context].map(task => normalizeTask(task)); });
             return empty;
         }
         function normalizeTask(task) {
-            return { id: task.id || createId("task"), text: task.text || "", done: Boolean(task.done), highlighted: Boolean(task.highlighted), date: fromKey(task.date) ? task.date : "", time: /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "" };
+            return { id: task.id || createId("task"), text: task.text || "", done: Boolean(task.done), highlighted: Boolean(task.highlighted), tags: normalizeTaskTags(task.tags), date: fromKey(task.date) ? task.date : "", time: /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "" };
         }
         function orderTasks(taskList) {
             const list = (taskList || []).map(task => {
@@ -4139,11 +4171,28 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                     task.text = "";
                 task.done = Boolean(task.done);
                 task.highlighted = Boolean(task.highlighted);
+                task.tags = normalizeTaskTags(task.tags);
                 task.date = fromKey(task.date) ? task.date : "";
                 task.time = /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "";
                 return task;
             });
             return list.filter(task => task.highlighted).concat(list.filter(task => !task.highlighted));
+        }
+        function allTaskTags() {
+            const tags = new Map();
+            TASK_CONTEXTS.forEach(context => (globalTasks[context] || []).forEach(task => normalizeTaskTags(task.tags).forEach(tag => tags.set(tag.toLowerCase(), tag))));
+            return Array.from(tags.values()).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+        }
+        function updateTaskTagFilter() {
+            const tags = allTaskTags(); const current = activeTaskTagFilter;
+            taskTagFilter.innerHTML = '<option value="">All tags</option>';
+            tags.forEach(tag => { const option = document.createElement("option"); option.value = tag; option.textContent = tag; taskTagFilter.appendChild(option); });
+            activeTaskTagFilter = tags.some(tag => tag.toLowerCase() === current.toLowerCase()) ? current : "";
+            taskTagFilter.value = activeTaskTagFilter;
+        }
+        function updateTaskTagSuggestions() {
+            taskTagSuggestions.innerHTML = "";
+            allTaskTags().forEach(tag => { const option = document.createElement("option"); option.value = tag; taskTagSuggestions.appendChild(option); });
         }
         function saveTasks() {
             TASK_CONTEXTS.forEach(context => {
@@ -4152,10 +4201,12 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             localStorage.setItem(TASKS_KEY, JSON.stringify(globalTasks));
         }
         function activeTasks() { return orderTasks(globalTasks[activeTaskContext] || []); }
+        function visibleTasks() { return activeTasks().filter(task => !activeTaskTagFilter || normalizeTaskTags(task.tags).some(tag => tag.toLowerCase() === activeTaskTagFilter.toLowerCase())); }
         function setActiveTaskContext(context) {
             if (!TASK_CONTEXTS.includes(context))
                 return;
             activeTaskContext = context;
+            activeTaskTagFilter = "";
             localStorage.setItem(TASK_CONTEXT_KEY, context);
             renderGlobalTasks();
         }
@@ -4241,8 +4292,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         }
         function renderGlobalTasks() {
             renderTaskContexts();
+            updateTaskTagFilter();
             globalTaskList.innerHTML = "";
-            activeTasks().forEach(task => {
+            const tasksToRender = visibleTasks();
+            tasksToRender.forEach(task => {
                 const row = document.createElement("div");
                 row.className = "task-row";
                 row.classList.toggle("done", task.done);
@@ -4270,6 +4323,13 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 const content = document.createElement("div");
                 content.className = "task-content";
                 content.appendChild(text);
+                const taskTags = normalizeTaskTags(task.tags);
+                if (taskTags.length) {
+                    const tagsMeta = document.createElement("div"); tagsMeta.className = "task-tags-meta";
+                    taskTags.slice(0, 2).forEach(tag => { const chip = document.createElement("span"); chip.className = "task-tag-chip"; chip.textContent = tag; tagsMeta.appendChild(chip); });
+                    if (taskTags.length > 2) { const more = document.createElement("span"); more.className = "task-tag-more"; more.textContent = `+${taskTags.length - 2}`; more.title = taskTags.slice(2).join(", "); tagsMeta.appendChild(more); }
+                    content.appendChild(tagsMeta);
+                }
                 if (task.date) {
                     const scheduleMeta = document.createElement("div");
                     scheduleMeta.className = "task-schedule-meta";
@@ -4281,9 +4341,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 }
                 setTimeout(() => autoGrowTaskText(text), 0);
                 const canMoveTask = TASK_CONTEXTS.includes(activeTaskContext);
-                const moveTargets = activeTaskContext === "Inbox" || activeTaskContext === "Today"
-                    ? TASK_CONTEXTS.filter(context => context !== activeTaskContext)
-                    : ["Today"];
+                const moveTargets = TASK_CONTEXTS.filter(context => context !== activeTaskContext);
                 row.classList.toggle("no-move", !canMoveTask);
                 const move = document.createElement("button");
                 move.type = "button";
@@ -4358,12 +4416,13 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 else row.append(checkbox, highlight, content, rowActions);
                 globalTaskList.appendChild(row);
             });
+            if (!tasksToRender.length) { const empty = document.createElement("div"); empty.className = "task-empty"; empty.textContent = activeTaskTagFilter ? `No tasks tagged “${activeTaskTagFilter}” in ${activeTaskContext}` : `No tasks in ${activeTaskContext}`; globalTaskList.appendChild(empty); }
         }
         function addGlobalTask() {
             const text = globalTaskInput.value.trim();
             if (!text)
                 return;
-            globalTasks[activeTaskContext].push({ id: createId("task"), text, done: false, highlighted: false, date: "", time: "" });
+            globalTasks[activeTaskContext].push({ id: createId("task"), text, done: false, highlighted: false, tags: [], date: "", time: "" });
             globalTaskInput.value = "";
             saveTasks();
             renderGlobalTasks();
@@ -4436,7 +4495,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 const preview = document.createElement("div"); preview.className = "global-result-preview";
                 if (result.type === "note") { const d = fromKey(result.dateKey); typeLine.textContent = "Note"; dateLine.textContent = d ? displayDate(d) : result.dateKey; titleLine.textContent = `${result.note.pinned ? "★ " : ""}${result.note.title || "Untitled"}`; preview.textContent = globalPreview(result.note.body); button.addEventListener("click", () => openGlobalResult(result.dateKey, result.note.id)); }
                 else if (result.type === "event") { const d = fromKey(result.event.date); const phase = eventPhase(result.event); typeLine.textContent = "Event"; dateLine.textContent = `${d ? displayDate(d) : result.event.date} · ${eventTimeLabel(result.event)}`; titleLine.textContent = result.event.title; preview.textContent = phase === "today" ? "Today" : phase.charAt(0).toUpperCase() + phase.slice(1); button.addEventListener("click", () => openGlobalEventResult(result.event.id)); }
-                else { typeLine.textContent = `Task · ${result.context}`; dateLine.textContent = result.task.done ? "Completed" : "Open"; titleLine.textContent = `${result.task.highlighted ? "★ " : ""}${result.task.text || "Task"}`; preview.textContent = `Open ${result.context} tasks`; button.addEventListener("click", () => openGlobalTaskResult(result.context)); }
+                else { typeLine.textContent = `Task · ${result.context}`; dateLine.textContent = result.task.done ? "Completed" : "Open"; titleLine.textContent = `${result.task.highlighted ? "★ " : ""}${result.task.text || "Task"}`; preview.textContent = normalizeTaskTags(result.task.tags).length ? normalizeTaskTags(result.task.tags).join(" · ") : `Open ${result.context} tasks`; button.addEventListener("click", () => openGlobalTaskResult(result.context, result.task.id)); }
                 button.append(typeLine, dateLine, titleLine, preview); globalResultsList.appendChild(button);
             });
         }
@@ -4452,7 +4511,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             setTimeout(() => openExpandedNote(noteId), 0);
         }
         function openGlobalEventResult(eventId) { const event = events.find(item => item.id === eventId); if (!event) return; const targetDate = fromKey(event.date); clearGlobalSearch(); if (targetDate) selectDate(targetDate, true); setTimeout(() => openEventEditor(event.id), 0); }
-        function openGlobalTaskResult(context) { if (!TASK_CONTEXTS.includes(context)) return; clearGlobalSearch(); openTasks(); activeTaskContext = context; localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext); renderGlobalTasks(); }
+        function openGlobalTaskResult(context, taskId = null) { if (!TASK_CONTEXTS.includes(context)) return; clearGlobalSearch(); openTasks(); activeTaskContext = context; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext); renderGlobalTasks(); if (taskId) setTimeout(() => openTaskEditor(taskId, context), 0); }
         function readDateData(key) {
             try {
                 return JSON.parse(localStorage.getItem(dateStorageKey(key))) || {};
@@ -4538,8 +4597,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 activityEntries = normalizeActivityEntries(backup.activity);
                 saveActivity();
             }
-            if (backup.preferences && TASK_CONTEXTS.includes(backup.preferences.activeTaskContext)) {
-                activeTaskContext = backup.preferences.activeTaskContext;
+            if (backup.preferences && (TASK_CONTEXTS.includes(backup.preferences.activeTaskContext) || LEGACY_TASK_CONTEXTS.includes(backup.preferences.activeTaskContext))) {
+                activeTaskContext = ["Home", "Work", "Projects"].includes(backup.preferences.activeTaskContext) ? "This month" : backup.preferences.activeTaskContext;
                 localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext);
             }
             renderGlobalTasks();
@@ -6217,6 +6276,7 @@ ${body}` : title };
         sortTasksBtn.addEventListener("click", sortTasks);
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
         taskAddBtn.addEventListener("click", addGlobalTask);
+        taskTagFilter.addEventListener("change", () => { activeTaskTagFilter = taskTagFilter.value; renderGlobalTasks(); });
         closeTaskEditorBtn.addEventListener("click", closeTaskEditor);
         cancelTaskEditorBtn.addEventListener("click", closeTaskEditor);
         saveTaskEditorBtn.addEventListener("click", saveTaskFromEditor);
