@@ -2843,9 +2843,24 @@ button.note-label-chip {
   #noteModal:has(#activityPanel.open) .activity-text { min-height: 24px !important; padding: 1px 0 !important; line-height: 1.25; }
   #noteModal:has(#activityPanel.open) .activity-time { padding: 0; margin-top: -1px; font-size: 9px; line-height: 1; }
 }
-/* Timed Event-generated Planner entries */
-textarea.event-timeblock { background: #dceaf7 !important; border-left: 3px solid #a9c9e5 !important; color: #35566f; font-weight: 650; }
-textarea.event-timeblock:focus { background: #cfe2f3 !important; }
+/* Linked timed Event entries in Planner */
+textarea.event-timeblock {
+  background: #dceaf7 !important;
+  border-left: 3px solid #a9c9e5 !important;
+  color: #35566f;
+  font-weight: 650;
+  cursor: pointer;
+}
+textarea.event-timeblock:hover,
+textarea.event-timeblock:focus {
+  background: #cfe2f3 !important;
+  outline: 2px solid rgba(102, 160, 205, .42);
+  outline-offset: -2px;
+}
+.slot:has(textarea.event-timeblock) .drag-handle {
+  cursor: default;
+  opacity: .3;
+}
 </style>
 </head>
 <body>
@@ -3442,7 +3457,10 @@ textarea.event-timeblock:focus { background: #cfe2f3 !important; }
         function normalizeEventTimeblocks(raw) {
             if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
             const clean = {};
-            Object.entries(raw).forEach(([eventId, link]) => { if (link && typeof link.time === "string" && typeof link.text === "string") clean[eventId] = { time: link.time, text: link.text }; });
+            Object.entries(raw).forEach(([eventId, link]) => {
+                if (link && typeof link.time === "string" && typeof link.text === "string")
+                    clean[eventId] = { time: link.time, text: link.text };
+            });
             return clean;
         }
         function removeLinkedEventTimeblock(event) {
@@ -3454,7 +3472,9 @@ textarea.event-timeblock:focus { background: #cfe2f3 !important; }
             data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
             if (data.entries[link.time] === link.text) delete data.entries[link.time];
             if (data.timeblockStatuses && typeof data.timeblockStatuses === "object") delete data.timeblockStatuses[link.time];
-            delete links[event.id]; data.eventTimeblocks = links; writeDateData(event.date, data);
+            delete links[event.id];
+            data.eventTimeblocks = links;
+            writeDateData(event.date, data);
         }
         function populateEventTimeblock(event, showOccupiedMessage = true) {
             const time = eventTimeblockTime(event);
@@ -3466,14 +3486,13 @@ textarea.event-timeblock:focus { background: #cfe2f3 !important; }
                 if (showOccupiedMessage) alert(`Event saved, but ${eventTimeLabel(event)} is in an occupied 30-minute block.`);
                 return false;
             }
-            const text = eventTimeblockText(event); data.entries[time] = text;
+            const text = eventTimeblockText(event);
+            data.entries[time] = text;
             if (data.timeblockStatuses && typeof data.timeblockStatuses === "object") delete data.timeblockStatuses[time];
-            links[event.id] = { time, text }; data.eventTimeblocks = links; writeDateData(event.date, data); return true;
-        }
-        function detachEventTimeblockAtTime(timeId) {
-            const links = normalizeEventTimeblocks(saved.eventTimeblocks); let changed = false;
-            Object.keys(links).forEach(eventId => { if (links[eventId].time === timeId) { delete links[eventId]; changed = true; } });
-            if (changed) saved.eventTimeblocks = links;
+            links[event.id] = { time, text };
+            data.eventTimeblocks = links;
+            writeDateData(event.date, data);
+            return true;
         }
         function renderSelectedDateEvents() {
             const selectedKey = toKey(selectedDate);
@@ -4712,14 +4731,28 @@ ${body}` : title };
             box.dataset.time = timeId;
             box.value = (saved.entries && saved.entries[timeId]) || saved[timeId] || "";
             const eventLink = Object.entries(normalizeEventTimeblocks(saved.eventTimeblocks)).find(([, link]) => link.time === timeId && link.text === box.value);
-            if (eventLink) {
+            const linkedEvent = eventLink ? events.find(event => event.id === eventLink[0]) : null;
+            if (linkedEvent) {
                 box.classList.add("event-timeblock");
-                box.dataset.eventId = eventLink[0];
+                box.dataset.eventId = linkedEvent.id;
+                box.readOnly = true;
+                box.title = `Open Event: ${linkedEvent.title}`;
+                box.setAttribute("aria-label", box.title);
+                handle.draggable = false;
+                handle.title = "Edit this time in the Event editor";
+                const openLinkedEvent = () => openEventEditor(linkedEvent.id);
+                box.addEventListener("click", openLinkedEvent);
+                box.addEventListener("keydown", event => {
+                    if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        openLinkedEvent();
+                    }
+                });
             }
             box.placeholder = "Add...";
             box.setAttribute("aria-label", `Entry for ${label.textContent}`);
             handle.addEventListener("dragstart", event => {
-                if (!isDesktopDragEnabled() || !box.value.trim()) {
+                if (!isDesktopDragEnabled() || box.classList.contains("event-timeblock") || !box.value.trim()) {
                     event.preventDefault();
                     return;
                 }
@@ -4749,9 +4782,6 @@ ${body}` : title };
                 event.preventDefault();
                 const sourceStatus = document.querySelector(`.timeblock-status[data-time="${draggedBox.dataset.time}"]`);
                 box.value = draggedBox.value;
-                detachEventTimeblockAtTime(draggedBox.dataset.time);
-                draggedBox.classList.remove("event-timeblock");
-                delete draggedBox.dataset.eventId;
                 draggedBox.value = "";
                 if (sourceStatus) {
                     statusButton.dataset.status = normalizeTimeblockStatus(sourceStatus.dataset.status); sourceStatus.dataset.status = "planned"; applyTimeblockStatus();
@@ -4762,16 +4792,9 @@ ${body}` : title };
                 save();
                 clearDropClasses();
             });
-            box.addEventListener("input", () => {
-                if (box.classList.contains("event-timeblock")) {
-                    detachEventTimeblockAtTime(timeId);
-                    box.classList.remove("event-timeblock");
-                    delete box.dataset.eventId;
-                }
-                autoGrow(box);
-                save();
-            });
+            box.addEventListener("input", () => { autoGrow(box); save(); });
             box.addEventListener("keydown", event => {
+                if (event.defaultPrevented || box.classList.contains("event-timeblock")) return;
                 if (event.key === "Enter" && !event.shiftKey) {
                     event.preventDefault();
                     const boxes = Array.from(document.querySelectorAll("textarea[data-time]"));
