@@ -2823,79 +2823,29 @@ button.note-label-chip {
 .activity-day { margin-top: 7px; }
 .activity-day-title { margin-bottom: 3px; }
 .activity-list { gap: 4px; }
-.activity-row {
-  grid-template-columns: 24px 24px minmax(0, 1fr) 24px;
-  grid-template-rows: auto auto;
-  grid-template-areas:
-    "status highlight text delete"
-    ". . time .";
-  align-items: start;
-  column-gap: 5px;
-  row-gap: 0;
-  min-height: 32px;
-  padding: 3px 5px;
-  border-radius: 10px;
-}
+.activity-row { grid-template-columns: 24px 24px minmax(0, 1fr) 24px; grid-template-rows: auto auto; grid-template-areas: "status highlight text delete" ". . time ."; align-items: start; column-gap: 5px; row-gap: 0; min-height: 32px; padding: 3px 5px; border-radius: 10px; }
 .activity-row-actions { display: contents; }
 .activity-status { grid-area: status; }
 .activity-highlight { grid-area: highlight; }
-.activity-text {
-  grid-area: text;
-  min-height: 24px !important;
-  padding: 2px 0 1px !important;
-  line-height: 1.25;
-}
+.activity-text { grid-area: text; min-height: 24px !important; padding: 2px 0 1px !important; line-height: 1.25; }
 .activity-delete { grid-area: delete; }
-.activity-time {
-  grid-area: time;
-  padding: 0;
-  margin-top: -1px;
-  font-size: 9px;
-  line-height: 1;
-  text-align: left;
-}
-.activity-status,
-.activity-highlight,
-.activity-delete { margin-top: 1px; }
-@media (min-width: 760px) {
-  .workspace-panel-host .activity-row,
-  body.workspace-focus-active .workspace-panel-host .activity-row {
-    grid-template-columns: 24px 24px minmax(0, 1fr) 24px;
-    column-gap: 5px;
-    padding: 3px 5px;
-  }
-}
+.activity-time { grid-area: time; padding: 0; margin-top: -1px; font-size: 9px; line-height: 1; text-align: left; }
+.activity-status, .activity-highlight, .activity-delete { margin-top: 1px; }
+@media (min-width: 760px) { .workspace-panel-host .activity-row, body.workspace-focus-active .workspace-panel-host .activity-row { grid-template-columns: 24px 24px minmax(0, 1fr) 24px; column-gap: 5px; padding: 3px 5px; } }
 @media (max-width: 759px) {
   #noteModal:has(#activityPanel.open) .activity-panel { padding: 7px 8px 9px; }
   #noteModal:has(#activityPanel.open) .activity-toolbar { margin-bottom: 5px; }
   #noteModal:has(#activityPanel.open) .activity-input { gap: 6px; margin-bottom: 6px; }
   #noteModal:has(#activityPanel.open) .activity-day { margin-top: 7px; }
   #noteModal:has(#activityPanel.open) .activity-list { gap: 3px; }
-  #noteModal:has(#activityPanel.open) .activity-row {
-    grid-template-columns: 24px 24px minmax(0, 1fr) 24px;
-    grid-template-rows: auto auto;
-    grid-template-areas:
-      "status highlight text delete"
-      ". . time .";
-    column-gap: 4px;
-    row-gap: 0;
-    min-height: 31px;
-    padding: 3px 5px;
-    border-radius: 9px;
-  }
+  #noteModal:has(#activityPanel.open) .activity-row { grid-template-columns: 24px 24px minmax(0, 1fr) 24px; grid-template-rows: auto auto; grid-template-areas: "status highlight text delete" ". . time ."; column-gap: 4px; row-gap: 0; min-height: 31px; padding: 3px 5px; border-radius: 9px; }
   #noteModal:has(#activityPanel.open) .activity-row-actions { display: contents; }
-  #noteModal:has(#activityPanel.open) .activity-text {
-    min-height: 24px !important;
-    padding: 1px 0 !important;
-    line-height: 1.25;
-  }
-  #noteModal:has(#activityPanel.open) .activity-time {
-    padding: 0;
-    margin-top: -1px;
-    font-size: 9px;
-    line-height: 1;
-  }
+  #noteModal:has(#activityPanel.open) .activity-text { min-height: 24px !important; padding: 1px 0 !important; line-height: 1.25; }
+  #noteModal:has(#activityPanel.open) .activity-time { padding: 0; margin-top: -1px; font-size: 9px; line-height: 1; }
 }
+/* Timed Event-generated Planner entries */
+textarea.event-timeblock { background: #dceaf7 !important; border-left: 3px solid #a9c9e5 !important; color: #35566f; font-weight: 650; }
+textarea.event-timeblock:focus { background: #cfe2f3 !important; }
 </style>
 </head>
 <body>
@@ -3480,6 +3430,51 @@ button.note-label-chip {
         function eventsForDate(dateKey) {
             return events.filter(event => event.date === dateKey).sort(compareEvents);
         }
+        function eventTimeblockTime(event) {
+            if (!event || !event.time) return "";
+            const [hour, minute] = event.time.split(":").map(Number);
+            const total = hour * 60 + minute;
+            if (total < 8 * 60 || total >= 24 * 60) return "";
+            const blockMinutes = Math.floor(total / 30) * 30;
+            return `${pad(Math.floor(blockMinutes / 60))}:${pad(blockMinutes % 60)}`;
+        }
+        function eventTimeblockText(event) { return `Event: ${event.title}`; }
+        function normalizeEventTimeblocks(raw) {
+            if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+            const clean = {};
+            Object.entries(raw).forEach(([eventId, link]) => { if (link && typeof link.time === "string" && typeof link.text === "string") clean[eventId] = { time: link.time, text: link.text }; });
+            return clean;
+        }
+        function removeLinkedEventTimeblock(event) {
+            if (!event) return;
+            const data = readDateData(event.date);
+            const links = normalizeEventTimeblocks(data.eventTimeblocks);
+            const link = links[event.id];
+            if (!link) return;
+            data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+            if (data.entries[link.time] === link.text) delete data.entries[link.time];
+            if (data.timeblockStatuses && typeof data.timeblockStatuses === "object") delete data.timeblockStatuses[link.time];
+            delete links[event.id]; data.eventTimeblocks = links; writeDateData(event.date, data);
+        }
+        function populateEventTimeblock(event, showOccupiedMessage = true) {
+            const time = eventTimeblockTime(event);
+            if (!time) return false;
+            const data = readDateData(event.date);
+            data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+            const links = normalizeEventTimeblocks(data.eventTimeblocks);
+            if ((data.entries[time] || "").trim()) {
+                if (showOccupiedMessage) alert(`Event saved, but ${eventTimeLabel(event)} is in an occupied 30-minute block.`);
+                return false;
+            }
+            const text = eventTimeblockText(event); data.entries[time] = text;
+            if (data.timeblockStatuses && typeof data.timeblockStatuses === "object") delete data.timeblockStatuses[time];
+            links[event.id] = { time, text }; data.eventTimeblocks = links; writeDateData(event.date, data); return true;
+        }
+        function detachEventTimeblockAtTime(timeId) {
+            const links = normalizeEventTimeblocks(saved.eventTimeblocks); let changed = false;
+            Object.keys(links).forEach(eventId => { if (links[eventId].time === timeId) { delete links[eventId]; changed = true; } });
+            if (changed) saved.eventTimeblocks = links;
+        }
         function renderSelectedDateEvents() {
             const selectedKey = toKey(selectedDate);
             const selectedEvents = eventsForDate(selectedKey);
@@ -3571,6 +3566,8 @@ button.note-label-chip {
         function saveEventFromEditor() {
             const title = eventTitleInput.value.trim();
             const date = eventDateInput.value;
+            const previousEvent = editingEventId ? events.find(item => item.id === editingEventId) : null;
+            const previousSnapshot = previousEvent ? { ...previousEvent } : null;
             if (!title) {
                 alert("Please enter an event title.");
                 eventTitleInput.focus();
@@ -3580,19 +3577,25 @@ button.note-label-chip {
                 alert("Please select a valid event date.");
                 return;
             }
+            let savedEvent;
             if (editingEventId) {
                 const current = events.find(item => item.id === editingEventId);
-                if (!current)
-                    return;
+                if (!current) return;
                 current.title = title;
                 current.date = date;
                 current.time = eventTimeInput.value || "";
+                savedEvent = current;
             }
             else {
-                events.push({ id: createId("event"), title, date, time: eventTimeInput.value || "", createdAt: new Date().toISOString() });
+                savedEvent = { id: createId("event"), title, date, time: eventTimeInput.value || "", createdAt: new Date().toISOString() };
+                events.push(savedEvent);
             }
             saveEvents();
+            if (previousSnapshot) removeLinkedEventTimeblock(previousSnapshot);
+            populateEventTimeblock(savedEvent);
             closeEventEditor();
+            if (toKey(selectedDate) === savedEvent.date || (previousSnapshot && toKey(selectedDate) === previousSnapshot.date))
+                loadSelectedDate();
             renderSelectedDateEvents();
             renderEvents();
             buildCalendar();
@@ -3602,9 +3605,13 @@ button.note-label-chip {
                 return;
             if (!confirm("Delete this event?"))
                 return;
+            const deletingEvent = events.find(event => event.id === editingEventId);
+            removeLinkedEventTimeblock(deletingEvent);
             events = events.filter(event => event.id !== editingEventId);
             saveEvents();
             closeEventEditor();
+            if (deletingEvent && toKey(selectedDate) === deletingEvent.date)
+                loadSelectedDate();
             renderSelectedDateEvents();
             renderEvents();
             buildCalendar();
@@ -4278,7 +4285,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             document.querySelectorAll(".timeblock-status[data-time]").forEach(button => { const status = normalizeTimeblockStatus(button.dataset.status); if (status !== "planned") statuses[button.dataset.time] = status; });
             return statuses;
         }
-        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses() }; }
+        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses(), eventTimeblocks: normalizeEventTimeblocks(saved.eventTimeblocks) }; }
         function save() { const data = currentDateDataFromState(); notes = data.notes; writeDateData(toKey(selectedDate), data); markDateHasData(toKey(selectedDate)); }
         function markDateHasData(key) {
             const button = document.querySelector(`.day-btn[data-date="${key}"]`);
@@ -4704,6 +4711,11 @@ ${body}` : title };
             const box = document.createElement("textarea");
             box.dataset.time = timeId;
             box.value = (saved.entries && saved.entries[timeId]) || saved[timeId] || "";
+            const eventLink = Object.entries(normalizeEventTimeblocks(saved.eventTimeblocks)).find(([, link]) => link.time === timeId && link.text === box.value);
+            if (eventLink) {
+                box.classList.add("event-timeblock");
+                box.dataset.eventId = eventLink[0];
+            }
             box.placeholder = "Add...";
             box.setAttribute("aria-label", `Entry for ${label.textContent}`);
             handle.addEventListener("dragstart", event => {
@@ -4737,6 +4749,9 @@ ${body}` : title };
                 event.preventDefault();
                 const sourceStatus = document.querySelector(`.timeblock-status[data-time="${draggedBox.dataset.time}"]`);
                 box.value = draggedBox.value;
+                detachEventTimeblockAtTime(draggedBox.dataset.time);
+                draggedBox.classList.remove("event-timeblock");
+                delete draggedBox.dataset.eventId;
                 draggedBox.value = "";
                 if (sourceStatus) {
                     statusButton.dataset.status = normalizeTimeblockStatus(sourceStatus.dataset.status); sourceStatus.dataset.status = "planned"; applyTimeblockStatus();
@@ -4747,7 +4762,15 @@ ${body}` : title };
                 save();
                 clearDropClasses();
             });
-            box.addEventListener("input", () => { autoGrow(box); save(); });
+            box.addEventListener("input", () => {
+                if (box.classList.contains("event-timeblock")) {
+                    detachEventTimeblockAtTime(timeId);
+                    box.classList.remove("event-timeblock");
+                    delete box.dataset.eventId;
+                }
+                autoGrow(box);
+                save();
+            });
             box.addEventListener("keydown", event => {
                 if (event.key === "Enter" && !event.shiftKey) {
                     event.preventDefault();
