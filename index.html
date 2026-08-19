@@ -1042,6 +1042,75 @@
   color: var(--ink);
   font-weight: 700;
 }
+@media (min-width: 760px) {
+  .workspace-tab {
+    border-color: transparent;
+    transition: background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+  }
+  #workspaceNotesTab {
+    background: #fff6d8;
+    border-color: #e5d28b;
+    color: #5c4b18;
+  }
+  #workspaceLabelsTab {
+    background: #eee8f6;
+    border-color: #cfc1e1;
+    color: #554766;
+  }
+  #workspaceTasksTab {
+    background: #fbe7d3;
+    border-color: #e5b98d;
+    color: #704a2d;
+  }
+  #workspaceActivityTab {
+    background: #ddf1e9;
+    border-color: #94c8b4;
+    color: #315f50;
+  }
+  #workspaceEventsTab {
+    background: #dceaf7;
+    border-color: #a9c9e5;
+    color: #35566f;
+  }
+  #workspaceNotesTab:hover,
+  #workspaceNotesTab:focus-visible,
+  #workspaceNotesTab.active {
+    background: #ffefb8;
+    border-color: #d6bd58;
+  }
+  #workspaceLabelsTab:hover,
+  #workspaceLabelsTab:focus-visible,
+  #workspaceLabelsTab.active {
+    background: #e3d8f0;
+    border-color: #b8a4d2;
+  }
+  #workspaceTasksTab:hover,
+  #workspaceTasksTab:focus-visible,
+  #workspaceTasksTab.active {
+    background: #f5dac0;
+    border-color: #dbaa78;
+  }
+  #workspaceActivityTab:hover,
+  #workspaceActivityTab:focus-visible,
+  #workspaceActivityTab.active {
+    background: #cee8de;
+    border-color: #83bca6;
+  }
+  #workspaceEventsTab:hover,
+  #workspaceEventsTab:focus-visible,
+  #workspaceEventsTab.active {
+    background: #cfe2f3;
+    border-color: #8fb8db;
+  }
+  .workspace-tab.active {
+    font-weight: 750;
+    box-shadow: inset 0 -2px 0 currentColor;
+  }
+  .workspace-tab:focus-visible {
+    outline: 2px solid rgba(85, 71, 102, .32);
+    outline-offset: 2px;
+  }
+}
 .workspace-panel-host {
   display: none;
 }
