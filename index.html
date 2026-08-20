@@ -3413,6 +3413,16 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   }
 }
 
+
+/* Desktop workspace Focus feature retired: Calendar visibility is controlled independently. */
+#focusViewBtn,
+#notesFocusBtn,
+#tasksFocusBtn,
+#activityFocusBtn,
+#eventsFocusBtn {
+  display: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -3486,7 +3496,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             <button class="plain-btn nav-day-btn" id="nextDayBtn" type="button">›</button>
           </div>
         </div>
-        <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button" title="Focus view" aria-label="Focus view">⛶</button><button class="plain-btn today-tasks-btn" id="todayTasksBtn" type="button" title="Open Today tasks">Today tasks</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
+        <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus view" aria-label="Focus view">⛶</button><button class="plain-btn today-tasks-btn" id="todayTasksBtn" type="button" title="Open Today tasks">Today tasks</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="events-strip" id="eventsStrip" aria-label="Events for selected date"><div class="events-strip-head"><span class="events-strip-title">Events</span><div class="events-strip-list" id="eventsStripList"></div><span class="events-strip-actions"><button class="plain-btn" id="viewEventsBtn" type="button">All events</button><button class="plain-btn event-add-link" id="addEventBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div></section>
@@ -3517,7 +3527,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         <div class="mobile-notes-date" id="mobileNotesDate">Notes for selected date</div>
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
-        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn notes-labels-btn" id="notesLabelsBtn" type="button" title="Filter notes by label">Labels</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
+        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn notes-labels-btn" id="notesLabelsBtn" type="button" title="Filter notes by label">Labels</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
         <div class="notes-focus-scope" id="notesFocusScope" aria-label="Notes scope"><button class="plain-btn notes-scope-btn active" id="notesScopeDateBtn" type="button">This date</button><button class="plain-btn notes-scope-btn" id="notesScopeAllBtn" type="button">All notes</button><select class="notes-label-filter" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
         <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-tool" id="mobileNotesLabelsBtn" type="button">Labels</button><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note to selected date">＋</button><span class="mobile-notes-more-wrap"><button class="plain-btn mobile-notes-more-btn" id="mobileNotesMoreBtn" type="button" aria-expanded="false">⋯</button><span class="mobile-notes-more-menu" id="mobileNotesMoreMenu"><button class="plain-btn" id="mobileNotesSortBtn" type="button">Sort A–Z</button><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button></span></span></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
@@ -3533,13 +3543,13 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
       <div class="note-label-chips expanded-label-chips" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
-        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" title="Focus on Tasks">⛶</button><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
+        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
         <div class="task-contexts" id="taskContexts"></div>
         <div class="task-filter-row"><label class="task-filter-label" for="taskTagFilter">Tags</label><select class="task-tag-filter" id="taskTagFilter" aria-label="Filter current task list by tag"><option value="">All tags</option></select></div>
         <div class="task-list" id="globalTaskList"></div>
       </div>
       <div class="activity-panel" id="activityPanel" hidden>
-        <div class="activity-toolbar"><span class="activity-title">Daily Activity Log</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="activityFocusBtn" type="button" title="Focus on Activity">⛶</button><button class="plain-btn icon-btn activity-filter-btn" id="activityFilterBtn" type="button" title="Hide completed activities" aria-pressed="false">✓</button><button
+        <div class="activity-toolbar"><span class="activity-title">Daily Activity Log</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="activityFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Activity">⛶</button><button class="plain-btn icon-btn activity-filter-btn" id="activityFilterBtn" type="button" title="Hide completed activities" aria-pressed="false">✓</button><button
   class="plain-btn"
   id="exportActivityBtn"
   type="button"
@@ -3551,7 +3561,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         <div id="activityLog"></div>
       </div>
       <div class="events-panel" id="eventsPanel" hidden>
-        <div class="events-toolbar"><span class="events-title">Events</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" title="Focus on Events">⛶</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link workspace-add-icon" id="eventsPanelAddBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div>
+        <div class="events-toolbar"><span class="events-title">Events</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Events">⛶</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link workspace-add-icon" id="eventsPanelAddBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div>
         <div id="eventsList"></div>
       </div>
       <div class="link-preview expanded-links" id="expandedLinks"></div>
@@ -3852,7 +3862,8 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         let notesSearchOpen = false;
         let notesSearchQuery = "";
         let notesBinOpen = false;
-        let notesFocusView = localStorage.getItem(NOTE_FOCUS_KEY) === "true";
+        let notesFocusView = false;
+        localStorage.removeItem(NOTE_FOCUS_KEY);
         let notesFocusAll = false;
         let mobileNotesAll = true;
         let notesLabelFilterValue = "";
@@ -6824,7 +6835,6 @@ ${body}` : title };
                 closeTaskMoveMenus();
         });
         sortNotesBtn.addEventListener("click", sortNotesByTitle);
-        notesFocusBtn.addEventListener("click", toggleNotesFocusView);
         notesScopeDateBtn.addEventListener("click", () => setNotesFocusScope(false));
         notesScopeAllBtn.addEventListener("click", () => setNotesFocusScope(true));
         notesLabelFilter.addEventListener("change", () => { notesLabelFilterValue = notesLabelFilter.value; renderNotes(); });
@@ -6845,9 +6855,6 @@ ${body}` : title };
         workspaceTasksTab.addEventListener("click", () => showDesktopWorkspacePanel("tasks"));
         workspaceActivityTab.addEventListener("click", () => showDesktopWorkspacePanel("activity"));
         workspaceEventsTab.addEventListener("click", () => showDesktopWorkspacePanel("events"));
-        tasksFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("tasks"));
-        activityFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("activity"));
-        eventsFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("events"));
 
         closePlannerCreateBtn.addEventListener("click", closePlannerCreate);
         cancelPlannerCreateBtn.addEventListener("click", closePlannerCreate);
@@ -6947,7 +6954,6 @@ ${body}` : title };
             markDateHasData(toKey(selectedDate));
             highlightCurrentTimeBlock();
         });
-        focusViewBtn.addEventListener("click", toggleFocusView);
         todayTasksBtn.addEventListener("click", openTodayTasksWorkspace);
         todayBtn.addEventListener("click", () => { const today = getToday(); if (isWithinRange(today))
             selectDate(today, true); });
@@ -7060,7 +7066,7 @@ document.addEventListener("keydown", event => {
   clearShortcutPrefix();
   insertTimestampShortcut(target, text);
 });
-      /* Keyboard shortcuts: G then F/T/I/A/N/S/L/E */
+      /* Keyboard shortcuts: G then T/I/A/N/S/L/E */
 let shortcutPrefixActive = false;
 let shortcutTimer = null;
 
@@ -7107,10 +7113,6 @@ document.addEventListener("keydown", event => {
 
   event.preventDefault();
   clearShortcutPrefix();
-
-  if (key === "f") {
-    document.getElementById("focusViewBtn")?.click();
-  }
 
   if (key === "t") {
     document.getElementById("addTaskTodayBtn")?.click();
