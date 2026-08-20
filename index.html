@@ -3236,6 +3236,68 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
 }
 @media (max-width: 759px) { #plannerCreateModal { display: none !important; } }
 
+
+/* Desktop-only minimal-colour workspace refinement */
+@media (min-width: 760px) {
+  /* The workspace is now a permanent primary area. */
+  #notesToggle { display: none !important; }
+  .notes-sidebar,
+  .notes-sidebar.collapsed { width: 100%; min-width: 0; background: var(--page); border: 1px solid var(--line); box-shadow: var(--shadow); overflow: hidden; }
+  .notes-sidebar.collapsed .notes-head { display: flex; min-height: var(--header-height); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); background: linear-gradient(180deg, #ffffff 0%, #f6f8f5 100%); }
+  .notes-sidebar.collapsed .notes-wrap,
+  .notes-sidebar.collapsed .workspace-tabs,
+  .notes-sidebar.collapsed .workspace-panel-host { display: block; }
+  .notes-sidebar.collapsed .workspace-tabs { display: inline-flex; }
+
+  /* Keep inactive workspace tabs calm and neutral. */
+  #workspaceNotesTab,
+  #workspaceTasksTab,
+  #workspaceActivityTab,
+  #workspaceEventsTab {
+    background: #ffffff;
+    border-color: var(--line);
+    color: var(--muted);
+    box-shadow: none;
+  }
+  #workspaceNotesTab:hover,
+  #workspaceTasksTab:hover,
+  #workspaceActivityTab:hover,
+  #workspaceEventsTab:hover,
+  #workspaceNotesTab:focus-visible,
+  #workspaceTasksTab:focus-visible,
+  #workspaceActivityTab:focus-visible,
+  #workspaceEventsTab:focus-visible { background: var(--soft); border-color: #cfd6cf; color: var(--ink); }
+  #workspaceNotesTab.active { background: #fff6d8; border-color: #e5d28b; color: #5c4b18; }
+  #workspaceTasksTab.active { background: #fbe7d3; border-color: #e5b98d; color: #704a2d; }
+  #workspaceActivityTab.active { background: #ddf1e9; border-color: #94c8b4; color: #315f50; }
+  #workspaceEventsTab.active { background: #dceaf7; border-color: #a9c9e5; color: #35566f; }
+
+  /* Pinned and highlighted items use structure, not filled backgrounds. */
+  .note-card.is-pinned,
+  .note-card.is-pinned .note-title-area,
+  .note-card.is-pinned .note-tools-row,
+  .notes-sidebar.notes-compact .note-card.is-pinned .note-title-area {
+    background: #ffffff;
+  }
+  .note-card.is-pinned { border-color: #c9b96e; box-shadow: inset 3px 0 0 #c9b96e; }
+  .note-card.is-pinned .note-title-input { color: var(--ink); font-weight: 700; }
+  .task-row.highlighted,
+  .task-row.is-highlighted,
+  .task-row.task-highlighted { background: #ffffff; border-color: #c9b96e; box-shadow: inset 3px 0 0 #c9b96e; }
+  .task-row.highlighted .task-text,
+  .task-row.is-highlighted .task-text,
+  .task-row.task-highlighted .task-text { color: var(--ink); font-weight: 650; }
+  .activity-row.highlighted { background: #ffffff; border-color: #83bca6; box-shadow: inset 3px 0 0 #83bca6; }
+  .activity-row.highlighted .activity-text { color: var(--ink); font-weight: 650; }
+  .event-today { background: #ffffff; border-color: #8fb8db; box-shadow: inset 3px 0 0 #8fb8db; }
+
+  /* Notes scope is available in the normal Notes workspace. */
+  #notesFocusScope.show { display: flex; }
+
+  /* Focus is removed from the desktop Planner only. */
+  .app > .note-block { display: none; }
+}
+
 </style>
 </head>
 <body>
@@ -5362,8 +5424,9 @@ ${body}` : title };
         function applyNotesFocusScope() {
             const mobileMode = isMobileViewport() && notesSidebar.classList.contains("mobile-notes-open");
             const labelsMode = isLabelsWorkspace();
-            const allActive = mobileMode ? mobileNotesAll : labelsMode || (notesFocusView && notesFocusAll);
-            notesFocusScope.classList.toggle("show", !notesBinOpen && (mobileMode || (!isMobileViewport() && (notesFocusView || labelsMode))));
+            const desktopNotesMode = !isMobileViewport() && desktopWorkspacePanel === "notes";
+            const allActive = mobileMode ? mobileNotesAll : labelsMode || (desktopNotesMode && notesFocusAll) || (notesFocusView && notesFocusAll);
+            notesFocusScope.classList.toggle("show", !notesBinOpen && (mobileMode || (!isMobileViewport() && (desktopNotesMode || notesFocusView || labelsMode))));
             notesFocusScope.classList.toggle("labels-mode", labelsMode);
             notesFocusScope.classList.toggle("mobile-scope", mobileMode);
             if (mobileMode && notesFocusScope.parentElement !== mobileNotesScopeSlot)
@@ -5391,7 +5454,7 @@ ${body}` : title };
                 renderNotes();
                 return;
             }
-            if (!notesFocusView)
+            if (desktopWorkspacePanel !== "notes" && !notesFocusView)
                 return;
             notesFocusAll = Boolean(showAll);
             applyNotesFocusScope();
@@ -6308,7 +6371,7 @@ ${body}` : title };
             notes = orderNotes(notes);
             applyNotesFocusScope();
             const mobilePinnedGlobal = isMobileViewport() && notesPinnedOnly && notesSidebar.classList.contains("mobile-notes-open");
-            if (!notesBinOpen && (mobilePinnedGlobal || (isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || (notesFocusView && notesFocusAll))))) {
+            if (!notesBinOpen && (mobilePinnedGlobal || (isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || ((desktopWorkspacePanel === "notes" || notesFocusView) && notesFocusAll))))) {
                 renderAllFocusNotes();
                 return;
             }
@@ -6464,6 +6527,15 @@ ${body}` : title };
             setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", desktopCalendarCollapsed);
         }
         function toggleFocusView() {
+            if (!isMobileViewport()) {
+                const collapseCalendar = !sidebar.classList.contains("collapsed");
+                setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", collapseCalendar);
+                setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
+                desktopCalendarCollapsed = collapseCalendar;
+                localStorage.setItem(CALENDAR_COLLAPSED_KEY, String(desktopCalendarCollapsed));
+                updateFocusViewButton();
+                return;
+            }
             const bothCollapsed = sidebar.classList.contains("collapsed") && notesSidebar.classList.contains("collapsed");
             const collapseBoth = !bothCollapsed;
             setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", collapseBoth);
@@ -6788,11 +6860,21 @@ ${body}` : title };
             }
             updateFocusViewButton();
         });
-        notesToggle.addEventListener("click", () => { const collapsed = !notesSidebar.classList.contains("collapsed"); setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", collapsed); updateFocusViewButton(); });
+        notesToggle.addEventListener("click", () => {
+            if (!isMobileViewport()) {
+                setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
+                updateFocusViewButton();
+                return;
+            }
+            const collapsed = !notesSidebar.classList.contains("collapsed");
+            setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", collapsed);
+            updateFocusViewButton();
+        });
         window.addEventListener("resize", () => {
             document.querySelectorAll("textarea[data-time]").forEach(autoGrow);
             document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
             if (!isMobileViewport() && !noteModal.classList.contains("open")) {
+                setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
                 moveWorkspacePanelsToSidebar();
                 showDesktopWorkspacePanel(desktopWorkspacePanel);
             }
