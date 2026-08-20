@@ -3394,6 +3394,25 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   }
 }
 
+
+/* Desktop All notes: allow the workspace to grow with the complete list */
+@media (min-width: 760px) {
+  .notes-sidebar.desktop-all-notes {
+    height: auto;
+    max-height: none;
+    align-self: start;
+    overflow: visible;
+  }
+  .notes-sidebar.desktop-all-notes .notes-wrap {
+    flex: 0 0 auto;
+    min-height: 0;
+    overflow: visible;
+  }
+  .notes-sidebar.desktop-all-notes #notesList {
+    overflow: visible;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -5523,6 +5542,7 @@ ${body}` : title };
             const desktopNotesMode = !isMobileViewport() && desktopWorkspacePanel === "notes";
             const allActive = mobileMode ? mobileNotesAll : labelsMode || (desktopNotesMode && notesFocusAll) || (notesFocusView && notesFocusAll);
             notesFocusScope.classList.toggle("show", !notesBinOpen && (mobileMode || (!isMobileViewport() && (desktopNotesMode || notesFocusView || labelsMode))));
+            notesSidebar.classList.toggle("desktop-all-notes", desktopNotesMode && allActive && !notesBinOpen);
             notesFocusScope.classList.toggle("labels-mode", labelsMode);
             notesFocusScope.classList.toggle("mobile-scope", mobileMode);
             if (mobileMode && notesFocusScope.parentElement !== mobileNotesScopeSlot)
