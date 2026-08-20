@@ -3333,6 +3333,58 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   }
 }
 
+
+/* Desktop section-specific Focus sizing */
+@media (min-width: 760px) {
+  /* Tasks, Activity and Events: hide Calendar but preserve normal workspace and Planner widths. */
+  body.workspace-focus-active:not(.global-search-active) .shell {
+    display: grid;
+    width: calc(100vw - 24px);
+    max-width: 1560px;
+    grid-template-areas: "calendar workspace planner";
+    grid-template-columns: clamp(190px, 15vw, 220px) minmax(480px, 1fr) clamp(380px, 31vw, 460px);
+    gap: 10px;
+    align-items: stretch;
+  }
+  body.workspace-focus-active .sidebar { display: none; }
+  body.workspace-focus-active .notes-sidebar,
+  body.workspace-focus-active .notes-sidebar.collapsed {
+    display: flex;
+    grid-area: workspace;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+  body.workspace-focus-active .app {
+    display: flex;
+    grid-area: planner;
+  }
+
+  /* Notes only: hide Calendar and expand Notes into the released space. */
+  body.notes-focus-active:not(.global-search-active) .shell {
+    display: grid;
+    width: calc(100vw - 24px);
+    max-width: 1560px;
+    grid-template-areas: "workspace planner";
+    grid-template-columns: minmax(480px, 1fr) clamp(380px, 31vw, 460px);
+    gap: 10px;
+    align-items: stretch;
+  }
+  body.notes-focus-active .sidebar { display: none; }
+  body.notes-focus-active .notes-sidebar,
+  body.notes-focus-active .notes-sidebar.collapsed {
+    display: flex;
+    grid-area: workspace;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+  body.notes-focus-active .app {
+    display: flex;
+    grid-area: planner;
+  }
+}
+
 </style>
 </head>
 <body>
