@@ -3268,6 +3268,9 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
   <span><strong>GS</strong> Search</span>
   <span><strong>GL</strong> Labels</span>
   <span><strong>GE</strong> Event</span>
+  <span><strong>Ctrl+;</strong> Date</span>
+  <span><strong>Ctrl+Shift+;</strong> Time</span>
+  <span><strong>Ctrl+Alt+;</strong> Timestamp</span>
 </div></footer>
     </main>
 
@@ -6561,6 +6564,41 @@ ${body}` : title };
         loadSelectedDate();
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
         setInterval(highlightCurrentTimeBlock, 60000);
+      /* Excel-style date and time insertion shortcuts */
+function timestampShortcutTarget(element) {
+  if (!(element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement)) return null;
+  if (element.readOnly || element.disabled) return null;
+  if (element === expandedBody) return expandedNoteEditing ? element : null;
+  if (element === focusInput || element === quoteInput || element === activityInput) return element;
+  if (element instanceof HTMLTextAreaElement && element.dataset.time && !element.classList.contains("event-timeblock") && !element.classList.contains("task-timeblock")) return element;
+  return null;
+}
+function timestampShortcutText(event, now = new Date()) {
+  const dateText = now.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+  const timeText = now.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  if (event.altKey && !event.shiftKey) return `${dateText}, ${timeText}`;
+  if (event.shiftKey && !event.altKey) return timeText;
+  if (!event.shiftKey && !event.altKey) return dateText;
+  return "";
+}
+function insertTimestampShortcut(target, text) {
+  const start = typeof target.selectionStart === "number" ? target.selectionStart : target.value.length;
+  const end = typeof target.selectionEnd === "number" ? target.selectionEnd : start;
+  if (typeof target.setRangeText === "function") target.setRangeText(text, start, end, "end");
+  else target.value = target.value.slice(0, start) + text + target.value.slice(end);
+  target.dispatchEvent(new Event("input", { bubbles: true }));
+}
+document.addEventListener("keydown", event => {
+  const semicolon = event.key === ";" || event.code === "Semicolon";
+  if (!semicolon || !event.ctrlKey || event.metaKey) return;
+  const target = timestampShortcutTarget(event.target);
+  const text = target ? timestampShortcutText(event) : "";
+  if (!target || !text) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  clearShortcutPrefix();
+  insertTimestampShortcut(target, text);
+});
       /* Keyboard shortcuts: G then F/T/I/A/N/S/L/E */
 let shortcutPrefixActive = false;
 let shortcutTimer = null;
