@@ -3298,6 +3298,41 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   .app > .note-block { display: none; }
 }
 
+
+/* Desktop-only workspace focus: keep Today's plan visible */
+@media (min-width: 760px) {
+  body.workspace-focus-active:not(.global-search-active) .shell,
+  body.notes-focus-active:not(.global-search-active) .shell {
+    display: grid;
+    width: calc(100vw - 24px);
+    max-width: 1560px;
+    grid-template-areas: "workspace planner";
+    grid-template-columns: minmax(480px, 1fr) clamp(380px, 31vw, 460px);
+    gap: 10px;
+    align-items: stretch;
+  }
+  body.workspace-focus-active .sidebar,
+  body.notes-focus-active .sidebar {
+    display: none;
+  }
+  body.workspace-focus-active .app,
+  body.notes-focus-active .app {
+    display: flex;
+    grid-area: planner;
+  }
+  body.workspace-focus-active .notes-sidebar,
+  body.notes-focus-active .notes-sidebar,
+  body.workspace-focus-active .notes-sidebar.collapsed,
+  body.notes-focus-active .notes-sidebar.collapsed {
+    display: flex;
+    grid-area: workspace;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    max-height: calc(100vh - 20px);
+  }
+}
+
 </style>
 </head>
 <body>
