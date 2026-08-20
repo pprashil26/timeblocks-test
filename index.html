@@ -3385,6 +3385,15 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   }
 }
 
+
+/* Desktop-only neutral default Task and Activity entries */
+@media (min-width: 760px) {
+  .workspace-panel-host .task-row:not(.highlighted):not(.is-highlighted):not(.task-highlighted),
+  .workspace-panel-host .activity-row:not(.highlighted) {
+    background: #ffffff;
+  }
+}
+
 </style>
 </head>
 <body>
