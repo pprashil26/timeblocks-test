@@ -2942,7 +2942,7 @@ textarea.event-timeblock:focus {
 .task-editor-body select { width: 100%; height: 32px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--page); color: var(--ink); }
 .task-editor-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 3px; }
 .task-editor-date-row > div { display: grid; gap: 5px; }
-.task-editor-actions { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px; padding: 0 14px 12px; }
+.task-editor-actions { display: grid; grid-template-columns: auto auto 1fr auto auto; align-items: center; gap: 12px; padding: 0 14px 12px; }
 .task-save-btn { min-height: 31px; padding: 5px 12px; border: 1px solid #e5b98d; border-radius: 10px; background: #fbe7d3; color: #704a2d; font-weight: 700; }
 textarea.task-timeblock { background: #fbe7d3 !important; border-left: 3px solid #e5b98d !important; color: #704a2d; font-weight: 650; cursor: pointer; }
 textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5dac0 !important; outline: 2px solid rgba(229,185,141,.55); outline-offset: -2px; }
@@ -3357,7 +3357,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         <div class="task-editor-date-row"><div><label for="taskEditorDate">Date <span class="event-optional">optional</span></label><input id="taskEditorDate" type="date" /></div><div><label for="taskEditorTime">Time <span class="event-optional">optional</span></label><input id="taskEditorTime" type="time" /></div></div>
         <div class="task-note-section" id="taskNoteSection"><span class="task-note-label">Note</span><span class="task-note-actions"><button class="plain-btn task-note-btn" id="taskCreateNoteBtn" type="button">Create note</button><button class="plain-btn task-note-btn" id="taskOpenNoteBtn" type="button" hidden>Open note</button><button class="plain-btn task-note-unlink" id="taskUnlinkNoteBtn" type="button" hidden>Unlink</button></span><span class="task-note-help" id="taskNoteHelp"></span></div>
       </div>
-      <div class="task-editor-actions"><button class="plain-btn delete-note-btn" id="deleteTaskEditorBtn" type="button">Delete</button><span></span><button class="plain-btn" id="cancelTaskEditorBtn" type="button">Cancel</button><button class="plain-btn task-save-btn" id="saveTaskEditorBtn" type="button">Save</button></div>
+      <div class="task-editor-actions"><button class="plain-btn delete-note-btn" id="deleteTaskEditorBtn" type="button">Delete</button><button class="plain-btn event-copy-btn" id="copyTaskBtn" type="button" hidden>Copy</button><span></span><button class="plain-btn" id="cancelTaskEditorBtn" type="button">Cancel</button><button class="plain-btn task-save-btn" id="saveTaskEditorBtn" type="button">Save</button></div>
     </section>
   </div>
   <div class="modal-backdrop" id="moveModal" aria-hidden="true">
@@ -3526,6 +3526,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         const closeTaskEditorBtn = el("closeTaskEditorBtn");
         const cancelTaskEditorBtn = el("cancelTaskEditorBtn");
         const saveTaskEditorBtn = el("saveTaskEditorBtn");
+        const copyTaskBtn = el("copyTaskBtn");
         const deleteTaskEditorBtn = el("deleteTaskEditorBtn");
         const clearDoneTasksBtn = el("clearDoneTasksBtn");
         const tasksFocusBtn = el("tasksFocusBtn");
@@ -3853,8 +3854,32 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             const clean={}; Object.entries(raw).forEach(([eventId,link])=>{if(!link||typeof link.text!=="string")return; const times=Array.isArray(link.times)?link.times.filter(t=>typeof t==="string"):(typeof link.time==="string"?[link.time]:[]); if(times.length)clean[eventId]={times,text:link.text};}); return clean;
         }
         function removeLinkedEventTimeblock(event) {
-            if(!event)return; const data=readDateData(event.date); const links=normalizeEventTimeblocks(data.eventTimeblocks); const link=links[event.id]; if(!link)return;
-            data.entries=data.entries&&typeof data.entries==="object"?data.entries:{}; link.times.forEach(time=>{if(data.entries[time]===link.text)delete data.entries[time];if(data.timeblockStatuses&&typeof data.timeblockStatuses==="object")delete data.timeblockStatuses[time];}); delete links[event.id]; data.eventTimeblocks=links; writeDateData(event.date,data);
+            if (!event || !event.date) return;
+            const data = readDateData(event.date);
+            const links = normalizeEventTimeblocks(data.eventTimeblocks);
+            const link = links[event.id];
+            const expectedText = eventTimeblockText(event);
+            const expectedTimes = eventTimeblockTimes(event);
+            const times = link ? link.times : expectedTimes;
+            let changed = false;
+            data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+            data.timeblockStatuses = data.timeblockStatuses && typeof data.timeblockStatuses === "object" ? data.timeblockStatuses : {};
+            times.forEach(time => {
+                const linkedText = link ? link.text : expectedText;
+                if (data.entries[time] === linkedText || data.entries[time] === expectedText) {
+                    delete data.entries[time];
+                    delete data.timeblockStatuses[time];
+                    changed = true;
+                }
+            });
+            if (link) {
+                delete links[event.id];
+                changed = true;
+            }
+            if (changed) {
+                data.eventTimeblocks = links;
+                writeDateData(event.date, data);
+            }
         }
         function populateEventTimeblock(event,showOccupiedMessage=true) {
             const times=eventTimeblockTimes(event); if(!times.length)return false; const data=readDateData(event.date); data.entries=data.entries&&typeof data.entries==="object"?data.entries:{}; const links=normalizeEventTimeblocks(data.eventTimeblocks);
@@ -4034,6 +4059,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             taskEditorTags.value = normalizeTaskTags(found.task.tags).join(", "); updateTaskTagSuggestions();
             taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = found.task.date || ""; taskEditorTime.value = found.task.time || "";
             deleteTaskEditorBtn.hidden = false;
+            copyTaskBtn.hidden = false;
             updateTaskNoteControls();
             taskModal.classList.add("open"); taskModal.setAttribute("aria-hidden", "false"); focusTaskEditorField(focusTarget);
         }
@@ -4044,8 +4070,26 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             taskEditorTags.value = ""; updateTaskTagSuggestions();
             taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = ""; taskEditorTime.value = "";
             deleteTaskEditorBtn.hidden = true;
+            copyTaskBtn.hidden = true;
             updateTaskNoteControls();
             taskModal.classList.add("open"); taskModal.setAttribute("aria-hidden", "false"); focusTaskEditorField(focusTarget);
+        }
+        function copyEditingTask() {
+            const found = editingTaskId ? findTaskLocation(editingTaskId) : null;
+            if (!found) return;
+            editingTaskId = null;
+            editingTaskContext = found.context;
+            taskEditorTitle.textContent = "Copy Task";
+            taskEditorText.value = found.task.text;
+            populateTaskEditorLists(found.context);
+            taskEditorTags.value = normalizeTaskTags(found.task.tags).join(", ");
+            taskEditorDate.value = found.task.date || "";
+            taskEditorTime.value = found.task.time || "";
+            deleteTaskEditorBtn.hidden = true;
+            copyTaskBtn.hidden = true;
+            updateTaskNoteControls();
+            taskEditorText.focus();
+            taskEditorText.select();
         }
         function closeTaskEditor() { taskModal.classList.remove("open"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; taskEditorFocusTarget = "text"; }
         function showTaskSavedFeedback() {
@@ -4071,6 +4115,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
                 editingTaskContext = targetContext;
                 taskEditorTitle.textContent = "Edit Task";
                 deleteTaskEditorBtn.hidden = false;
+                copyTaskBtn.hidden = false;
                 updateTaskNoteControls();
                 showTaskSavedFeedback();
                 if (task.date === toKey(selectedDate)) loadSelectedDate();
@@ -4187,7 +4232,52 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         }
         function closeEventEditor(){eventModal.classList.remove("open");eventModal.setAttribute("aria-hidden","true");editingEventId=null;editingEventOccurrenceDate="";}
         function copyEditingEvent(){const id=editingEventId;let event=id&&id.includes("@")?eventsForDate(editingEventOccurrenceDate).find(item=>item.id===id):events.find(item=>item.id===id);if(!event)return;editingEventId=null;editingEventOccurrenceDate="";eventEditorTitle.textContent="Copy Event";deleteEventBtn.hidden=true;copyEventBtn.hidden=true;eventSeriesScope.hidden=true;eventRepeatInput.value="none";renderEventWeekdays([]);updateEventEditorOptions();eventTitleInput.focus();}
-        function removeSeriesPlannerLinks(seriesId,predicate=()=>true){allDateKeys().forEach(dateKey=>{const data=readDateData(dateKey);const links=normalizeEventTimeblocks(data.eventTimeblocks);let changed=false;Object.keys(links).forEach(id=>{if(id.startsWith(seriesId+"@")&&predicate(id.split("@")[1])){const link=links[id];data.entries=data.entries||{};link.times.forEach(time=>{if(data.entries[time]===link.text)delete data.entries[time];if(data.timeblockStatuses)delete data.timeblockStatuses[time];});delete links[id];changed=true;}});if(changed){data.eventTimeblocks=links;writeDateData(dateKey,data);}});}
+        function removeSeriesPlannerLinks(seriesId, predicate = () => true) {
+            const master = events.find(item => item.id === seriesId);
+            const exceptionIds = new Set(events.filter(item => item.seriesId === seriesId).map(item => item.id));
+            allDateKeys().forEach(dateKey => {
+                if (!predicate(dateKey)) return;
+                const data = readDateData(dateKey);
+                const links = normalizeEventTimeblocks(data.eventTimeblocks);
+                data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+                data.timeblockStatuses = data.timeblockStatuses && typeof data.timeblockStatuses === "object" ? data.timeblockStatuses : {};
+                let changed = false;
+                Object.keys(links).forEach(id => {
+                    const occurrenceDate = id.startsWith(seriesId + "@") ? id.slice(seriesId.length + 1) : dateKey;
+                    const belongsToSeries = id.startsWith(seriesId + "@") || exceptionIds.has(id);
+                    if (!belongsToSeries || !predicate(occurrenceDate)) return;
+                    const link = links[id];
+                    link.times.forEach(time => {
+                        if (data.entries[time] === link.text) {
+                            delete data.entries[time];
+                            delete data.timeblockStatuses[time];
+                        }
+                    });
+                    delete links[id];
+                    changed = true;
+                });
+                if (master && recurrenceMatches(master, dateKey)) {
+                    const occurrence = eventForOccurrence(master, dateKey);
+                    const expectedText = eventTimeblockText(occurrence);
+                    eventTimeblockTimes(occurrence).forEach(time => {
+                        if (data.entries[time] === expectedText) {
+                            delete data.entries[time];
+                            delete data.timeblockStatuses[time];
+                            changed = true;
+                        }
+                    });
+                    const generatedId = occurrenceId(seriesId, dateKey);
+                    if (links[generatedId]) {
+                        delete links[generatedId];
+                        changed = true;
+                    }
+                }
+                if (changed) {
+                    data.eventTimeblocks = links;
+                    writeDateData(dateKey, data);
+                }
+            });
+        }
         function saveEventFromEditor(){
             const title=eventTitleInput.value.trim(),date=eventDateInput.value;if(!title){alert("Please enter an event title.");eventTitleInput.focus();return;}if(!fromKey(date)||!isWithinRange(fromKey(date))){alert("Please select a valid event date.");return;}
             const draft={title,date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor()};
@@ -6432,6 +6522,7 @@ ${body}` : title };
         closeTaskEditorBtn.addEventListener("click", closeTaskEditor);
         cancelTaskEditorBtn.addEventListener("click", closeTaskEditor);
         saveTaskEditorBtn.addEventListener("click", saveTaskFromEditor);
+        copyTaskBtn.addEventListener("click", copyEditingTask);
         deleteTaskEditorBtn.addEventListener("click", deleteTaskFromEditor);
         taskModal.addEventListener("click", event => { if (event.target === taskModal) closeTaskEditor(); });
         taskModal.addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && event.target instanceof HTMLInputElement) { event.preventDefault(); saveTaskFromEditor(); } });
