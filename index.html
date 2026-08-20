@@ -3158,6 +3158,35 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
 #addEventBtn:hover,#addEventBtn:focus-visible { background:#cfe2f3;border-color:#8fb8db;color:#29485f; }
 .expanded-copy-toolbar-btn { width:auto;min-width:48px;padding:0 8px;font-size:11px;font-weight:700;color:#526b7a; }
 @media (max-width:380px){.mobile-notes-toolbar{grid-template-columns:minmax(132px,1fr) 49px 34px 34px!important;}}
+
+/* Compact single-row selected-date Events toolbar */
+.events-strip-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+.events-strip-list {
+  min-width: 0;
+  margin-top: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.events-strip-actions {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.events-strip-empty {
+  display: inline-flex;
+  min-height: 27px;
+  align-items: center;
+}
+@media (max-width: 759px) {
+  .events-strip-head { gap: 6px; }
+  .events-strip-title { font-size: 11px; }
+  .events-strip-actions { gap: 6px; }
+  #viewEventsBtn { font-size: 11px; }
+}
 </style>
 </head>
 <body>
@@ -3234,7 +3263,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button" title="Focus view" aria-label="Focus view">⛶</button><button class="plain-btn today-tasks-btn" id="todayTasksBtn" type="button" title="Open Today tasks">Today tasks</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
-      <section class="events-strip" id="eventsStrip" aria-label="Events for selected date"><div class="events-strip-head"><span class="events-strip-title">Events</span><span class="events-strip-actions"><button class="plain-btn" id="viewEventsBtn" type="button">All events</button><button class="plain-btn event-add-link" id="addEventBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div><div class="events-strip-list" id="eventsStripList"></div></section>
+      <section class="events-strip" id="eventsStrip" aria-label="Events for selected date"><div class="events-strip-head"><span class="events-strip-title">Events</span><div class="events-strip-list" id="eventsStripList"></div><span class="events-strip-actions"><button class="plain-btn" id="viewEventsBtn" type="button">All events</button><button class="plain-btn event-add-link" id="addEventBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to midnight"></section>
       <section class="quote-block" aria-label="Favourite quote or reminder"><div class="quote-line"><label class="quote-label" for="quoteInput">Quote</label><input id="quoteInput" type="text" placeholder="Favourite quote, mantra or reminder..." autocomplete="off" /></div></section>
       <footer><span class="footer-actions"><span>Saved locally on this device</span><span>·</span><button class="plain-btn backup-btn" id="exportBackupBtn" type="button">Export</button><span>·</span><button class="plain-btn backup-btn" id="importBackupBtn" type="button">Import</button><span>·</span><button class="plain-btn backup-btn help-btn" type="button">Help</button><input accept=".txt,text/plain,application/json" hidden id="importBackupInput" type="file" /></span><div class="last-import-status" data-last-import-status>Last import: Never</div><div
