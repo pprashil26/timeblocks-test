@@ -3215,6 +3215,27 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
   body.workspace-focus-active .notes-sidebar,
   body.notes-focus-active .notes-sidebar { width: 100%; max-width: 1180px; max-height: calc(100vh - 20px); }
 }
+
+/* Desktop Planner source-aware quick creation */
+.planner-create-panel { width: min(360px, 94vw); overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--page); box-shadow: 0 18px 50px rgba(50,40,28,.22); }
+.planner-create-head { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; min-height: 44px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.planner-create-title { margin: 0; font-size: var(--font-lg); font-weight: 700; }
+.planner-create-body { display: grid; gap: 8px; padding: 12px 14px; }
+.planner-create-body label { color: var(--muted); font-size: 11px; font-weight: 650; }
+.planner-create-body select, .planner-create-body input { width: 100%; height: 32px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--page); color: var(--ink); }
+.planner-create-meta { color: var(--muted); font-size: 11px; }
+.planner-create-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 0 14px 12px; }
+.planner-create-save { min-height: 31px; padding: 5px 12px; border: 1px solid var(--entry-border); border-radius: 10px; background: var(--selected); color: var(--ink); font-weight: 700; }
+textarea.activity-timeblock { background: #ddf1e9 !important; border-left: 3px solid #94c8b4 !important; color: #315f50; font-weight: 650; cursor: pointer; }
+textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { background: #cee8de !important; outline: 2px solid rgba(131,188,166,.48); outline-offset: -2px; }
+.slot:has(textarea.activity-timeblock) .drag-handle { cursor: default; opacity: .3; }
+@media (min-width: 760px) {
+  .app > .events-strip, .app > .quote-block { display: none; }
+  textarea[data-time].planner-empty-slot { cursor: pointer; }
+  textarea[data-time].planner-empty-slot:hover, textarea[data-time].planner-empty-slot:focus { background: var(--soft); outline: 2px solid rgba(123,146,133,.30); outline-offset: -2px; }
+}
+@media (max-width: 759px) { #plannerCreateModal { display: none !important; } }
+
 </style>
 </head>
 <body>
@@ -3399,6 +3420,20 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
       <div class="task-editor-actions"><button class="plain-btn delete-note-btn" id="deleteTaskEditorBtn" type="button">Delete</button><button class="plain-btn event-copy-btn" id="copyTaskBtn" type="button" hidden>Copy</button><span></span><button class="plain-btn" id="cancelTaskEditorBtn" type="button">Cancel</button><button class="plain-btn task-save-btn" id="saveTaskEditorBtn" type="button">Save</button></div>
     </section>
   </div>
+
+  <div class="modal-backdrop" id="plannerCreateModal" aria-hidden="true">
+    <section class="planner-create-panel" role="dialog" aria-modal="true" aria-label="Add Planner item">
+      <div class="planner-create-head"><p class="planner-create-title">Add to Planner</p><button class="plain-btn" id="closePlannerCreateBtn" type="button">Close</button></div>
+      <div class="planner-create-body">
+        <div class="planner-create-meta" id="plannerCreateMeta"></div>
+        <label for="plannerCreateType">Type</label>
+        <select id="plannerCreateType"><option value="task">Task</option><option value="event">Event</option><option value="activity">Activity</option></select>
+        <label for="plannerCreateText">Title</label>
+        <input id="plannerCreateText" type="text" maxlength="240" autocomplete="off" placeholder="What do you want to add?" />
+      </div>
+      <div class="planner-create-actions"><button class="plain-btn" id="cancelPlannerCreateBtn" type="button">Cancel</button><button class="plain-btn planner-create-save" id="savePlannerCreateBtn" type="button">Save</button></div>
+    </section>
+  </div>
   <div class="modal-backdrop" id="moveModal" aria-hidden="true">
     <section class="move-note-panel" role="dialog" aria-modal="true"><div class="move-note-head"><p class="move-note-title" id="moveModalTitle">Move Note</p><button class="plain-btn" id="cancelMoveTop" type="button">Close</button></div><div class="move-note-body"><label for="moveDateInput" id="moveDateLabel">Move to date</label><input id="moveDateInput" type="date" /></div><div class="move-note-actions"><button class="plain-btn" id="cancelMoveBtn" type="button">Cancel</button><button class="plain-btn" id="confirmMoveBtn" type="button">Move</button></div></section>
   </div>
@@ -3496,6 +3531,13 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         const importBackupInput = el("importBackupInput");
         const focusInput = el("focusInput");
         const quoteInput = el("quoteInput");
+        const plannerCreateModal = el("plannerCreateModal");
+        const plannerCreateMeta = el("plannerCreateMeta");
+        const plannerCreateType = el("plannerCreateType");
+        const plannerCreateText = el("plannerCreateText");
+        const closePlannerCreateBtn = el("closePlannerCreateBtn");
+        const cancelPlannerCreateBtn = el("cancelPlannerCreateBtn");
+        const savePlannerCreateBtn = el("savePlannerCreateBtn");
         const notesSearchBtn = el("notesSearchBtn");
         const notesSearchRow = el("notesSearchRow");
         const notesSearchInput = el("notesSearchInput");
@@ -3646,6 +3688,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         let globalSearchQuery = "";
         let globalTasks = normalizeTaskLists(loadJson(TASKS_KEY, null));
         let events = normalizeEvents(loadJson(EVENTS_KEY, []));
+        let plannerCreateTime = "";
         let editingEventId = null;
         let editingEventOccurrenceDate = "";
         let editingTaskId = null;
@@ -4335,6 +4378,98 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             noteModal.classList.add("open");
             noteModal.setAttribute("aria-hidden", "false");
         }
+
+        function activityTimeblockText(entry) { return `Activity: ${entry.text}`; }
+        function normalizeActivityTimeblocks(raw) {
+            if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+            const clean = {};
+            Object.entries(raw).forEach(([activityId, link]) => { if (link && typeof link.time === "string" && typeof link.text === "string") clean[activityId] = { time: link.time, text: link.text }; });
+            return clean;
+        }
+        function findActivityEntry(activityId) { return activityEntries.find(entry => entry.id === activityId) || null; }
+        function removeLinkedActivityTimeblock(entry) {
+            if (!entry) return;
+            allDateKeys().forEach(dateKey => {
+                const data = readDateData(dateKey);
+                const links = normalizeActivityTimeblocks(data.activityTimeblocks);
+                const link = links[entry.id];
+                if (!link) return;
+                data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+                data.timeblockStatuses = data.timeblockStatuses && typeof data.timeblockStatuses === "object" ? data.timeblockStatuses : {};
+                if (data.entries[link.time] === link.text) delete data.entries[link.time];
+                delete data.timeblockStatuses[link.time];
+                delete links[entry.id];
+                data.activityTimeblocks = links;
+                writeDateData(dateKey, data);
+            });
+        }
+        function updateLinkedActivityTimeblock(entry) {
+            if (!entry) return;
+            allDateKeys().forEach(dateKey => {
+                const data = readDateData(dateKey);
+                const links = normalizeActivityTimeblocks(data.activityTimeblocks);
+                const link = links[entry.id];
+                if (!link) return;
+                data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+                if (data.entries[link.time] === link.text) {
+                    link.text = activityTimeblockText(entry);
+                    data.entries[link.time] = link.text;
+                    data.activityTimeblocks = links;
+                    writeDateData(dateKey, data);
+                }
+            });
+        }
+        function populateActivityTimeblock(entry, dateKey, time, showOccupiedMessage = true) {
+            const data = readDateData(dateKey);
+            data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+            if ((data.entries[time] || "").trim()) { if (showOccupiedMessage) alert("Activity saved, but the selected Planner block is occupied."); return false; }
+            const links = normalizeActivityTimeblocks(data.activityTimeblocks);
+            const text = activityTimeblockText(entry);
+            data.entries[time] = text;
+            data.timeblockStatuses = data.timeblockStatuses && typeof data.timeblockStatuses === "object" ? data.timeblockStatuses : {};
+            delete data.timeblockStatuses[time];
+            links[entry.id] = { time, text };
+            data.activityTimeblocks = links;
+            writeDateData(dateKey, data);
+            return true;
+        }
+        function openLinkedActivity(activityId) {
+            openActivity();
+            setTimeout(() => {
+                const target = document.querySelector(`.activity-text[data-activity-id="${activityId}"]`);
+                if (target) { target.focus(); target.scrollIntoView({ block: "center" }); }
+            }, 0);
+        }
+        function openPlannerCreate(timeId) {
+            if (isMobileViewport()) return;
+            plannerCreateTime = timeId;
+            plannerCreateType.value = "task";
+            plannerCreateText.value = "";
+            plannerCreateMeta.textContent = `${displayDate(selectedDate)} · ${new Date(2000,0,1,...timeId.split(":").map(Number)).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}`;
+            plannerCreateModal.classList.add("open");
+            plannerCreateModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => plannerCreateText.focus(), 0);
+        }
+        function closePlannerCreate() { plannerCreateModal.classList.remove("open"); plannerCreateModal.setAttribute("aria-hidden", "true"); plannerCreateTime = ""; }
+        function savePlannerCreate() {
+            const text = plannerCreateText.value.trim();
+            if (!text || !plannerCreateTime) { plannerCreateText.focus(); return; }
+            const dateKey = toKey(selectedDate);
+            const type = plannerCreateType.value;
+            if (type === "task") {
+                const task = { id: createId("task"), text, done: false, highlighted: false, tags: [], date: dateKey, time: plannerCreateTime, noteLink: null };
+                globalTasks.Today.unshift(task); saveTasks(); populateTaskTimeblock(task, false); renderGlobalTasks();
+            } else if (type === "event") {
+                const event = { id: createId("event"), title: text, date: dateKey, time: plannerCreateTime, durationMinutes: 30, recurrence: null, seriesId: "", originalDate: "", cancelled: false, createdAt: new Date().toISOString() };
+                events.push(event); saveEvents(); populateEventTimeblock(event, false); renderEvents(); buildCalendar();
+            } else {
+                const [hour, minute] = plannerCreateTime.split(":").map(Number);
+                const created = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), hour, minute);
+                const entry = { id: createId("activity"), text, status: "started", highlighted: false, createdAt: created.toISOString() };
+                activityEntries.unshift(entry); saveActivity(); populateActivityTimeblock(entry, dateKey, plannerCreateTime, false); renderActivity();
+            }
+            closePlannerCreate(); loadSelectedDate();
+        }
         function normalizeActivityEntries(raw) {
             if (!Array.isArray(raw))
                 return [];
@@ -4453,6 +4588,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
                     highlight.classList.toggle("active", entry.highlighted);
                     const text = document.createElement("textarea");
                     text.className = "activity-text";
+                    text.dataset.activityId = entry.id;
                     text.rows = 1;
                     text.value = entry.text;
                     setTimeout(() => autoGrowActivityText(text), 0);
@@ -4465,7 +4601,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
 
 if (!currentEntry) { return; }
 
-currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
+currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); updateLinkedActivityTimeblock(currentEntry); if (activityDateKey(currentEntry.createdAt) === toKey(selectedDate)) loadSelectedDate(); });
                     status.addEventListener("click", () => cycleActivityStatus(entry.id));
                     highlight.addEventListener("click", () => toggleActivityHighlight(entry.id));
                     text.addEventListener("keydown", event => {
@@ -4477,6 +4613,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                     del.addEventListener("click", () => {
                         if (!confirm("Delete this activity entry?"))
                             return;
+                        removeLinkedActivityTimeblock(entry);
                         activityEntries = activityEntries.filter(item => item.id !== entry.id);
                         saveActivity();
                         renderActivity();
@@ -5050,7 +5187,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             document.querySelectorAll(".timeblock-status[data-time]").forEach(button => { const status = normalizeTimeblockStatus(button.dataset.status); if (status !== "planned") statuses[button.dataset.time] = status; });
             return statuses;
         }
-        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses(), eventTimeblocks: normalizeEventTimeblocks(saved.eventTimeblocks), taskTimeblocks: normalizeTaskTimeblocks(saved.taskTimeblocks) }; }
+        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses(), eventTimeblocks: normalizeEventTimeblocks(saved.eventTimeblocks), taskTimeblocks: normalizeTaskTimeblocks(saved.taskTimeblocks), activityTimeblocks: normalizeActivityTimeblocks(saved.activityTimeblocks) }; }
         function save() { const data = currentDateDataFromState(); notes = data.notes; writeDateData(toKey(selectedDate), data); markDateHasData(toKey(selectedDate)); }
         function markDateHasData(key) {
             const button = document.querySelector(`.day-btn[data-date="${key}"]`);
@@ -5443,11 +5580,20 @@ ${body}` : title };
                 box.addEventListener("click", openLinkedTask);
                 box.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openLinkedTask(); } });
             }
+            const activityLink = Object.entries(normalizeActivityTimeblocks(saved.activityTimeblocks)).find(([, link]) => link.time === timeId && link.text === box.value);
+            const linkedActivity = activityLink ? findActivityEntry(activityLink[0]) : null;
+            if (!linkedEvent && !linkedTask && linkedActivity) {
+                box.classList.add("activity-timeblock"); box.dataset.activityId = linkedActivity.id; box.readOnly = true;
+                box.title = `Open Activity: ${linkedActivity.text}`; box.setAttribute("aria-label", box.title); handle.draggable = false; handle.title = "Open this Activity entry";
+                const openActivityEntry = () => openLinkedActivity(linkedActivity.id);
+                box.addEventListener("click", openActivityEntry);
+                box.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openActivityEntry(); } });
+            }
             box.placeholder = "Add...";
-            if (!linkedEvent && !linkedTask)
+            if (!linkedEvent && !linkedTask && !linkedActivity)
                 box.setAttribute("aria-label", `Entry for ${label.textContent}`);
             handle.addEventListener("dragstart", event => {
-                if (!isDesktopDragEnabled() || box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock") || !box.value.trim()) {
+                if (!isDesktopDragEnabled() || box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock") || box.classList.contains("activity-timeblock") || !box.value.trim()) {
                     event.preventDefault();
                     return;
                 }
@@ -5487,9 +5633,14 @@ ${body}` : title };
                 save();
                 clearDropClasses();
             });
-            box.addEventListener("input", () => { autoGrow(box); save(); });
+            if (!linkedEvent && !linkedTask && !linkedActivity && !box.value.trim()) {
+                box.classList.add("planner-empty-slot");
+                box.addEventListener("focus", () => { if (!isMobileViewport() && !box.value.trim()) { box.blur(); openPlannerCreate(timeId); } });
+                box.addEventListener("click", () => { if (!isMobileViewport() && !box.value.trim()) openPlannerCreate(timeId); });
+            }
+            box.addEventListener("input", () => { autoGrow(box); box.classList.toggle("planner-empty-slot", !isMobileViewport() && !box.value.trim()); save(); });
             box.addEventListener("keydown", event => {
-                if (event.defaultPrevented || (box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock"))) return;
+                if (event.defaultPrevented || (box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock") || box.classList.contains("activity-timeblock"))) return;
                 if (event.key === "Enter" && !event.shiftKey) {
                     event.preventDefault();
                     const boxes = Array.from(document.querySelectorAll("textarea[data-time]"));
@@ -6509,6 +6660,12 @@ ${body}` : title };
         tasksFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("tasks"));
         activityFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("activity"));
         eventsFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("events"));
+
+        closePlannerCreateBtn.addEventListener("click", closePlannerCreate);
+        cancelPlannerCreateBtn.addEventListener("click", closePlannerCreate);
+        savePlannerCreateBtn.addEventListener("click", savePlannerCreate);
+        plannerCreateText.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); savePlannerCreate(); } });
+        plannerCreateModal.addEventListener("click", event => { if (event.target === plannerCreateModal) closePlannerCreate(); });
         addEventBtn.addEventListener("click", () => openEventEditor());
         viewEventsBtn.addEventListener("click", openEvents);
         eventsPanelAddBtn.addEventListener("click", () => openEventEditor());
