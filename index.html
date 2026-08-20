@@ -3139,6 +3139,22 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
 .event-series-scope label { color: var(--muted); font-size: 11px; font-weight: 650; }
 .event-series-scope select { height: 31px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--page); color: var(--ink); }
 @media (max-width: 759px) { .event-editor-grid { grid-template-columns: 1fr; } .calendar-jump { padding-bottom: 2px; } }
+
+/* Phase 1 workspace simplification */
+@media (min-width: 760px) {
+  #focusViewBtn { width: 28px; min-width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 9px; background: var(--soft); color: var(--ink); font-size: 14px; font-weight: 750; text-decoration: none; }
+  #focusViewBtn:hover, #focusViewBtn:focus-visible { background: var(--selected); border-color: var(--entry-border); text-decoration: none; }
+  .notes-labels-btn { min-height: 28px; padding: 4px 9px; border: 1px solid #cfc1e1; border-radius: 9px; background: #eee8f6; color: #554766; font-weight: 750; line-height: 1; text-decoration: none !important; }
+  .notes-labels-btn:hover, .notes-labels-btn:focus-visible, .notes-labels-btn.active { background: #e3d8f0; border-color: #b8a4d2; color: #493b5b; }
+}
+.workspace-add-icon { width: 28px; min-width: 28px; height: 28px; padding: 0 !important; display: inline-flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 750; }
+.note-card:not(.trash-note-card), .all-notes-card { cursor: pointer; }
+.note-card:not(.trash-note-card):focus-visible, .all-notes-card:focus-visible { outline: 2px solid rgba(123,146,133,.48); outline-offset: 2px; }
+.note-card:not(.trash-note-card) .note-title-area, .all-notes-card .note-title-area { padding: 8px 9px 5px; }
+.note-card:not(.trash-note-card) .note-tools-row, .all-notes-card .note-tools-row { min-height: 28px; padding: 2px 8px 5px; }
+.note-card:not(.trash-note-card) .note-title-input { height: auto; min-height: 22px; }
+.mobile-notes-toolbar { grid-template-columns: minmax(148px, 1fr) auto 36px 36px !important; }
+@media (max-width: 380px) { .mobile-notes-toolbar { grid-template-columns: minmax(132px, 1fr) 49px 34px 34px !important; } }
 </style>
 </head>
 <body>
@@ -3212,7 +3228,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             <button class="plain-btn nav-day-btn" id="nextDayBtn" type="button">›</button>
           </div>
         </div>
-        <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn today-tasks-btn" id="todayTasksBtn" type="button" title="Open Today tasks">Today tasks</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
+        <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button" title="Focus view" aria-label="Focus view">⛶</button><button class="plain-btn today-tasks-btn" id="todayTasksBtn" type="button" title="Open Today tasks">Today tasks</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="events-strip" id="eventsStrip" aria-label="Events for selected date"><div class="events-strip-head"><span class="events-strip-title">Events</span><span class="events-strip-actions"><button class="plain-btn" id="viewEventsBtn" type="button">All events</button><button class="plain-btn event-add-link" id="addEventBtn" type="button">+ Event</button></span></div><div class="events-strip-list" id="eventsStripList"></div></section>
@@ -3235,14 +3251,14 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
     </main>
 
     <aside class="notes-sidebar" id="notesSidebar" aria-label="Lined notepad sidebar">
-      <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Right sidebar panels"><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceLabelsTab" type="button" role="tab" aria-selected="false">Labels</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button><button class="workspace-tab" id="workspaceEventsTab" type="button" role="tab" aria-selected="false">Events</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
+      <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Right sidebar panels"><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button><button class="workspace-tab" id="workspaceEventsTab" type="button" role="tab" aria-selected="false">Events</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
       <div class="notes-wrap" id="notesWorkspacePanel">
         <div class="mobile-notes-date" id="mobileNotesDate">Notes for selected date</div>
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
-        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn icon-btn notes-toolbar-icon" id="notesPinnedBtn" type="button" title="Show pinned notes only" aria-pressed="false">☆</button><button class="plain-btn icon-btn notes-toolbar-icon compact-btn" id="compactNotesBtn" type="button" title="Hide note previews">▤</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
+        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn notes-labels-btn" id="notesLabelsBtn" type="button" title="Filter notes by label">Labels</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
         <div class="notes-focus-scope" id="notesFocusScope" aria-label="Notes scope"><button class="plain-btn notes-scope-btn active" id="notesScopeDateBtn" type="button">This date</button><button class="plain-btn notes-scope-btn" id="notesScopeAllBtn" type="button">All notes</button><select class="notes-label-filter" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
-        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-tool" id="mobileNotesLabelsBtn" type="button">Labels</button><button class="plain-btn mobile-notes-tool mobile-notes-pinned" id="mobileNotesPinnedBtn" type="button" title="Show pinned notes only" aria-label="Show pinned notes only">☆</button><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note to selected date">＋</button><span class="mobile-notes-more-wrap"><button class="plain-btn mobile-notes-more-btn" id="mobileNotesMoreBtn" type="button" aria-expanded="false">⋯</button><span class="mobile-notes-more-menu" id="mobileNotesMoreMenu"><button class="plain-btn" id="mobileNotesCompactBtn" type="button">Compact view</button><button class="plain-btn" id="mobileNotesSortBtn" type="button">Sort A–Z</button><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button></span></span></div>
+        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-tool" id="mobileNotesLabelsBtn" type="button">Labels</button><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note to selected date">＋</button><span class="mobile-notes-more-wrap"><button class="plain-btn mobile-notes-more-btn" id="mobileNotesMoreBtn" type="button" aria-expanded="false">⋯</button><span class="mobile-notes-more-menu" id="mobileNotesMoreMenu"><button class="plain-btn" id="mobileNotesSortBtn" type="button">Sort A–Z</button><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button></span></span></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
       <div class="workspace-panel-host" id="workspacePanelHost"></div>
@@ -3256,7 +3272,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
       <div class="note-label-chips expanded-label-chips" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
-        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" title="Focus on Tasks">⛶</button><button class="plain-btn task-add-link" id="newTaskBtn" type="button">+ Task</button><button class="plain-btn" id="sortTasksBtn" type="button">Sort</button><span> · </span><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button></span></div>
+        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" title="Focus on Tasks">⛶</button><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
         <div class="task-contexts" id="taskContexts"></div>
         <div class="task-filter-row"><label class="task-filter-label" for="taskTagFilter">Tags</label><select class="task-tag-filter" id="taskTagFilter" aria-label="Filter current task list by tag"><option value="">All tags</option></select></div>
         <div class="task-list" id="globalTaskList"></div>
@@ -3270,11 +3286,11 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
 >
   Export
 </button></span></div>
-        <div class="activity-input"><input id="activityInput" type="text" placeholder="What are you doing?" autocomplete="off" /><button class="plain-btn activity-add-btn" id="activityAddBtn" type="button">Add</button></div>
+        <div class="activity-input"><input id="activityInput" type="text" placeholder="What are you doing?" autocomplete="off" /><button class="plain-btn activity-add-btn workspace-add-icon" id="activityAddBtn" type="button" title="Add activity" aria-label="Add activity">+</button></div>
         <div id="activityLog"></div>
       </div>
       <div class="events-panel" id="eventsPanel" hidden>
-        <div class="events-toolbar"><span class="events-title">Events</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" title="Focus on Events">⛶</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link" id="eventsPanelAddBtn" type="button">+ Event</button></span></div>
+        <div class="events-toolbar"><span class="events-title">Events</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" title="Focus on Events">⛶</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link workspace-add-icon" id="eventsPanelAddBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div>
         <div id="eventsList"></div>
       </div>
       <div class="link-preview expanded-links" id="expandedLinks"></div>
@@ -3324,7 +3340,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
   </div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true">
-    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by time horizon and filter them with Task tags.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Use Compact to show more notes and the star to show pinned notes only.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Today, This month, and Someday. Add Task tags such as Home, Work, or Waiting for context.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>How to use</h3><ol><li>Use + Task to open the full Task editor in Inbox.</li><li>Use + Activity to record an Activity entry.</li><li>Use Planner to open Calendar and Today’s plan.</li><li>Use Notes to open notes for the selected date.</li><li>Use ? to open Help at any time.</li><li>Use Export in the homepage footer regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>In Tasks, switch between Inbox, Today, This month, and Someday, then filter the current list by tag.</li><li>In Notes, use the star to show pinned notes only and Compact to show more entries.</li><li>Select the required date in Planner before opening date-specific Notes.</li><li>Import and Last import are available in the homepage footer.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></div></section>
+    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by time horizon and filter them with Task tags.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Select a note card to open it, and use Labels to filter notes.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Today, This month, and Someday. Add Task tags such as Home, Work, or Waiting for context.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>How to use</h3><ol><li>Use + Task to open the full Task editor in Inbox.</li><li>Use + Activity to record an Activity entry.</li><li>Use Planner to open Calendar and Today’s plan.</li><li>Use Notes to open notes for the selected date.</li><li>Use ? to open Help at any time.</li><li>Use Export in the homepage footer regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>In Tasks, switch between Inbox, Today, This month, and Someday, then filter the current list by tag.</li><li>In Notes, select a card to open it and use Labels to filter notes.</li><li>Select the required date in Planner before opening date-specific Notes.</li><li>Import and Last import are available in the homepage footer.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></div></section>
   </div>
 
   <script>
@@ -3389,7 +3405,6 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         const notesWorkspacePanel = el("notesWorkspacePanel");
         const workspacePanelHost = el("workspacePanelHost");
         const workspaceNotesTab = el("workspaceNotesTab");
-        const workspaceLabelsTab = el("workspaceLabelsTab");
         const workspaceTasksTab = el("workspaceTasksTab");
         const workspaceActivityTab = el("workspaceActivityTab");
         const workspaceEventsTab = el("workspaceEventsTab");
@@ -3423,10 +3438,9 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         const notesSearchClear = el("notesSearchClear");
         const notesNoResults = el("notesNoResults");
         const addNoteBtn = el("addNoteBtn");
-        const compactNotesBtn = el("compactNotesBtn");
         const sortNotesBtn = el("sortNotesBtn");
         const notesFocusBtn = el("notesFocusBtn");
-        const notesPinnedBtn = el("notesPinnedBtn");
+        const notesLabelsBtn = el("notesLabelsBtn");
         const notesFocusScope = el("notesFocusScope");
         const notesScopeDateBtn = el("notesScopeDateBtn");
         const notesScopeAllBtn = el("notesScopeAllBtn");
@@ -3434,11 +3448,9 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         const mobileNotesToolbar = el("mobileNotesToolbar");
         const mobileNotesScopeSlot = el("mobileNotesScopeSlot");
         const mobileNotesLabelsBtn = el("mobileNotesLabelsBtn");
-        const mobileNotesPinnedBtn = el("mobileNotesPinnedBtn");
         const mobileNotesAddBtn = el("mobileNotesAddBtn");
         const mobileNotesMoreBtn = el("mobileNotesMoreBtn");
         const mobileNotesMoreMenu = el("mobileNotesMoreMenu");
-        const mobileNotesCompactBtn = el("mobileNotesCompactBtn");
         const mobileNotesSortBtn = el("mobileNotesSortBtn");
         const mobileNotesMoveAllBtn = el("mobileNotesMoveAllBtn");
         const mobileNotesBinBtn = el("mobileNotesBinBtn");
@@ -3485,7 +3497,6 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         const cancelTaskEditorBtn = el("cancelTaskEditorBtn");
         const saveTaskEditorBtn = el("saveTaskEditorBtn");
         const deleteTaskEditorBtn = el("deleteTaskEditorBtn");
-        const sortTasksBtn = el("sortTasksBtn");
         const clearDoneTasksBtn = el("clearDoneTasksBtn");
         const tasksFocusBtn = el("tasksFocusBtn");
         const activityPanel = el("activityPanel");
@@ -3556,7 +3567,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         let notesFocusAll = false;
         let mobileNotesAll = true;
         let notesLabelFilterValue = "";
-        let notesPinnedOnly = localStorage.getItem(NOTES_PINNED_ONLY_KEY) === "true";
+        let notesPinnedOnly = false;
         let globalPinnedExpanded = false;
         let threeMonthCalendar = localStorage.getItem(CALENDAR_RANGE_KEY) === "true";
         let desktopCalendarCollapsed = localStorage.getItem(CALENDAR_COLLAPSED_KEY) === "true";
@@ -4322,18 +4333,20 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         }
         function orderTasks(taskList) {
             const list = (taskList || []).map(task => {
-                if (!task.id)
-                    task.id = createId("task");
-                if (typeof task.text !== "string")
-                    task.text = "";
-                task.done = Boolean(task.done);
-                task.highlighted = Boolean(task.highlighted);
-                task.tags = normalizeTaskTags(task.tags);
-                task.date = fromKey(task.date) ? task.date : "";
-                task.time = /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "";
-                return task;
+                if (!task.id) task.id = createId("task");
+                if (typeof task.text !== "string") task.text = "";
+                task.done = Boolean(task.done); task.highlighted = Boolean(task.highlighted); task.tags = normalizeTaskTags(task.tags);
+                task.date = fromKey(task.date) ? task.date : ""; task.time = /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : ""; return task;
             });
-            return list.filter(task => task.highlighted).concat(list.filter(task => !task.highlighted));
+            const firstTag = task => normalizeTaskTags(task.tags).slice().sort((a,b) => a.localeCompare(b, undefined, { sensitivity: "base" }))[0] || "";
+            return list.sort((a,b) => {
+                if (a.highlighted !== b.highlighted) return a.highlighted ? -1 : 1;
+                if (a.done !== b.done) return a.done ? 1 : -1;
+                const at = firstTag(a), bt = firstTag(b);
+                if (Boolean(at) !== Boolean(bt)) return at ? -1 : 1;
+                const tagOrder = at.localeCompare(bt, undefined, { sensitivity: "base" }); if (tagOrder) return tagOrder;
+                return (a.text || "").localeCompare(b.text || "", undefined, { sensitivity: "base" });
+            });
         }
         function allTaskTags() {
             const tags = new Map();
@@ -4781,12 +4794,9 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 button.classList.toggle("has-data", hasSavedDataForDate(key));
         }
         function applyNotesCompact() {
-            notesSidebar.classList.toggle("notes-compact", notesCompact);
-            compactNotesBtn.classList.toggle("active", notesCompact);
-            compactNotesBtn.textContent = notesCompact ? "▦" : "▤";
-            compactNotesBtn.title = notesCompact ? "Show note previews" : "Hide note previews";
+            notesCompact = true;
+            notesSidebar.classList.remove("notes-compact");
         }
-
         function createLabelChip(label, removable = false, onRemove = null) {
             const chip = document.createElement(removable ? "button" : "span");
             if (removable)
@@ -4970,11 +4980,6 @@ ${body}` : title };
             notesScopeDateBtn.setAttribute("aria-pressed", String(!allActive));
             notesScopeAllBtn.setAttribute("aria-pressed", String(allActive));
             mobileNotesToolbar.hidden = !mobileMode || notesBinOpen;
-            mobileNotesPinnedBtn.classList.toggle("active", notesPinnedOnly);
-            mobileNotesPinnedBtn.textContent = notesPinnedOnly ? "★" : "☆";
-            mobileNotesPinnedBtn.title = notesPinnedOnly ? "Show all notes" : "Show pinned notes only";
-            mobileNotesPinnedBtn.setAttribute("aria-label", mobileNotesPinnedBtn.title);
-            mobileNotesCompactBtn.textContent = notesCompact ? "Show previews" : "Compact view";
         }
         function setNotesFocusScope(showAll) {
             if (notesBinOpen)
@@ -5001,7 +5006,7 @@ ${body}` : title };
                 normalizeNotes(data.notes).forEach(note => {
                     const labelsMode = isLabelsWorkspace();
                     const hasRequiredLabel = labelsMode ? note.labels.length > 0 : true;
-                    if (!note.deleted && hasRequiredLabel && (!notesPinnedOnly || note.pinned) && (!notesLabelFilterValue || note.labels.some(label => label.toLowerCase() === notesLabelFilterValue.toLowerCase())) && noteMatchesSearch(note))
+                    if (!note.deleted && hasRequiredLabel && (!notesLabelFilterValue || note.labels.some(label => label.toLowerCase() === notesLabelFilterValue.toLowerCase())) && noteMatchesSearch(note))
                         results.push({ dateKey, note });
                 });
             });
@@ -5038,45 +5043,19 @@ ${body}` : title };
             const { dateKey, note } = result;
             const card = document.createElement("section");
             card.className = "note-card all-notes-card";
+            card.tabIndex = 0; card.setAttribute("role", "button"); card.setAttribute("aria-label", `Open note: ${note.title || "Untitled"}`);
             card.classList.toggle("is-pinned", Boolean(note.pinned));
-            const titleArea = document.createElement("div");
-            titleArea.className = "note-title-area";
-            const title = document.createElement("div");
-            title.className = "all-notes-title";
-            title.textContent = note.title || "Untitled";
-            const date = document.createElement("div");
-            date.className = "all-notes-date";
-            const parsedDate = fromKey(dateKey);
-            date.textContent = parsedDate ? displayDate(parsedDate) : dateKey;
-            const tools = document.createElement("div");
-            tools.className = "note-tools-row";
-            const pin = document.createElement("button");
-            pin.className = "icon-btn pin-note-btn";
-            pin.type = "button";
-            pin.textContent = note.pinned ? "★" : "☆";
-            pin.title = note.pinned ? "Unpin note" : "Pin note";
-            pin.classList.toggle("pinned", Boolean(note.pinned));
-            const open = document.createElement("button");
-            open.className = "icon-btn";
-            open.type = "button";
-            open.textContent = "⤢";
-            open.title = "Open note";
-            const labelChips = document.createElement("div");
-            labelChips.className = "note-label-chips";
-            renderLabelChips(labelChips, note.labels);
-            const body = document.createElement("div");
-            body.className = "note-body all-notes-preview";
-            body.textContent = note.body || "No note body";
+            const titleArea = document.createElement("div"); titleArea.className = "note-title-area";
+            const title = document.createElement("div"); title.className = "all-notes-title"; title.textContent = note.title || "Untitled";
+            const date = document.createElement("div"); date.className = "all-notes-date"; const parsedDate = fromKey(dateKey); date.textContent = parsedDate ? displayDate(parsedDate) : dateKey;
+            const tools = document.createElement("div"); tools.className = "note-tools-row";
+            const pin = document.createElement("button"); pin.className = "icon-btn pin-note-btn"; pin.type = "button"; pin.textContent = note.pinned ? "★" : "☆"; pin.title = note.pinned ? "Unpin note" : "Pin note"; pin.classList.toggle("pinned", Boolean(note.pinned));
+            const labelChips = document.createElement("div"); labelChips.className = "note-label-chips"; renderLabelChips(labelChips, note.labels);
             pin.addEventListener("click", event => { event.stopPropagation(); updateAllFocusNotePin(dateKey, note.id); });
-            open.addEventListener("click", event => { event.stopPropagation(); openAllFocusNote(dateKey, note.id); });
-            card.addEventListener("click", event => {
-                if (notesCompact && !event.target.closest("button"))
-                    openAllFocusNote(dateKey, note.id);
-            });
-            titleArea.append(title, date);
-            tools.append(pin, open);
-            card.append(titleArea, tools, labelChips, body);
-            return card;
+            const openNote = () => openAllFocusNote(dateKey, note.id);
+            card.addEventListener("click", event => { if (!event.target.closest("button, a")) openNote(); });
+            card.addEventListener("keydown", event => { if ((event.key === "Enter" || event.key === " ") && event.target === card) { event.preventDefault(); openNote(); } });
+            titleArea.append(title, date); tools.append(pin); card.append(titleArea, tools, labelChips); return card;
         }
         function renderAllFocusNotes() {
             const results = collectAllFocusNotes();
@@ -5087,7 +5066,7 @@ ${body}` : title };
                     : "No labelled notes yet";
             }
             else {
-                notesNoResults.textContent = notesPinnedOnly ? "No pinned notes across saved dates" : "No notes found across saved dates";
+                notesNoResults.textContent = "No notes found across saved dates";
             }
             notesNoResults.classList.toggle("show", results.length === 0);
             applyNotesCompact();
@@ -5129,20 +5108,8 @@ ${body}` : title };
             closeNotesMoreMenu();
             applyNotesFocusView();
         }
-        function applyNotesPinnedFilter() {
-            notesPinnedBtn.classList.toggle("active", notesPinnedOnly && !notesBinOpen);
-            notesPinnedBtn.setAttribute("aria-pressed", String(notesPinnedOnly && !notesBinOpen));
-            notesPinnedBtn.textContent = notesPinnedOnly ? "★" : "☆";
-            notesPinnedBtn.title = notesPinnedOnly ? "Show all notes" : "Show pinned notes only";
-        }
-        function toggleNotesPinnedFilter() {
-            if (notesBinOpen)
-                return;
-            notesPinnedOnly = !notesPinnedOnly;
-            localStorage.setItem(NOTES_PINNED_ONLY_KEY, String(notesPinnedOnly));
-            applyNotesPinnedFilter();
-            renderNotes();
-        }
+        function applyNotesPinnedFilter() { notesPinnedOnly = false; }
+        function toggleNotesPinnedFilter() { notesPinnedOnly = false; renderNotes(); }
         function updateSearchUi() {
             notesSearchRow.classList.toggle("open", notesSearchOpen && !notesBinOpen);
             notesSidebar.classList.toggle("bin-open", notesBinOpen);
@@ -5298,83 +5265,22 @@ ${body}` : title };
         function findNoteById(id) { return notes.find(note => note.id === id); }
         function createNoteCard(note) {
             const card = document.createElement("section");
-            card.className = "note-card";
-            card.dataset.id = note.id;
+            card.className = "note-card"; card.dataset.id = note.id; card.tabIndex = 0; card.setAttribute("role", "button"); card.setAttribute("aria-label", `Open note: ${note.title || "Untitled"}`);
             card.classList.toggle("is-pinned", Boolean(note.pinned));
-            const titleArea = document.createElement("div");
-            titleArea.className = "note-title-area";
-            const title = document.createElement("input");
-            title.className = "note-title-input";
-            title.type = "text";
-            title.value = note.title || "Untitled";
-            title.placeholder = "Note title";
-            const compactExpandButton = document.createElement("button");
-            compactExpandButton.className = "icon-btn compact-expand-btn";
-            compactExpandButton.type = "button";
-            compactExpandButton.textContent = "⤢";
-            compactExpandButton.title = "Open larger note editor";
-            const toolsRow = document.createElement("div");
-            toolsRow.className = "note-tools-row";
-            const pinButton = document.createElement("button");
-            pinButton.className = "icon-btn pin-note-btn";
-            pinButton.type = "button";
-            pinButton.textContent = note.pinned ? "★" : "☆";
-            pinButton.title = note.pinned ? "Unpin note" : "Pin note";
-            pinButton.classList.toggle("pinned", Boolean(note.pinned));
-            const expandButton = document.createElement("button");
-            expandButton.className = "icon-btn";
-            expandButton.type = "button";
-            expandButton.textContent = "⤢";
-            expandButton.title = "Open larger note editor";
-            const moveButton = document.createElement("button");
-            moveButton.className = "icon-btn";
-            moveButton.type = "button";
-            moveButton.textContent = "⇄";
-            moveButton.title = "Move note to another day";
-            const deleteButton = document.createElement("button");
-            deleteButton.className = "icon-btn delete-note-btn";
-            deleteButton.type = "button";
-            deleteButton.textContent = "×";
-            deleteButton.title = "Delete note";
-            const body = document.createElement("textarea");
-            body.className = "note-body";
-            body.value = note.body || "";
-            body.placeholder = "Write note...";
-            const labelChips = document.createElement("div");
-            labelChips.className = "note-label-chips";
-            renderLabelChips(labelChips, note.labels);
-            const linkPreview = document.createElement("div");
-            linkPreview.className = "link-preview";
-            renderLinks(linkPreview, body.value);
-            title.addEventListener("input", () => { const currentNote = findNoteById(note.id); if (!currentNote)
-                return; currentNote.title = title.value; if (expandedNoteId === note.id)
-                expandedTitle.value = title.value; save(); });
-            body.addEventListener("input", () => {
-                const currentNote = findNoteById(note.id);
-                if (!currentNote)
-                    return;
-                currentNote.body = body.value;
-                autoGrowNoteBody(body);
-                renderLinks(linkPreview, body.value);
-                if (expandedNoteId === note.id) {
-                    expandedBody.value = body.value;
-                    renderLinks(expandedLinks, body.value);
-                }
-                save();
-            });
-            pinButton.addEventListener("click", () => togglePin(note.id));
-            expandButton.addEventListener("click", () => openExpandedNote(note.id));
-            compactExpandButton.addEventListener("click", event => { event.stopPropagation(); openExpandedNote(note.id); });
-            titleArea.addEventListener("click", event => {
-                if (notesCompact && event.target !== compactExpandButton)
-                    openExpandedNote(note.id);
-            });
-            moveButton.addEventListener("click", () => openMoveNote(note.id));
-            deleteButton.addEventListener("click", () => deleteNoteById(note.id));
-            titleArea.append(title, compactExpandButton);
-            toolsRow.append(pinButton, expandButton, moveButton, deleteButton);
-            card.append(titleArea, toolsRow, labelChips, body, linkPreview);
-            return card;
+            const titleArea = document.createElement("div"); titleArea.className = "note-title-area";
+            const title = document.createElement("div"); title.className = "note-title-input"; title.textContent = note.title || "Untitled";
+            const toolsRow = document.createElement("div"); toolsRow.className = "note-tools-row";
+            const pinButton = document.createElement("button"); pinButton.className = "icon-btn pin-note-btn"; pinButton.type = "button"; pinButton.textContent = note.pinned ? "★" : "☆"; pinButton.title = note.pinned ? "Unpin note" : "Pin note"; pinButton.classList.toggle("pinned", Boolean(note.pinned));
+            const moveButton = document.createElement("button"); moveButton.className = "icon-btn"; moveButton.type = "button"; moveButton.textContent = "⇄"; moveButton.title = "Move note to another day";
+            const deleteButton = document.createElement("button"); deleteButton.className = "icon-btn delete-note-btn"; deleteButton.type = "button"; deleteButton.textContent = "×"; deleteButton.title = "Delete note";
+            const labelChips = document.createElement("div"); labelChips.className = "note-label-chips"; renderLabelChips(labelChips, note.labels);
+            pinButton.addEventListener("click", event => { event.stopPropagation(); togglePin(note.id); });
+            moveButton.addEventListener("click", event => { event.stopPropagation(); openMoveNote(note.id); });
+            deleteButton.addEventListener("click", event => { event.stopPropagation(); deleteNoteById(note.id); });
+            const openNote = () => openExpandedNote(note.id);
+            card.addEventListener("click", event => { if (!event.target.closest("button, a")) openNote(); });
+            card.addEventListener("keydown", event => { if ((event.key === "Enter" || event.key === " ") && event.target === card) { event.preventDefault(); openNote(); } });
+            titleArea.append(title); toolsRow.append(pinButton, moveButton, deleteButton); card.append(titleArea, toolsRow, labelChips); return card;
         }
         function createTrashCard(note) {
             const card = document.createElement("section");
@@ -5574,16 +5480,16 @@ ${body}` : title };
         function updateWorkspaceTabs() {
             const tabs = [
                 [workspaceNotesTab, "notes"],
-                [workspaceLabelsTab, "labels"],
                 [workspaceTasksTab, "tasks"],
                 [workspaceActivityTab, "activity"],
                 [workspaceEventsTab, "events"]
             ];
             tabs.forEach(([button, panel]) => {
-                const active = desktopWorkspacePanel === panel;
+                const active = panel === "notes" ? (desktopWorkspacePanel === "notes" || desktopWorkspacePanel === "labels") : desktopWorkspacePanel === panel;
                 button.classList.toggle("active", active);
                 button.setAttribute("aria-selected", String(active));
             });
+            notesLabelsBtn.classList.toggle("active", desktopWorkspacePanel === "labels");
         }
         function applyWorkspaceFocusState() {
             const active = !isMobileViewport() && Boolean(workspaceFocusPanel);
@@ -6016,7 +5922,7 @@ ${body}` : title };
             const pinnedIdsOnSelectedDate = renderGlobalPinnedSection();
             const visibleNotes = notesBinOpen
                 ? notes.filter(note => note.deleted)
-                : notes.filter(note => !note.deleted && !pinnedIdsOnSelectedDate.has(note.id) && (!notesPinnedOnly || note.pinned) && (!notesLabelFilterValue || note.labels.some(label => label.toLowerCase() === notesLabelFilterValue.toLowerCase())) && noteMatchesSearch(note));
+                : notes.filter(note => !note.deleted && !pinnedIdsOnSelectedDate.has(note.id) && (!notesLabelFilterValue || note.labels.some(label => label.toLowerCase() === notesLabelFilterValue.toLowerCase())) && noteMatchesSearch(note));
             visibleNotes.forEach(note => notesList.appendChild(notesBinOpen ? createTrashCard(note) : createNoteCard(note)));
             if (notesBinOpen) {
                 notesNoResults.textContent = visibleNotes.length ? "" : "Recycle bin is empty";
@@ -6145,8 +6051,9 @@ ${body}` : title };
         function addBlankDay(days) { const spacer = document.createElement("div"); spacer.className = "day-spacer"; spacer.setAttribute("aria-hidden", "true"); days.appendChild(spacer); }
         function updateFocusViewButton() {
             const bothCollapsed = sidebar.classList.contains("collapsed") && notesSidebar.classList.contains("collapsed");
-            focusViewBtn.textContent = bothCollapsed ? "Full view" : "Focus";
-            focusViewBtn.title = bothCollapsed ? "Show calendar and notes" : "Hide calendar and notes";
+            focusViewBtn.textContent = bothCollapsed ? "↩" : "⛶";
+            focusViewBtn.title = bothCollapsed ? "Return to full view" : "Focus view";
+            focusViewBtn.setAttribute("aria-label", focusViewBtn.title);
         }
         function setSidebarCollapsed(panel, button, shellClass, collapsed) {
             panel.classList.toggle("collapsed", collapsed);
@@ -6310,7 +6217,6 @@ ${body}` : title };
             applyNotesFocusScope();
             notesLabelFilter.focus();
         });
-        mobileNotesPinnedBtn.addEventListener("click", toggleNotesPinnedFilter);
         mobileNotesAddBtn.addEventListener("click", () => addNoteBtn.click());
         mobileNotesMoreBtn.addEventListener("click", event => {
             event.stopPropagation();
@@ -6319,7 +6225,6 @@ ${body}` : title };
             mobileNotesMoreBtn.setAttribute("aria-expanded", String(open));
         });
         mobileNotesMoreMenu.addEventListener("click", event => event.stopPropagation());
-        mobileNotesCompactBtn.addEventListener("click", () => { compactNotesBtn.click(); mobileNotesMoreMenu.classList.remove("open"); applyNotesFocusScope(); });
         mobileNotesSortBtn.addEventListener("click", () => { sortNotesBtn.click(); mobileNotesMoreMenu.classList.remove("open"); });
         mobileNotesMoveAllBtn.addEventListener("click", () => { moveAllNotesBtn.click(); mobileNotesMoreMenu.classList.remove("open"); });
         mobileNotesBinBtn.addEventListener("click", () => { notesBinBtn.click(); mobileNotesMoreMenu.classList.remove("open"); });
@@ -6327,7 +6232,6 @@ ${body}` : title };
         notesSearchInput.addEventListener("input", () => { notesSearchQuery = notesSearchInput.value; renderNotes(); });
         notesSearchInput.addEventListener("keydown", event => { if (event.key === "Escape")
             clearSearch(); });
-        compactNotesBtn.addEventListener("click", () => { notesCompact = !notesCompact; localStorage.setItem(COMPACT_KEY, String(notesCompact)); applyNotesCompact(); });
         notesMoreBtn.addEventListener("click", event => { event.stopPropagation(); toggleNotesMoreMenu(); });
         notesMoreMenu.addEventListener("click", event => event.stopPropagation());
         document.addEventListener("click", event => {
@@ -6345,7 +6249,6 @@ ${body}` : title };
         notesScopeDateBtn.addEventListener("click", () => setNotesFocusScope(false));
         notesScopeAllBtn.addEventListener("click", () => setNotesFocusScope(true));
         notesLabelFilter.addEventListener("change", () => { notesLabelFilterValue = notesLabelFilter.value; renderNotes(); });
-        notesPinnedBtn.addEventListener("click", toggleNotesPinnedFilter);
         moveAllNotesBtn.addEventListener("click", () => { closeNotesMoreMenu(); openMoveAllNotes(); });
         notesBinBtn.addEventListener("click", toggleNotesBin);
         notesBinBackBtn.addEventListener("click", toggleNotesBin);
@@ -6359,7 +6262,7 @@ ${body}` : title };
             openExpandedNote(newNote.id, true, "title");
         });
         workspaceNotesTab.addEventListener("click", () => showDesktopWorkspacePanel("notes"));
-        workspaceLabelsTab.addEventListener("click", () => showDesktopWorkspacePanel("labels"));
+        notesLabelsBtn.addEventListener("click", () => showDesktopWorkspacePanel("labels"));
         workspaceTasksTab.addEventListener("click", () => showDesktopWorkspacePanel("tasks"));
         workspaceActivityTab.addEventListener("click", () => showDesktopWorkspacePanel("activity"));
         workspaceEventsTab.addEventListener("click", () => showDesktopWorkspacePanel("events"));
@@ -6385,7 +6288,6 @@ ${body}` : title };
         activityBtn.addEventListener("click", openActivity);
         addTaskInboxBtn.addEventListener("click", openTasksInboxShortcut);
         addTaskTodayBtn.addEventListener("click", openTasksTodayShortcut);
-        sortTasksBtn.addEventListener("click", sortTasks);
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
         newTaskBtn.addEventListener("click", () => openNewTaskEditor(activeTaskContext));
         taskTagFilter.addEventListener("change", () => { activeTaskTagFilter = taskTagFilter.value; renderGlobalTasks(); });
