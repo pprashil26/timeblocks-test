@@ -3932,8 +3932,38 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             const selectedKey = toKey(selectedDate);
             return fromKey(selectedKey) ? selectedKey : toKey(getToday());
         }
-        function createNoteForEditingTask() {
+        function saveEditingTaskChangesBeforeNote() {
             const found = editingTaskId ? findTaskLocation(editingTaskId) : null;
+            if (!found) return null;
+            const text = taskEditorText.value.trim();
+            const date = taskEditorDate.value;
+            const time = taskEditorTime.value;
+            if (!text) { alert("Please enter a task."); taskEditorText.focus(); return null; }
+            if (date && (!fromKey(date) || !isWithinRange(fromKey(date)))) { alert("Please select a valid task date."); return null; }
+            if (time && !date) { alert("Please select a date for the task time."); return null; }
+            const targetContext = TASK_CONTEXTS.includes(taskEditorContext.value) ? taskEditorContext.value : found.context;
+            const previous = { ...found.task };
+            removeLinkedTaskTimeblock(previous);
+            found.task.text = text;
+            found.task.tags = normalizeTaskTags(taskEditorTags.value.split(","));
+            found.task.date = date;
+            found.task.time = time;
+            if (targetContext !== found.context) {
+                globalTasks[found.context] = globalTasks[found.context].filter(item => item.id !== found.task.id);
+                globalTasks[targetContext].unshift(found.task);
+                editingTaskContext = targetContext;
+                activeTaskContext = targetContext;
+                activeTaskTagFilter = "";
+                localStorage.setItem(TASK_CONTEXT_KEY, targetContext);
+            }
+            saveTasks();
+            populateTaskTimeblock(found.task);
+            renderGlobalTasks();
+            if (toKey(selectedDate) === previous.date || toKey(selectedDate) === found.task.date) loadSelectedDate();
+            return findTaskLocation(found.task.id);
+        }
+        function createNoteForEditingTask() {
+            const found = saveEditingTaskChangesBeforeNote();
             if (!found || linkedNoteForTask(found.task)) return updateTaskNoteControls();
             const dateKey = linkedNoteDateForTask(found.task);
             const data = readDateData(dateKey);
@@ -4015,6 +4045,15 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             taskModal.classList.add("open"); taskModal.setAttribute("aria-hidden", "false"); focusTaskEditorField(focusTarget);
         }
         function closeTaskEditor() { taskModal.classList.remove("open"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; taskEditorFocusTarget = "text"; }
+        function showTaskSavedFeedback() {
+            const original = saveTaskEditorBtn.textContent;
+            saveTaskEditorBtn.textContent = "Saved ✓";
+            saveTaskEditorBtn.disabled = true;
+            setTimeout(() => {
+                saveTaskEditorBtn.textContent = original;
+                saveTaskEditorBtn.disabled = false;
+            }, 900);
+        }
         function saveTaskFromEditor() {
             const text = taskEditorText.value.trim(); if (!text) { alert("Please enter a task."); taskEditorText.focus(); return; }
             const date = taskEditorDate.value; const time = taskEditorTime.value;
@@ -4024,7 +4063,13 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             if (!editingTaskId) {
                 const task = { id: createId("task"), text, done: false, highlighted: false, tags: normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null };
                 globalTasks[targetContext].unshift(task); activeTaskContext = targetContext; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, targetContext);
-                saveTasks(); populateTaskTimeblock(task); closeTaskEditor(); renderGlobalTasks();
+                saveTasks(); populateTaskTimeblock(task); renderGlobalTasks();
+                editingTaskId = task.id;
+                editingTaskContext = targetContext;
+                taskEditorTitle.textContent = "Edit Task";
+                deleteTaskEditorBtn.hidden = false;
+                updateTaskNoteControls();
+                showTaskSavedFeedback();
                 if (task.date === toKey(selectedDate)) loadSelectedDate();
                 return;
             }
