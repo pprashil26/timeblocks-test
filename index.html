@@ -3176,6 +3176,45 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
 .task-linked-note-btn { color:#5c4b18;background:#fff6d8;font-weight:750; }
 .task-linked-note-btn:hover,.task-linked-note-btn:focus-visible { background:#ffefb8;color:#4f4014; }
 @media (max-width:759px){.events-strip-head{gap:6px}.events-strip-title{font-size:11px}.events-strip-actions{gap:6px}#viewEventsBtn{font-size:11px}.task-note-section{padding:8px}.task-note-actions{gap:6px}}
+
+/* Desktop Navigate / Work / Plan layout */
+@media (min-width: 760px) {
+  .shell {
+    grid-template-areas: "calendar workspace planner";
+    grid-template-columns: clamp(190px, 15vw, 220px) minmax(480px, 1fr) clamp(380px, 31vw, 460px);
+    align-items: stretch;
+  }
+  .sidebar { grid-area: calendar; }
+  .notes-sidebar { grid-area: workspace; width: 100%; min-width: 0; }
+  .app { grid-area: planner; min-width: 0; }
+  .sidebar,
+  .notes-sidebar,
+  .app { max-height: calc(100vh - 20px); }
+  .notes-sidebar { display: flex; flex-direction: column; }
+  .notes-sidebar .notes-wrap,
+  .workspace-panel-host { min-height: 0; flex: 1; overflow: hidden; }
+  .notes-sidebar .notes-wrap { overflow-y: auto; }
+  .workspace-panel-host .tasks-panel,
+  .workspace-panel-host .activity-panel,
+  .workspace-panel-host .events-panel { max-height: none; height: 100%; }
+  .app { display: flex; flex-direction: column; }
+  .app .timeline { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+  .app > header,
+  .app > .note-block,
+  .app > .events-strip,
+  .app > .quote-block,
+  .app > footer { flex: 0 0 auto; }
+  .app .time-pair-row { grid-template-columns: 1fr; gap: 2px; border-bottom: 0; padding-bottom: 0; }
+  .app .slot { grid-template-columns: 48px 16px 24px minmax(0, 1fr); min-height: 24px; border-bottom: 1px solid var(--line); }
+  .app textarea[data-time] { min-height: 23px; height: 23px; }
+  .shell.left-collapsed:not(.right-collapsed) { grid-template-columns: 116px minmax(480px, 1fr) clamp(380px, 31vw, 460px); }
+  .shell.right-collapsed:not(.left-collapsed) { grid-template-columns: clamp(190px, 15vw, 220px) minmax(480px, 1fr) 126px; }
+  .shell.left-collapsed.right-collapsed { grid-template-columns: 116px minmax(480px, 1fr) 126px; }
+  body.workspace-focus-active:not(.global-search-active) .shell,
+  body.notes-focus-active:not(.global-search-active) .shell { display: block; max-width: 1180px; }
+  body.workspace-focus-active .notes-sidebar,
+  body.notes-focus-active .notes-sidebar { width: 100%; max-width: 1180px; max-height: calc(100vh - 20px); }
+}
 </style>
 </head>
 <body>
@@ -3872,14 +3911,8 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
                     changed = true;
                 }
             });
-            if (link) {
-                delete links[event.id];
-                changed = true;
-            }
-            if (changed) {
-                data.eventTimeblocks = links;
-                writeDateData(event.date, data);
-            }
+            if (link) { delete links[event.id]; changed = true; }
+            if (changed) { data.eventTimeblocks = links; writeDateData(event.date, data); }
         }
         function populateEventTimeblock(event,showOccupiedMessage=true) {
             const times=eventTimeblockTimes(event); if(!times.length)return false; const data=readDateData(event.date); data.entries=data.entries&&typeof data.entries==="object"?data.entries:{}; const links=normalizeEventTimeblocks(data.eventTimeblocks);
@@ -4247,35 +4280,17 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
                     const belongsToSeries = id.startsWith(seriesId + "@") || exceptionIds.has(id);
                     if (!belongsToSeries || !predicate(occurrenceDate)) return;
                     const link = links[id];
-                    link.times.forEach(time => {
-                        if (data.entries[time] === link.text) {
-                            delete data.entries[time];
-                            delete data.timeblockStatuses[time];
-                        }
-                    });
-                    delete links[id];
-                    changed = true;
+                    link.times.forEach(time => { if (data.entries[time] === link.text) { delete data.entries[time]; delete data.timeblockStatuses[time]; } });
+                    delete links[id]; changed = true;
                 });
                 if (master && recurrenceMatches(master, dateKey)) {
                     const occurrence = eventForOccurrence(master, dateKey);
                     const expectedText = eventTimeblockText(occurrence);
-                    eventTimeblockTimes(occurrence).forEach(time => {
-                        if (data.entries[time] === expectedText) {
-                            delete data.entries[time];
-                            delete data.timeblockStatuses[time];
-                            changed = true;
-                        }
-                    });
+                    eventTimeblockTimes(occurrence).forEach(time => { if (data.entries[time] === expectedText) { delete data.entries[time]; delete data.timeblockStatuses[time]; changed = true; } });
                     const generatedId = occurrenceId(seriesId, dateKey);
-                    if (links[generatedId]) {
-                        delete links[generatedId];
-                        changed = true;
-                    }
+                    if (links[generatedId]) { delete links[generatedId]; changed = true; }
                 }
-                if (changed) {
-                    data.eventTimeblocks = links;
-                    writeDateData(dateKey, data);
-                }
+                if (changed) { data.eventTimeblocks = links; writeDateData(dateKey, data); }
             });
         }
         function saveEventFromEditor(){
