@@ -3361,6 +3361,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   font-weight: 700;
   flex-shrink: 0;
 }
+.task-status-not-started { color: #6f7873; }
 .task-status-started { color: #526b7a; }
 .task-status-waiting { color: #8a6a24; }
 .task-status-completed { color: #4f6f5f; }
@@ -3599,7 +3600,10 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             { id: "completed", icon: "✓", label: "Completed" },
             { id: "later", icon: "↷", label: "Act later" }
         ];
-        const TASK_STATUSES = ACTIVITY_STATUSES;
+        const TASK_STATUSES = [
+            { id: "not-started", icon: "○", label: "Not started" },
+            ...ACTIVITY_STATUSES
+        ];
         const TASK_CONTEXT_KEY = "timeblocks:taskContext";
         const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
         const NOTE_WIDE_KEY = "timeblocks:expandedNoteWide";
@@ -4327,7 +4331,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             if (time && !date) { alert("Please select a date for the task time."); return; }
             const targetContext = TASK_CONTEXTS.includes(taskEditorContext.value) ? taskEditorContext.value : (editingTaskContext || activeTaskContext);
             if (!editingTaskId) {
-                const task = { id: createId("task"), text, status: "started", done: false, highlighted: false, tags: normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null };
+                const task = { id: createId("task"), text, status: "not-started", done: false, highlighted: false, tags: normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null };
                 globalTasks[targetContext].unshift(task); activeTaskContext = targetContext; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, targetContext);
                 saveTasks(); populateTaskTimeblock(task); renderGlobalTasks();
                 if (isMobileViewport() && mobileTaskCaptureReturnHome) {
@@ -4607,7 +4611,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             const dateKey = toKey(selectedDate);
             const type = plannerCreateType.value;
             if (type === "task") {
-                const task = { id: createId("task"), text, status: "started", done: false, highlighted: false, tags: [], date: dateKey, time: plannerCreateTime, noteLink: null };
+                const task = { id: createId("task"), text, status: "not-started", done: false, highlighted: false, tags: [], date: dateKey, time: plannerCreateTime, noteLink: null };
                 globalTasks.Today.unshift(task); saveTasks(); populateTaskTimeblock(task, false); renderGlobalTasks();
             } else if (type === "event") {
                 const event = { id: createId("event"), title: text, date: dateKey, time: plannerCreateTime, durationMinutes: 30, recurrence: null, seriesId: "", originalDate: "", cancelled: false, createdAt: new Date().toISOString() };
@@ -4879,11 +4883,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             return empty;
         }
         function normalizeTask(task) {
-            const status = TASK_STATUSES.some(item => item.id === task.status) ? task.status : (task.done ? "completed" : "started");
+            const status = TASK_STATUSES.some(item => item.id === task.status) ? task.status : (task.done ? "completed" : "not-started");
             return { id: task.id || createId("task"), text: task.text || "", status, done: status === "completed", highlighted: Boolean(task.highlighted), tags: normalizeTaskTags(task.tags), date: fromKey(task.date) ? task.date : "", time: /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "", noteLink: normalizeTaskNoteLink(task.noteLink) };
         }
         function orderTasks(taskList) {
-            const list=(taskList||[]).map(task=>{if(!task.id)task.id=createId("task");if(typeof task.text!=="string")task.text="";task.status=TASK_STATUSES.some(item=>item.id===task.status)?task.status:(task.done?"completed":"started");task.done=task.status==="completed";task.highlighted=Boolean(task.highlighted);task.tags=normalizeTaskTags(task.tags);task.date=fromKey(task.date)?task.date:"";task.time=/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time||"")?task.time:"";task.noteLink=normalizeTaskNoteLink(task.noteLink);return task;});
+            const list=(taskList||[]).map(task=>{if(!task.id)task.id=createId("task");if(typeof task.text!=="string")task.text="";task.status=TASK_STATUSES.some(item=>item.id===task.status)?task.status:(task.done?"completed":"not-started");task.done=task.status==="completed";task.highlighted=Boolean(task.highlighted);task.tags=normalizeTaskTags(task.tags);task.date=fromKey(task.date)?task.date:"";task.time=/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time||"")?task.time:"";task.noteLink=normalizeTaskNoteLink(task.noteLink);return task;});
             const firstTag=task=>normalizeTaskTags(task.tags).slice().sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:"base"}))[0]||"";return list.sort((a,b)=>{if(a.highlighted!==b.highlighted)return a.highlighted?-1:1;if(a.done!==b.done)return a.done?1:-1;const at=firstTag(a),bt=firstTag(b);if(Boolean(at)!==Boolean(bt))return at?-1:1;const tagOrder=at.localeCompare(bt,undefined,{sensitivity:"base"});if(tagOrder)return tagOrder;return(a.text||"").localeCompare(b.text||"",undefined,{sensitivity:"base"});});
         }
         function allTaskTags() {
