@@ -3441,8 +3441,10 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   font-size: 11px;
   font-weight: 650;
 }
-.notes-date-picker.active { border-color: #c8b458; background: #fff8d9; }
-.notes-date-picker:disabled { opacity: .58; background: #f5f4ef; }
+.notes-date-picker { background: #fff; border-color: #cfd8d3; }
+.notes-date-picker.active { background: #fff; border-color: #9fb0a7; color: var(--ink); }
+.notes-date-picker:not(.active) { background: #fff; border-color: #d9dfdc; color: var(--muted); }
+.notes-date-picker:focus-visible { outline: 2px solid rgba(91, 121, 104, .22); outline-offset: 1px; border-color: #8fa397; }
 @media (max-width: 759px) {
   .notes-focus-scope.mobile-scope #notesScopeDateBtn {
     display: inline-flex;
@@ -6653,7 +6655,8 @@ ${body}` : title };
             notes = orderNotes(notes);
             applyNotesFocusScope();
             const mobilePinnedGlobal = isMobileViewport() && notesPinnedOnly && notesSidebar.classList.contains("mobile-notes-open");
-            if (!notesBinOpen && (mobilePinnedGlobal || (isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || (notesFocusView && notesFocusAll))))) {
+            const desktopNotesAll = !isMobileViewport() && desktopWorkspacePanel === "notes" && notesFocusAll;
+            if (!notesBinOpen && (mobilePinnedGlobal || (isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || desktopNotesAll || (notesFocusView && notesFocusAll))))) {
                 renderAllFocusNotes();
                 return;
             }
