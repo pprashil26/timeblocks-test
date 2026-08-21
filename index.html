@@ -3325,13 +3325,12 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   .mobile-home-brand .mobile-home-nav {
     grid-template-columns: 1.25fr 1fr 1fr 1fr 32px;
   }
-  body.mobile-section-active.mobile-view-plan .app > header .toolbar,
+  body.mobile-section-active.mobile-view-plan .app > .note-block,
   body.mobile-section-active.mobile-view-plan .app > .events-strip,
   body.mobile-section-active.mobile-view-plan .app > .quote-block {
     display: none !important;
   }
   body.mobile-section-active.mobile-view-calendar #calendarWrap {
-    max-height: none !important;
     overflow-y: auto !important;
     scroll-behavior: smooth;
   }
@@ -4283,6 +4282,14 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             taskEditorText.select();
         }
         function closeTaskEditor() { taskModal.classList.remove("open"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; taskEditorFocusTarget = "text"; mobileTaskCaptureReturnHome = false; }
+        function cancelTaskEditor() {
+            const returnHome = isMobileViewport() && mobileTaskCaptureReturnHome;
+            closeTaskEditor();
+            if (returnHome) {
+                closeExpandedEditor();
+                clearMobileSection();
+            }
+        }
         function showTaskSavedFeedback() {
             const original = saveTaskEditorBtn.textContent;
             saveTaskEditorBtn.textContent = "Saved ✓";
@@ -5138,7 +5145,9 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 const month = selectedButton ? selectedButton.closest(".month") : calendarWrap.querySelector(".month");
                 if (!month)
                     return;
-                calendarWrap.style.height = `${Math.ceil(month.getBoundingClientRect().height)}px`;
+                const monthHeight = Math.ceil(month.getBoundingClientRect().height);
+                calendarWrap.style.setProperty("height", `${monthHeight}px`, "important");
+                calendarWrap.style.setProperty("max-height", `${monthHeight}px`, "important");
                 calendarWrap.scrollTop = month.offsetTop;
             });
         }
@@ -6846,12 +6855,12 @@ ${body}` : title };
         taskCreateNoteBtn.addEventListener("click", createNoteForEditingTask);
         taskOpenNoteBtn.addEventListener("click", openLinkedNoteForEditingTask);
         taskUnlinkNoteBtn.addEventListener("click", unlinkNoteFromEditingTask);
-        closeTaskEditorBtn.addEventListener("click", closeTaskEditor);
-        cancelTaskEditorBtn.addEventListener("click", closeTaskEditor);
+        closeTaskEditorBtn.addEventListener("click", cancelTaskEditor);
+        cancelTaskEditorBtn.addEventListener("click", cancelTaskEditor);
         saveTaskEditorBtn.addEventListener("click", saveTaskFromEditor);
         copyTaskBtn.addEventListener("click", copyEditingTask);
         deleteTaskEditorBtn.addEventListener("click", deleteTaskFromEditor);
-        taskModal.addEventListener("click", event => { if (event.target === taskModal) closeTaskEditor(); });
+        taskModal.addEventListener("click", event => { if (event.target === taskModal) cancelTaskEditor(); });
         taskModal.addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && event.target instanceof HTMLInputElement) { event.preventDefault(); saveTaskFromEditor(); } });
         activityAddBtn.addEventListener("click", addActivityEntry);
         activityFilterBtn.addEventListener("click", toggleActivityFilter);
@@ -6959,6 +6968,9 @@ ${body}` : title };
                 setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
                 moveWorkspacePanelsToSidebar();
                 showDesktopWorkspacePanel(desktopWorkspacePanel);
+            }
+            else if (document.body.classList.contains("mobile-view-calendar")) {
+                alignMobileCalendarToCurrentMonth();
             }
         });
         window.addEventListener("hashchange", () => { const hashDate = fromKey(location.hash.replace("#", "")); if (hashDate && isWithinRange(hashDate))
