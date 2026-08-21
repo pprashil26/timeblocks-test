@@ -3298,121 +3298,17 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   .app > .note-block { display: none; }
 }
 
-
-/* Desktop-only workspace focus: keep Today's plan visible */
-@media (min-width: 760px) {
-  body.workspace-focus-active:not(.global-search-active) .shell,
-  body.notes-focus-active:not(.global-search-active) .shell {
-    display: grid;
-    width: calc(100vw - 24px);
-    max-width: 1560px;
-    grid-template-areas: "workspace planner";
-    grid-template-columns: minmax(480px, 1fr) clamp(380px, 31vw, 460px);
-    gap: 10px;
-    align-items: stretch;
-  }
-  body.workspace-focus-active .sidebar,
-  body.notes-focus-active .sidebar {
-    display: none;
-  }
-  body.workspace-focus-active .app,
-  body.notes-focus-active .app {
-    display: flex;
-    grid-area: planner;
-  }
-  body.workspace-focus-active .notes-sidebar,
-  body.notes-focus-active .notes-sidebar,
-  body.workspace-focus-active .notes-sidebar.collapsed,
-  body.notes-focus-active .notes-sidebar.collapsed {
-    display: flex;
-    grid-area: workspace;
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-    max-height: calc(100vh - 20px);
-  }
-}
-
-
-/* Desktop section-specific Focus sizing */
-@media (min-width: 760px) {
-  /* Tasks, Activity and Events: hide Calendar but preserve normal workspace and Planner widths. */
-  body.workspace-focus-active:not(.global-search-active) .shell {
-    display: grid;
-    width: calc(100vw - 24px);
-    max-width: 1560px;
-    grid-template-areas: "calendar workspace planner";
-    grid-template-columns: clamp(190px, 15vw, 220px) minmax(480px, 1fr) clamp(380px, 31vw, 460px);
-    gap: 10px;
-    align-items: stretch;
-  }
-  body.workspace-focus-active .sidebar { display: none; }
-  body.workspace-focus-active .notes-sidebar,
-  body.workspace-focus-active .notes-sidebar.collapsed {
-    display: flex;
-    grid-area: workspace;
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-  }
-  body.workspace-focus-active .app {
-    display: flex;
-    grid-area: planner;
-  }
-
-  /* Notes only: hide Calendar and expand Notes into the released space. */
-  body.notes-focus-active:not(.global-search-active) .shell {
-    display: grid;
-    width: calc(100vw - 24px);
-    max-width: 1560px;
-    grid-template-areas: "workspace planner";
-    grid-template-columns: minmax(480px, 1fr) clamp(380px, 31vw, 460px);
-    gap: 10px;
-    align-items: stretch;
-  }
-  body.notes-focus-active .sidebar { display: none; }
-  body.notes-focus-active .notes-sidebar,
-  body.notes-focus-active .notes-sidebar.collapsed {
-    display: flex;
-    grid-area: workspace;
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-  }
-  body.notes-focus-active .app {
-    display: flex;
-    grid-area: planner;
-  }
-}
-
-
 /* Desktop-only neutral default Task and Activity entries */
 @media (min-width: 760px) {
   .workspace-panel-host .task-row:not(.highlighted):not(.is-highlighted):not(.task-highlighted),
-  .workspace-panel-host .activity-row:not(.highlighted) {
-    background: #ffffff;
-  }
+  .workspace-panel-host .activity-row:not(.highlighted) { background: #ffffff; }
 }
-
-
 /* Desktop All notes: allow the workspace to grow with the complete list */
 @media (min-width: 760px) {
-  .notes-sidebar.desktop-all-notes {
-    height: auto;
-    max-height: none;
-    align-self: start;
-    overflow: visible;
-  }
-  .notes-sidebar.desktop-all-notes .notes-wrap {
-    flex: 0 0 auto;
-    min-height: 0;
-    overflow: visible;
-  }
-  .notes-sidebar.desktop-all-notes #notesList {
-    overflow: visible;
-  }
+  .notes-sidebar.desktop-all-notes { height: auto; max-height: none; align-self: start; overflow: visible; }
+  .notes-sidebar.desktop-all-notes .notes-wrap { flex: 0 0 auto; min-height: 0; overflow: visible; }
+  .notes-sidebar.desktop-all-notes #notesList { overflow: visible; }
 }
-
 
 /* Desktop workspace Focus feature retired: Calendar visibility is controlled independently. */
 #focusViewBtn,
@@ -3421,6 +3317,34 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
 #activityFocusBtn,
 #eventsFocusBtn {
   display: none !important;
+}
+
+
+/* Mobile homepage Tasks navigation and simplified Planner */
+@media (max-width: 759px) {
+  .mobile-home-brand .mobile-home-nav {
+    grid-template-columns: 1.25fr 1fr 1fr 1fr 32px;
+  }
+  body.mobile-section-active.mobile-view-plan .app > header .toolbar,
+  body.mobile-section-active.mobile-view-plan .app > .events-strip,
+  body.mobile-section-active.mobile-view-plan .app > .quote-block {
+    display: none !important;
+  }
+  body.mobile-section-active.mobile-view-calendar #calendarWrap {
+    max-height: none !important;
+    overflow-y: auto !important;
+    scroll-behavior: smooth;
+  }
+}
+@media (max-width: 380px) {
+  .mobile-home-brand .mobile-home-nav {
+    grid-template-columns: 1.2fr 1fr 1fr 1fr 30px;
+    gap: 2px;
+  }
+  .mobile-home-brand .mobile-home-link {
+    font-size: 10px;
+    padding-inline: 3px;
+  }
 }
 
 </style>
@@ -3456,6 +3380,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
       <nav class="mobile-home-nav" aria-label="Navigation">
         <button class="plain-btn mobile-home-link" id="mobileAllEventsBtn" type="button">All events</button>
         <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Planner</button>
+        <button class="plain-btn mobile-home-link" id="mobileTasksBtn" type="button">Tasks</button>
         <button class="plain-btn mobile-home-link" id="mobileNotesBtn" type="button">Notes</button>
         <button class="plain-btn mobile-home-link mobile-home-help" id="mobileHelpBtn" type="button" title="Help" aria-label="Help">?</button>
       </nav>
@@ -3672,6 +3597,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         const globalResultsHead = el("globalResultsHead");
         const globalResultsList = el("globalResultsList");
         const mobileCalendarBtn = el("mobileCalendarBtn");
+        const mobileTasksBtn = el("mobileTasksBtn");
         const mobileNotesBtn = el("mobileNotesBtn");
         const mobileAddTaskBtn = el("mobileAddTaskBtn");
         const mobileActivityBtn = el("mobileActivityBtn");
@@ -3866,6 +3792,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         localStorage.removeItem(NOTE_FOCUS_KEY);
         let notesFocusAll = false;
         let mobileNotesAll = true;
+        let mobileTaskCaptureReturnHome = false;
         let notesLabelFilterValue = "";
         let notesPinnedOnly = false;
         let globalPinnedExpanded = false;
@@ -4355,7 +4282,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             taskEditorText.focus();
             taskEditorText.select();
         }
-        function closeTaskEditor() { taskModal.classList.remove("open"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; taskEditorFocusTarget = "text"; }
+        function closeTaskEditor() { taskModal.classList.remove("open"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; taskEditorFocusTarget = "text"; mobileTaskCaptureReturnHome = false; }
         function showTaskSavedFeedback() {
             const original = saveTaskEditorBtn.textContent;
             saveTaskEditorBtn.textContent = "Saved ✓";
@@ -4375,6 +4302,13 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
                 const task = { id: createId("task"), text, done: false, highlighted: false, tags: normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null };
                 globalTasks[targetContext].unshift(task); activeTaskContext = targetContext; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, targetContext);
                 saveTasks(); populateTaskTimeblock(task); renderGlobalTasks();
+                if (isMobileViewport() && mobileTaskCaptureReturnHome) {
+                    closeTaskEditor();
+                    closeExpandedEditor();
+                    clearMobileSection();
+                    if (task.date === toKey(selectedDate)) loadSelectedDate();
+                    return;
+                }
                 editingTaskId = task.id;
                 editingTaskContext = targetContext;
                 taskEditorTitle.textContent = "Edit Task";
@@ -5196,6 +5130,18 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
         }
         function isMobileViewport() { return window.matchMedia("(max-width: 759px)").matches; }
         function clearMobileSection() { document.body.classList.remove("mobile-section-active", "mobile-view-plan", "mobile-view-calendar", "mobile-view-notes"); mobileSectionTitle.textContent = "Section"; }
+        function alignMobileCalendarToCurrentMonth() {
+            if (!isMobileViewport())
+                return;
+            requestAnimationFrame(() => {
+                const selectedButton = calendarWrap.querySelector(`.day-btn[data-date="${toKey(selectedDate)}"]`);
+                const month = selectedButton ? selectedButton.closest(".month") : calendarWrap.querySelector(".month");
+                if (!month)
+                    return;
+                calendarWrap.style.height = `${Math.ceil(month.getBoundingClientRect().height)}px`;
+                calendarWrap.scrollTop = month.offsetTop;
+            });
+        }
         function setMobileSection(section) {
             document.body.classList.remove("mobile-view-plan", "mobile-view-calendar", "mobile-view-notes");
             document.body.classList.add("mobile-section-active", `mobile-view-${section}`);
@@ -6209,6 +6155,15 @@ ${body}` : title };
             renderGlobalTasks();
             openNewTaskEditor("Today");
         }
+        function openMobileTodayTasks() {
+            if (!isMobileViewport())
+                return;
+            openTasks();
+            activeTaskContext = "Today";
+            activeTaskTagFilter = "";
+            localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext);
+            renderGlobalTasks();
+        }
         function openTasks() {
             if (!isMobileViewport()) {
                 showDesktopWorkspacePanel("tasks");
@@ -6498,7 +6453,7 @@ ${body}` : title };
             notes = orderNotes(notes);
             applyNotesFocusScope();
             const mobilePinnedGlobal = isMobileViewport() && notesPinnedOnly && notesSidebar.classList.contains("mobile-notes-open");
-            if (!notesBinOpen && (mobilePinnedGlobal || (isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || ((desktopWorkspacePanel === "notes" || notesFocusView) && notesFocusAll))))) {
+            if (!notesBinOpen && (mobilePinnedGlobal || (isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || (notesFocusView && notesFocusAll))))) {
                 renderAllFocusNotes();
                 return;
             }
@@ -6779,7 +6734,9 @@ ${body}` : title };
             if (isWithinRange(today))
                 selectDate(today, true);
             setMobileSection("calendar");
+            alignMobileCalendarToCurrentMonth();
         });
+        mobileTasksBtn.addEventListener("click", openMobileTodayTasks);
         mobileNotesBtn.addEventListener("click", () => {
             mobileNotesAll = true;
             notesBinOpen = false;
@@ -6788,7 +6745,10 @@ ${body}` : title };
             notesSearchInput.value = "";
             setMobileSection("notes");
         });
-        mobileAddTaskBtn.addEventListener("click", openTasksInboxShortcut);
+        mobileAddTaskBtn.addEventListener("click", () => {
+            mobileTaskCaptureReturnHome = true;
+            openTasksInboxShortcut();
+        });
         mobileActivityBtn.addEventListener("click", openActivity);
         mobileHelpBtn.addEventListener("click", openHelp);
         mobileShareBtn.addEventListener("click", shareFastGtd);
