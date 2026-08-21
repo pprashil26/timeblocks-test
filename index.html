@@ -3428,6 +3428,29 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   }
 }
 
+
+/* Independent Notes date picker */
+.notes-date-picker {
+  min-height: 28px;
+  padding: 3px 7px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 650;
+}
+.notes-date-picker.active { border-color: #c8b458; background: #fff8d9; }
+.notes-date-picker:disabled { opacity: .58; background: #f5f4ef; }
+@media (max-width: 759px) {
+  .notes-focus-scope.mobile-scope #notesScopeDateBtn {
+    display: inline-flex;
+    width: 132px;
+    min-width: 132px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3534,7 +3557,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
         <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn notes-labels-btn" id="notesLabelsBtn" type="button" title="Filter notes by label">Labels</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
-        <div class="notes-focus-scope" id="notesFocusScope" aria-label="Notes scope"><button class="plain-btn notes-scope-btn active" id="notesScopeDateBtn" type="button">This date</button><button class="plain-btn notes-scope-btn" id="notesScopeAllBtn" type="button">All notes</button><select class="notes-label-filter" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
+        <div class="notes-focus-scope" id="notesFocusScope" aria-label="Notes scope"><input class="notes-date-picker active" id="notesScopeDateBtn" type="date" aria-label="Notes date" title="Select Notes date" /><button class="plain-btn notes-scope-btn" id="notesScopeAllBtn" type="button">All notes</button><select class="notes-label-filter" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
         <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-tool" id="mobileNotesLabelsBtn" type="button">Labels</button><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note to selected date">＋</button><span class="mobile-notes-more-wrap"><button class="plain-btn mobile-notes-more-btn" id="mobileNotesMoreBtn" type="button" aria-expanded="false">⋯</button><span class="mobile-notes-more-menu" id="mobileNotesMoreMenu"><button class="plain-btn" id="mobileNotesSortBtn" type="button">Sort A–Z</button><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button></span></span></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
@@ -3667,6 +3690,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         ];
         const TASK_CONTEXT_KEY = "timeblocks:taskContext";
         const TASK_LEGACY_MIGRATION_TIME = Date.now();
+        const NOTES_DATE_KEY = "timeblocks:notesDate";
         const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
         const NOTE_WIDE_KEY = "timeblocks:expandedNoteWide";
         const NOTE_FOCUS_KEY = "timeblocks:notesFocusView";
@@ -3864,6 +3888,8 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         let selectedDate = getInitialDate();
         let storageKey = "";
         let saved = {};
+        const savedNotesDate = fromKey(localStorage.getItem(NOTES_DATE_KEY) || "");
+        let notesDate = savedNotesDate && isWithinRange(savedNotesDate) ? savedNotesDate : getToday();
         let notes = [];
         let draggedBox = null;
         let expandedNoteId = null;
@@ -4283,7 +4309,10 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             saveTasks();
             closeTaskEditor();
             const targetDate = fromKey(dateKey);
-            if (targetDate) selectDate(targetDate, true);
+            if (targetDate) {
+                notesDate = targetDate;
+                loadNotesForIndependentDate();
+            }
             setTimeout(() => openExpandedNote(note.id, true), 0);
         }
         function openLinkedNoteForEditingTask() {
@@ -4292,7 +4321,10 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             if (!linked) return updateTaskNoteControls();
             closeTaskEditor();
             const targetDate = fromKey(linked.link.dateKey);
-            if (targetDate) selectDate(targetDate, true);
+            if (targetDate) {
+                notesDate = targetDate;
+                loadNotesForIndependentDate();
+            }
             setTimeout(() => openExpandedNote(linked.note.id), 0);
         }
         function unlinkNoteFromEditingTask() {
@@ -5220,7 +5252,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 noteButton.addEventListener("click", () => {
                     if (!linkedNote) return;
                     const targetDate = fromKey(linkedNote.link.dateKey);
-                    if (targetDate) selectDate(targetDate, true);
+                    if (targetDate) {
+                        notesDate = targetDate;
+                        loadNotesForIndependentDate();
+                    }
                     setTimeout(() => openExpandedNote(linkedNote.note.id), 0);
                 });
                 move.addEventListener("click", event => {
@@ -5329,7 +5364,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             if (!targetDate)
                 return;
             clearGlobalSearch();
-            selectDate(targetDate, true);
+            notesDate = targetDate;
+            loadNotesForIndependentDate();
             if (isMobileViewport())
                 setMobileSection("notes");
             setTimeout(() => openExpandedNote(noteId), 0);
@@ -5433,7 +5469,30 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             renderLastImportStatus();
             alert(`Imported ${entries.length} saved date(s).`);
         }
-        function readSavedData() { storageKey = selectedStorageKey(); saved = readDateData(toKey(selectedDate)); notes = orderNotes(normalizeNotes(saved.notes)); }
+        function notesDateKey() { return toKey(notesDate); }
+        function loadNotesForIndependentDate() {
+            notes = orderNotes(normalizeNotes(readDateData(notesDateKey()).notes));
+            notesScopeDateBtn.value = notesDateKey();
+            mobileNotesDate.textContent = `Notes for ${displayDate(notesDate)}`;
+        }
+        function setIndependentNotesDate(dateKey) {
+            const target = fromKey(dateKey);
+            if (!target || !isWithinRange(target)) {
+                notesScopeDateBtn.value = notesDateKey();
+                return;
+            }
+            notesDate = target;
+            localStorage.setItem(NOTES_DATE_KEY, notesDateKey());
+            notesBinOpen = false;
+            notesSearchQuery = "";
+            notesSearchInput.value = "";
+            loadNotesForIndependentDate();
+            if (isMobileViewport()) mobileNotesAll = false;
+            else notesFocusAll = false;
+            applyNotesFocusScope();
+            renderNotes();
+        }
+        function readSavedData() { storageKey = selectedStorageKey(); saved = readDateData(toKey(selectedDate)); loadNotesForIndependentDate(); }
         function hasNotesData(data) { return Array.isArray(data.notes) ? normalizeNotes(data.notes).some(note => !note.deleted && ((note.title || "").trim() || (note.body || "").trim())) : Boolean((data.notes || "").trim()); }
         function hasSavedDataForDate(key) {
             const data = readDateData(key);
@@ -5451,8 +5510,22 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             document.querySelectorAll(".timeblock-status[data-time]").forEach(button => { const status = normalizeTimeblockStatus(button.dataset.status); if (status !== "planned") statuses[button.dataset.time] = status; });
             return statuses;
         }
-        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses(), eventTimeblocks: normalizeEventTimeblocks(saved.eventTimeblocks), taskTimeblocks: normalizeTaskTimeblocks(saved.taskTimeblocks), activityTimeblocks: normalizeActivityTimeblocks(saved.activityTimeblocks) }; }
-        function save() { const data = currentDateDataFromState(); notes = data.notes; writeDateData(toKey(selectedDate), data); markDateHasData(toKey(selectedDate)); }
+        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: normalizeNotes(saved.notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses(), eventTimeblocks: normalizeEventTimeblocks(saved.eventTimeblocks), taskTimeblocks: normalizeTaskTimeblocks(saved.taskTimeblocks), activityTimeblocks: normalizeActivityTimeblocks(saved.activityTimeblocks) }; }
+        function save() {
+            const plannerKey = toKey(selectedDate);
+            const noteKey = notesDateKey();
+            const plannerData = currentDateDataFromState();
+            if (plannerKey === noteKey) plannerData.notes = orderNotes(notes);
+            writeDateData(plannerKey, plannerData);
+            saved = plannerData;
+            if (plannerKey !== noteKey) {
+                const noteData = readDateData(noteKey);
+                noteData.notes = orderNotes(notes);
+                writeDateData(noteKey, noteData);
+            }
+            markDateHasData(plannerKey);
+            if (noteKey !== plannerKey) markDateHasData(noteKey);
+        }
         function markDateHasData(key) {
             const button = document.querySelector(`.day-btn[data-date="${key}"]`);
             if (button)
@@ -5641,7 +5714,6 @@ ${body}` : title };
                 updateLabelFilterOptions();
             notesScopeDateBtn.classList.toggle("active", !allActive);
             notesScopeAllBtn.classList.toggle("active", allActive);
-            notesScopeDateBtn.setAttribute("aria-pressed", String(!allActive));
             notesScopeAllBtn.setAttribute("aria-pressed", String(allActive));
             mobileNotesToolbar.hidden = !mobileMode || notesBinOpen;
         }
@@ -5691,7 +5763,7 @@ ${body}` : title };
             target.pinned = !target.pinned;
             data.notes = orderNotes(targetNotes);
             writeDateData(dateKey, data);
-            if (dateKey === toKey(selectedDate))
+            if (dateKey === notesDateKey())
                 notes = orderNotes(normalizeNotes(data.notes));
             markDateHasData(dateKey);
             renderNotes();
@@ -5700,7 +5772,8 @@ ${body}` : title };
             const targetDate = fromKey(dateKey);
             if (!targetDate)
                 return;
-            selectDate(targetDate, true);
+            notesDate = targetDate;
+            loadNotesForIndependentDate();
             setTimeout(() => openExpandedNote(noteId), 0);
         }
         function createAllFocusNoteCard(result) {
@@ -6259,11 +6332,8 @@ ${body}` : title };
             openEventEditor();
         }
         function openQuickNote() {
-            const today = getToday();
-            if (!isWithinRange(today))
-                return;
-            selectDate(today, true);
             notesBinOpen = false;
+            loadNotesForIndependentDate();
             const newNote = { id: createId(), title: "Quick note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
             notes.unshift(newNote);
             renderNotes();
@@ -6485,19 +6555,19 @@ ${body}` : title };
                 .concat(activeTarget.filter(note => note.pinned), cleanMovedNotes.filter(note => !note.pinned), activeTarget.filter(note => !note.pinned), deletedTarget);
         }
         function moveAllNotesToDate(targetKey) {
-            const sourceKey = toKey(selectedDate);
+            const sourceKey = notesDateKey();
             const sourceNotes = orderNotes(notes.filter(note => !note.deleted));
             if (!sourceNotes.length) {
                 alert("There are no notes to move for this date.");
                 return;
             }
             const targetDate = fromKey(targetKey);
-            const ok = confirm(`Move all ${sourceNotes.length} note(s) from ${displayDate(selectedDate)} to ${displayDate(targetDate)}?\n\nOnly notes will be moved. Focus and timeblocks will stay on the current date.`);
+            const ok = confirm(`Move all ${sourceNotes.length} note(s) from ${displayDate(notesDate)} to ${displayDate(targetDate)}?\n\nOnly notes will be moved. Focus and timeblocks will stay on the current date.`);
             if (!ok)
                 return;
             if (noteModal.classList.contains("open"))
                 closeExpandedEditor();
-            const sourceData = currentDateDataFromState();
+            const sourceData = readDateData(sourceKey);
             sourceData.notes = notes.filter(note => note.deleted);
             writeDateData(sourceKey, sourceData);
             const targetData = readDateData(targetKey);
@@ -6520,14 +6590,14 @@ ${body}` : title };
         function moveSingleNoteToDate(targetKey) {
             if (!movingNoteId)
                 return;
-            const sourceKey = toKey(selectedDate);
+            const sourceKey = notesDateKey();
             if (expandedNoteId === movingNoteId)
                 closeExpandedEditor();
             const sourceIndex = notes.findIndex(note => note.id === movingNoteId && !note.deleted);
             if (sourceIndex === -1)
                 return;
             const [movingNote] = notes.splice(sourceIndex, 1);
-            const sourceData = currentDateDataFromState();
+            const sourceData = readDateData(sourceKey);
             sourceData.notes = orderNotes(notes);
             writeDateData(sourceKey, sourceData);
             const targetData = readDateData(targetKey);
@@ -6553,7 +6623,7 @@ ${body}` : title };
                 alert("Please select a date between 1 January 1970 and 31 December 2099.");
                 return;
             }
-            const sourceKey = toKey(selectedDate);
+            const sourceKey = notesDateKey();
             if (targetKey === sourceKey) {
                 alert("Please select a different date.");
                 return;
@@ -6629,7 +6699,6 @@ ${body}` : title };
             ensureRecurringEventBlocks(toKey(selectedDate));
             readSavedData();
             selectedDateText.textContent = displayDate(selectedDate);
-            mobileNotesDate.textContent = `Notes for ${displayDate(selectedDate)}`;
             focusInput.value = saved.focus || "";
             quoteInput.value = favouriteQuote;
             buildTimeline();
@@ -6649,8 +6718,6 @@ ${body}` : title };
             selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
             if (updateHash)
                 history.replaceState(null, "", `#${toKey(selectedDate)}`);
-            notesBinOpen = false;
-            clearSearch();
             loadSelectedDate();
         }
         function shiftSelectedDate(days) {
@@ -6925,7 +6992,9 @@ ${body}` : title };
                 closeTaskMoveMenus();
         });
         sortNotesBtn.addEventListener("click", sortNotesByTitle);
-        notesScopeDateBtn.addEventListener("click", () => setNotesFocusScope(false));
+        notesScopeDateBtn.min = toKey(START_DATE);
+        notesScopeDateBtn.max = toKey(END_DATE);
+        notesScopeDateBtn.addEventListener("change", () => setIndependentNotesDate(notesScopeDateBtn.value));
         notesScopeAllBtn.addEventListener("click", () => setNotesFocusScope(true));
         notesLabelFilter.addEventListener("change", () => { notesLabelFilterValue = notesLabelFilter.value; renderNotes(); });
         moveAllNotesBtn.addEventListener("click", () => { closeNotesMoreMenu(); openMoveAllNotes(); });
