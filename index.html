@@ -3367,6 +3367,67 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
 .task-status-completed { color: #4f6f5f; }
 .task-status-later { color: #6d6078; }
 
+
+/* Direct Task tag filters: lighter secondary chips, distinct from Task list navigation */
+.task-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  margin-bottom: 8px;
+}
+.task-filter-label {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 650;
+}
+.task-tag-filters {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.task-tag-filters::-webkit-scrollbar { display: none; }
+.task-tag-filter-chip {
+  flex: 0 0 auto;
+  min-height: 24px;
+  padding: 3px 8px;
+  border: 1px solid #cfd8d3;
+  border-radius: 999px;
+  background: #fff;
+  color: #66736d;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.task-tag-filter-chip:hover,
+.task-tag-filter-chip:focus-visible {
+  border-color: #aebdb5;
+  background: #f5f8f6;
+  color: #42534a;
+}
+.task-tag-filter-chip.active {
+  border-color: #9fb9ad;
+  background: #e8f1ed;
+  color: #355448;
+  font-weight: 700;
+}
+@media (max-width: 759px) {
+  #noteModal:has(#globalTasksPanel.open) .task-filter-row {
+    padding-inline: 1px;
+  }
+  #noteModal:has(#globalTasksPanel.open) .task-tag-filter-chip {
+    min-height: 28px;
+    padding: 4px 9px;
+    font-size: 11px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3490,7 +3551,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
       <div class="tasks-panel" id="globalTasksPanel" hidden>
         <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
         <div class="task-contexts" id="taskContexts"></div>
-        <div class="task-filter-row"><label class="task-filter-label" for="taskTagFilter">Tags</label><select class="task-tag-filter" id="taskTagFilter" aria-label="Filter current task list by tag"><option value="">All tags</option></select></div>
+        <div class="task-filter-row" aria-label="Task tag filters"><span class="task-filter-label">Tags</span><div class="task-tag-filters" id="taskTagFilter" role="group" aria-label="Filter current task list by tag"></div></div>
         <div class="task-list" id="globalTaskList"></div>
       </div>
       <div class="activity-panel" id="activityPanel" hidden>
@@ -4915,11 +4976,25 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             return Array.from(tags.values()).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
         }
         function updateTaskTagFilter() {
-            const tags = allTaskTags(); const current = activeTaskTagFilter;
-            taskTagFilter.innerHTML = '<option value="">All tags</option>';
-            tags.forEach(tag => { const option = document.createElement("option"); option.value = tag; option.textContent = tag; taskTagFilter.appendChild(option); });
+            const tags = allTaskTags();
+            const current = activeTaskTagFilter;
             activeTaskTagFilter = tags.some(tag => tag.toLowerCase() === current.toLowerCase()) ? current : "";
-            taskTagFilter.value = activeTaskTagFilter;
+            taskTagFilter.innerHTML = "";
+            const filters = [{ value: "", label: "All tags" }].concat(tags.map(tag => ({ value: tag, label: `#${tag}` })));
+            filters.forEach(filter => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "plain-btn task-tag-filter-chip";
+                button.textContent = filter.label;
+                const active = filter.value.toLowerCase() === activeTaskTagFilter.toLowerCase();
+                button.classList.toggle("active", active);
+                button.setAttribute("aria-pressed", String(active));
+                button.addEventListener("click", () => {
+                    activeTaskTagFilter = filter.value;
+                    renderGlobalTasks();
+                });
+                taskTagFilter.appendChild(button);
+            });
         }
         function updateTaskTagSuggestions() {
             taskTagSuggestions.innerHTML = "";
@@ -6897,7 +6972,6 @@ ${body}` : title };
         addTaskTodayBtn.addEventListener("click", openTasksTodayShortcut);
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
         newTaskBtn.addEventListener("click", () => openNewTaskEditor(activeTaskContext));
-        taskTagFilter.addEventListener("change", () => { activeTaskTagFilter = taskTagFilter.value; renderGlobalTasks(); });
         taskCreateNoteBtn.addEventListener("click", createNoteForEditingTask);
         taskOpenNoteBtn.addEventListener("click", openLinkedNoteForEditingTask);
         taskUnlinkNoteBtn.addEventListener("click", unlinkNoteFromEditingTask);
