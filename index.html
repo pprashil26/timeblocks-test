@@ -3605,6 +3605,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             ...ACTIVITY_STATUSES
         ];
         const TASK_CONTEXT_KEY = "timeblocks:taskContext";
+        const TASK_LEGACY_MIGRATION_TIME = Date.now();
         const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
         const NOTE_WIDE_KEY = "timeblocks:expandedNoteWide";
         const NOTE_FOCUS_KEY = "timeblocks:notesFocusView";
@@ -4331,7 +4332,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             if (time && !date) { alert("Please select a date for the task time."); return; }
             const targetContext = TASK_CONTEXTS.includes(taskEditorContext.value) ? taskEditorContext.value : (editingTaskContext || activeTaskContext);
             if (!editingTaskId) {
-                const task = { id: createId("task"), text, status: "not-started", done: false, highlighted: false, tags: normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null };
+                const task = { id: createId("task"), text, status: "not-started", done: false, highlighted: false, tags: normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null, createdAt: new Date().toISOString() };
                 globalTasks[targetContext].unshift(task); activeTaskContext = targetContext; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, targetContext);
                 saveTasks(); populateTaskTimeblock(task); renderGlobalTasks();
                 if (isMobileViewport() && mobileTaskCaptureReturnHome) {
@@ -4611,7 +4612,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             const dateKey = toKey(selectedDate);
             const type = plannerCreateType.value;
             if (type === "task") {
-                const task = { id: createId("task"), text, status: "not-started", done: false, highlighted: false, tags: [], date: dateKey, time: plannerCreateTime, noteLink: null };
+                const task = { id: createId("task"), text, status: "not-started", done: false, highlighted: false, tags: [], date: dateKey, time: plannerCreateTime, noteLink: null, createdAt: new Date().toISOString() };
                 globalTasks.Today.unshift(task); saveTasks(); populateTaskTimeblock(task, false); renderGlobalTasks();
             } else if (type === "event") {
                 const event = { id: createId("event"), title: text, date: dateKey, time: plannerCreateTime, durationMinutes: 30, recurrence: null, seriesId: "", originalDate: "", cancelled: false, createdAt: new Date().toISOString() };
@@ -4884,11 +4885,29 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
         }
         function normalizeTask(task) {
             const status = TASK_STATUSES.some(item => item.id === task.status) ? task.status : (task.done ? "completed" : "not-started");
-            return { id: task.id || createId("task"), text: task.text || "", status, done: status === "completed", highlighted: Boolean(task.highlighted), tags: normalizeTaskTags(task.tags), date: fromKey(task.date) ? task.date : "", time: /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "", noteLink: normalizeTaskNoteLink(task.noteLink) };
+            const createdAt = task.createdAt && !Number.isNaN(new Date(task.createdAt).getTime()) ? task.createdAt : "";
+            return { id: task.id || createId("task"), text: task.text || "", status, done: status === "completed", highlighted: Boolean(task.highlighted), tags: normalizeTaskTags(task.tags), date: fromKey(task.date) ? task.date : "", time: /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "", noteLink: normalizeTaskNoteLink(task.noteLink), createdAt };
         }
         function orderTasks(taskList) {
-            const list=(taskList||[]).map(task=>{if(!task.id)task.id=createId("task");if(typeof task.text!=="string")task.text="";task.status=TASK_STATUSES.some(item=>item.id===task.status)?task.status:(task.done?"completed":"not-started");task.done=task.status==="completed";task.highlighted=Boolean(task.highlighted);task.tags=normalizeTaskTags(task.tags);task.date=fromKey(task.date)?task.date:"";task.time=/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time||"")?task.time:"";task.noteLink=normalizeTaskNoteLink(task.noteLink);return task;});
-            const firstTag=task=>normalizeTaskTags(task.tags).slice().sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:"base"}))[0]||"";return list.sort((a,b)=>{if(a.highlighted!==b.highlighted)return a.highlighted?-1:1;if(a.done!==b.done)return a.done?1:-1;const at=firstTag(a),bt=firstTag(b);if(Boolean(at)!==Boolean(bt))return at?-1:1;const tagOrder=at.localeCompare(bt,undefined,{sensitivity:"base"});if(tagOrder)return tagOrder;return(a.text||"").localeCompare(b.text||"",undefined,{sensitivity:"base"});});
+            const list = (taskList || []).map((task, index) => {
+                if (!task.id) task.id = createId("task");
+                if (typeof task.text !== "string") task.text = "";
+                task.status = TASK_STATUSES.some(item => item.id === task.status) ? task.status : (task.done ? "completed" : "not-started");
+                task.done = task.status === "completed";
+                task.highlighted = Boolean(task.highlighted);
+                task.tags = normalizeTaskTags(task.tags);
+                task.date = fromKey(task.date) ? task.date : "";
+                task.time = /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "";
+                task.noteLink = normalizeTaskNoteLink(task.noteLink);
+                if (!task.createdAt || Number.isNaN(new Date(task.createdAt).getTime()))
+                    task.createdAt = new Date(TASK_LEGACY_MIGRATION_TIME - index).toISOString();
+                return task;
+            });
+            return list.sort((a, b) => {
+                if (a.highlighted !== b.highlighted)
+                    return a.highlighted ? -1 : 1;
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            });
         }
         function allTaskTags() {
             const tags = new Map();
@@ -5153,17 +5172,6 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 globalTaskList.appendChild(row);
             });
             if (!tasksToRender.length) { const empty = document.createElement("div"); empty.className = "task-empty"; empty.textContent = activeTaskTagFilter ? `No tasks tagged “${activeTaskTagFilter}” in ${activeTaskContext}` : `No tasks in ${activeTaskContext}`; globalTaskList.appendChild(empty); }
-        }
-        function sortTasks() {
-            globalTasks[activeTaskContext] = orderTasks(activeTasks()).sort((a, b) => {
-                if (a.highlighted !== b.highlighted)
-                    return a.highlighted ? -1 : 1;
-                if (a.done !== b.done)
-                    return a.done ? 1 : -1;
-                return (a.text || "").localeCompare(b.text || "", undefined, { sensitivity: "base" });
-            });
-            saveTasks();
-            renderGlobalTasks();
         }
         function clearDoneTasks() {
             const cleared = activeTasks().filter(task => task.done);
