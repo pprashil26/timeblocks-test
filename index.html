@@ -3890,8 +3890,8 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         let selectedDate = getInitialDate();
         let storageKey = "";
         let saved = {};
-        const savedNotesDate = fromKey(localStorage.getItem(NOTES_DATE_KEY) || "");
-        let notesDate = savedNotesDate && isWithinRange(savedNotesDate) ? savedNotesDate : getToday();
+        let notesDate = getToday();
+        localStorage.setItem(NOTES_DATE_KEY, toKey(notesDate));
         let notes = [];
         let draggedBox = null;
         let expandedNoteId = null;
@@ -3953,9 +3953,6 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             return new Date(current.getFullYear(), current.getMonth(), current.getDate());
         }
         function getInitialDate() {
-            const hashDate = fromKey(location.hash.replace("#", ""));
-            if (hashDate && isWithinRange(hashDate))
-                return hashDate;
             const today = getToday();
             return isWithinRange(today) ? today : new Date(START_DATE);
         }
@@ -6334,6 +6331,13 @@ ${body}` : title };
             openEventEditor();
         }
         function openQuickNote() {
+            const today = getToday();
+            if (!isWithinRange(today))
+                return;
+            notesDate = today;
+            localStorage.setItem(NOTES_DATE_KEY, notesDateKey());
+            notesFocusAll = false;
+            mobileNotesAll = false;
             notesBinOpen = false;
             loadNotesForIndependentDate();
             const newNote = { id: createId(), title: "Quick note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
