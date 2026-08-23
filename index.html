@@ -3,7 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Today's plan</title>
+  <title>FAST GTD</title>
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="application-name" content="FAST GTD" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="FAST GTD" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <style>
 
     :root {
@@ -7326,6 +7335,24 @@ if (key === "e") {
   
   
   
+  </script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js", { scope: "./" }).then(registration => {
+          registration.addEventListener("updatefound", () => {
+            const worker = registration.installing;
+            if (!worker) return;
+            worker.addEventListener("statechange", () => {
+              if (worker.state === "installed" && navigator.serviceWorker.controller) {
+                if (confirm("A new FAST GTD version is available. Reload now?")) window.location.reload();
+              }
+            });
+          });
+        }).catch(error => console.warn("FAST GTD offline support could not start.", error));
+      });
+    }
   </script>
 </body>
 </html>
