@@ -1,0 +1,16 @@
+FAST GTD PWA deployment package
+
+Upload all files in this folder to the same GitHub Pages directory:
+- index.html
+- manifest.webmanifest
+- service-worker.js
+- logo.png
+- icon-192.png
+- icon-512.png
+- icon-maskable-512.png
+- apple-touch-icon.png
+
+Important:
+- The PWA must be served over HTTPS or localhost. Opening index.html directly with file:// will not register the service worker.
+- When updating FAST GTD, change CACHE_NAME in service-worker.js so old cached assets are removed.
+- Existing FAST GTD localStorage data remains unchanged because the app origin and storage keys are unchanged.

@@ -1,0 +1,41 @@
+{
+  "id": "./",
+  "name": "FAST GTD",
+  "short_name": "FAST GTD",
+  "description": "A lightweight, local-first GTD app to capture tasks, notes, events and daily activity.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "any",
+  "lang": "en-AU",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
