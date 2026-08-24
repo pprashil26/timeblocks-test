@@ -3766,6 +3766,48 @@ body.notes-focus-active .note-body {
   }
 }
 
+
+/* Mobile homepage: three equal compact capture pills in one row */
+@media (max-width: 759px) {
+  .mobile-home-brand .mobile-home-capture-grid.mobile-home-capture-simple {
+    display: grid;
+    width: min(330px, 96%);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 9px;
+    overflow: visible;
+  }
+
+  .mobile-home-capture-simple > .mobile-capture-pill,
+  .mobile-home-capture-simple > .mobile-quick-note-btn,
+  .mobile-home-capture-simple > .mobile-quick-event-btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 36px;
+    margin: 0;
+    padding: 6px 5px;
+    font-size: 11.5px;
+    line-height: 1.1;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 360px) {
+  .mobile-home-brand .mobile-home-capture-grid.mobile-home-capture-simple {
+    width: 98%;
+    gap: 4px;
+  }
+
+  .mobile-home-capture-simple > .mobile-capture-pill,
+  .mobile-home-capture-simple > .mobile-quick-note-btn,
+  .mobile-home-capture-simple > .mobile-quick-event-btn {
+    min-height: 34px;
+    padding-left: 3px;
+    padding-right: 3px;
+    font-size: 10.75px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3787,13 +3829,9 @@ body.notes-focus-active .note-body {
       <p class="mobile-home-brand-motto">Finish Actions, Save Time</p>
       <p class="mobile-home-brand-tagline">A lightweight GTD app · empty your mind</p>
       <div class="mobile-home-capture-grid mobile-home-capture-simple" aria-label="Quick capture">
-        <div class="mobile-home-capture-row mobile-home-capture-row-top">
-          <button class="plain-btn mobile-capture-pill mobile-task-capture-btn" id="mobileAddTaskBtn" type="button">＋ Task</button>
-          <button class="plain-btn mobile-quick-note-btn" id="mobileQuickNoteBtn" type="button" title="Add a quick note for today">＋ Quick note</button>
-        </div>
-        <div class="mobile-home-capture-row mobile-home-capture-row-bottom mobile-home-event-row">
-          <button class="plain-btn mobile-quick-event-btn" id="mobileQuickEventBtn" type="button" title="Add an event for today">＋ Event</button>
-        </div>
+        <button class="plain-btn mobile-capture-pill mobile-task-capture-btn" id="mobileAddTaskBtn" type="button">＋ Task</button>
+        <button class="plain-btn mobile-quick-note-btn" id="mobileQuickNoteBtn" type="button" title="Add a quick note for today">＋ Note</button>
+        <button class="plain-btn mobile-quick-event-btn" id="mobileQuickEventBtn" type="button" title="Add an event for today">＋ Event</button>
       </div>
       <nav class="mobile-home-nav mobile-home-nav-simple" aria-label="Navigation">
         <button class="plain-btn mobile-home-link" id="mobileTodayBtn" type="button">Today</button>
