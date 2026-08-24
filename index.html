@@ -3496,6 +3496,72 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   .expanded-list-menu .plain-btn { min-height: 42px; padding: 9px 11px; font-size: 13px; }
 }
 
+
+/* Final Notes editor refinement */
+.expanded-line-toolbar-btn {
+  width: auto;
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--page);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-decoration: none !important;
+}
+.expanded-line-toolbar-btn:hover,
+.expanded-line-toolbar-btn:focus-visible { background: var(--soft); }
+.note-body {
+  min-height: 72px;
+  height: auto;
+  max-height: none;
+  overflow: hidden;
+}
+body.notes-focus-active .note-body {
+  min-height: 96px;
+  height: auto;
+  max-height: none;
+}
+@media (min-width: 760px) {
+  #noteModal.wide-note-page .expanded-note { width: min(860px, 96vw); max-height: 94vh; }
+  #noteModal.wide-note-page .expanded-body {
+    width: min(760px, calc(100% - 32px));
+    height: auto;
+    min-height: 56vh;
+    max-height: none;
+    flex: 1 1 auto;
+    margin: 14px auto 16px;
+    padding: 18px 22px;
+    font-size: 17px;
+    line-height: 30px;
+    background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 29px, rgba(160,145,120,.24) 30px);
+  }
+  #noteModal.wide-note-page .expanded-links { width: min(760px, calc(100% - 32px)); margin: 0 auto 14px; }
+}
+@media (max-width: 759px) {
+  #noteModal.wide-note-page .expanded-note { width: 100%; }
+  .expanded-body { min-height: 58vh; height: auto; max-height: none; font-size: 16px; line-height: 28px; }
+  .notes-label-filter { display: none !important; }
+  .notes-label-filter.mobile-open {
+    display: block !important;
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    z-index: 35;
+    width: calc(100% - 16px);
+    max-width: none;
+    min-height: 38px;
+    margin-top: 39px;
+    padding: 6px 30px 6px 10px;
+    border-radius: 10px;
+    background: var(--page);
+    box-shadow: 0 10px 24px rgba(46, 57, 50, .14);
+    font-size: 13px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3613,7 +3679,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" id="expandedNoteShell" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
-      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="icon-btn expanded-copy-toolbar-btn" id="expandedCopyToolbarBtn" type="button" title="Copy note" aria-label="Copy note">Copy</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="icon-btn expanded-font-toolbar-btn" id="expandedFontBtn" type="button" title="Use larger note font" aria-pressed="false">Aa</button><button class="icon-btn" id="expandedWideBtn" type="button" title="Toggle wide note view">↔</button><button class="icon-btn" id="expandedLineBtn" type="button" title="Insert horizontal line"><span class="expanded-line-icon" aria-hidden="true">─</span><span class="expanded-line-text">Insert line</span></button><span class="expanded-list-wrap"><button class="icon-btn expanded-list-toolbar-btn" id="expandedListBtn" type="button" title="List formatting" aria-expanded="false">List</button><span class="expanded-list-menu" id="expandedListMenu"><button class="plain-btn" id="expandedBulletsBtn" type="button">• Bulleted list</button><button class="plain-btn" id="expandedNumbersBtn" type="button">1. Numbered list</button><button class="plain-btn" id="expandedChecklistBtn" type="button">☐ Checklist</button><button class="plain-btn" id="expandedCheckItemBtn" type="button">✓ Check/uncheck item</button><button class="plain-btn" id="expandedPlainBtn" type="button">Plain text</button></span></span><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedCopyBtn" type="button" hidden>Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move note</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete note</button></span></span></div>
+      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="icon-btn expanded-copy-toolbar-btn" id="expandedCopyToolbarBtn" type="button" title="Copy note" aria-label="Copy note">Copy</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="plain-btn expanded-line-toolbar-btn" id="expandedLineBtn" type="button" title="Insert horizontal line">Insert line</button><span class="expanded-list-wrap"><button class="icon-btn expanded-list-toolbar-btn" id="expandedListBtn" type="button" title="List formatting" aria-expanded="false">List</button><span class="expanded-list-menu" id="expandedListMenu"><button class="plain-btn" id="expandedBulletsBtn" type="button">• Bulleted list</button><button class="plain-btn" id="expandedNumbersBtn" type="button">1. Numbered list</button><button class="plain-btn" id="expandedChecklistBtn" type="button">☐ Checklist</button><button class="plain-btn" id="expandedCheckItemBtn" type="button">✓ Check/uncheck item</button><button class="plain-btn" id="expandedPlainBtn" type="button">Plain text</button></span></span><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedCopyBtn" type="button" hidden>Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete</button></span></span></div>
       <div class="note-label-chips expanded-label-chips" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
@@ -3841,7 +3907,6 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         const expandedNoteTools = el("expandedNoteTools");
         const expandedPinBtn = el("expandedPinBtn");
         const expandedEditBtn = el("expandedEditBtn");
-        const expandedWideBtn = el("expandedWideBtn");
         const expandedLineBtn = el("expandedLineBtn");
         const expandedListBtn = el("expandedListBtn");
         const expandedListMenu = el("expandedListMenu");
@@ -3858,7 +3923,6 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         const expandedLabelsBtn = el("expandedLabelsBtn");
         const expandedShareBtn = el("expandedShareBtn");
         const expandedLabelChips = el("expandedLabelChips");
-        const expandedFontBtn = el("expandedFontBtn");
         const expandedDeleteBtn = el("expandedDeleteBtn");
         const closeExpandedNote = el("closeExpandedNote");
         const expandedNoteShell = el("expandedNoteShell");
@@ -3981,8 +4045,6 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         if (!TASK_CONTEXTS.includes(activeTaskContext)) activeTaskContext = "Inbox";
         let activeTaskTagFilter = "";
         saveTasks();
-        let expandedNoteLargeFont = localStorage.getItem(NOTE_FONT_KEY) === "true";
-        let expandedNoteWide = localStorage.getItem(NOTE_WIDE_KEY) === "true";
         let favouriteQuote = localStorage.getItem(QUOTE_KEY) || "";
         let lastImportAt = localStorage.getItem(LAST_IMPORT_KEY) || "";
         function pad(value) { return String(value).padStart(2, "0"); }
@@ -5113,29 +5175,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
 
         function closeExpandedMoreMenu() { expandedMoreMenu.classList.remove("open"); }
         function toggleExpandedMoreMenu() { expandedMoreMenu.classList.toggle("open"); }
-        function applyExpandedNoteFont() {
-            noteModal.classList.toggle("large-note-font", expandedNoteLargeFont);
-            expandedFontBtn.classList.toggle("active", expandedNoteLargeFont);
-            expandedFontBtn.textContent = "Aa";
-            expandedFontBtn.title = expandedNoteLargeFont ? "Use standard note font" : "Use larger note font";
-            expandedFontBtn.setAttribute("aria-pressed", String(expandedNoteLargeFont));
-        }
-        function toggleExpandedNoteFont() {
-            expandedNoteLargeFont = !expandedNoteLargeFont;
-            localStorage.setItem(NOTE_FONT_KEY, String(expandedNoteLargeFont));
-            applyExpandedNoteFont();
-            closeExpandedMoreMenu();
-        }
-        function applyExpandedNoteWide() {
-            noteModal.classList.toggle("wide-note-page", expandedNoteWide);
-            expandedWideBtn.classList.toggle("active", expandedNoteWide);
-            expandedWideBtn.title = expandedNoteWide ? "Exit wide note view" : "Use wide note view";
-        }
-        function toggleExpandedNoteWide() {
-            expandedNoteWide = !expandedNoteWide;
-            localStorage.setItem(NOTE_WIDE_KEY, String(expandedNoteWide));
-            applyExpandedNoteWide();
-            setTimeout(() => expandedBody.focus(), 0);
+        function applyExpandedNoteLayout() {
+            noteModal.classList.toggle("wide-note-page", !isMobileViewport());
         }
         function sortNotesByTitle() {
             const active = notes.filter(note => !note.deleted);
@@ -5341,7 +5382,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             renderGlobalTasks();
         }
         function isMobileViewport() { return window.matchMedia("(max-width: 759px)").matches; }
-        function clearMobileSection() { document.body.classList.remove("mobile-section-active", "mobile-view-plan", "mobile-view-calendar", "mobile-view-notes"); mobileSectionTitle.textContent = "Section"; }
+        function clearMobileSection() { notesLabelFilter.classList.remove("mobile-open"); document.body.classList.remove("mobile-section-active", "mobile-view-plan", "mobile-view-calendar", "mobile-view-notes"); mobileSectionTitle.textContent = "Section"; }
         function alignMobileCalendarToCurrentMonth() {
             if (!isMobileViewport())
                 return;
@@ -6139,7 +6180,7 @@ ${body}` : title };
             expandedNoteTools.hidden = false;
             closeExpandedMoreMenu();
             closeExpandedListMenu();
-            applyExpandedNoteWide();
+            applyExpandedNoteLayout();
             if (globalTasksPanel.parentElement === expandedNoteShell) {
                 globalTasksPanel.hidden = true;
                 globalTasksPanel.classList.remove("open");
@@ -6192,7 +6233,7 @@ ${body}` : title };
             expandedPinBtn.textContent = note.pinned ? "★" : "☆";
             expandedPinBtn.title = note.pinned ? "Unpin note" : "Pin note";
             expandedPinBtn.classList.toggle("pinned", Boolean(note.pinned));
-            applyExpandedNoteWide();
+            applyExpandedNoteLayout();
             renderExpandedLabels();
         }
         function togglePin(id) {
@@ -6226,7 +6267,7 @@ ${body}` : title };
                 updateExpandedToolbar();
                 setExpandedNoteEditMode(Boolean(startInEditMode), false);
             }
-            applyExpandedNoteFont();
+            applyExpandedNoteLayout();
             noteModal.classList.add("open");
             noteModal.setAttribute("aria-hidden", "false");
             setTimeout(() => {
@@ -7108,8 +7149,14 @@ ${body}` : title };
             closeHelp(); });
         notesSearchBtn.addEventListener("click", openSearch);
         mobileNotesLabelsBtn.addEventListener("click", () => {
-            applyNotesFocusScope();
-            notesLabelFilter.focus();
+            const open = !notesLabelFilter.classList.contains("mobile-open");
+            notesLabelFilter.classList.toggle("mobile-open", open);
+            mobileNotesLabelsBtn.classList.toggle("active", open || Boolean(notesLabelFilterValue));
+            mobileNotesLabelsBtn.setAttribute("aria-pressed", String(open));
+            if (open) {
+                updateLabelFilterOptions();
+                notesLabelFilter.focus();
+            }
         });
         mobileNotesAddBtn.addEventListener("click", () => addNoteBtn.click());
         mobileNotesMoreBtn.addEventListener("click", event => {
@@ -7145,7 +7192,13 @@ ${body}` : title };
         notesScopeDateBtn.max = toKey(END_DATE);
         notesScopeDateBtn.addEventListener("change", () => setIndependentNotesDate(notesScopeDateBtn.value));
         notesScopeAllBtn.addEventListener("click", () => setNotesFocusScope(true));
-        notesLabelFilter.addEventListener("change", () => { notesLabelFilterValue = notesLabelFilter.value; renderNotes(); });
+        notesLabelFilter.addEventListener("change", () => {
+            notesLabelFilterValue = notesLabelFilter.value;
+            notesLabelFilter.classList.remove("mobile-open");
+            mobileNotesLabelsBtn.classList.toggle("active", Boolean(notesLabelFilterValue));
+            mobileNotesLabelsBtn.setAttribute("aria-pressed", "false");
+            renderNotes();
+        });
         moveAllNotesBtn.addEventListener("click", () => { closeNotesMoreMenu(); openMoveAllNotes(); });
         notesBinBtn.addEventListener("click", toggleNotesBin);
         notesBinBackBtn.addEventListener("click", toggleNotesBin);
@@ -7212,7 +7265,6 @@ ${body}` : title };
         expandedPinBtn.addEventListener("click", () => { if (expandedNoteId)
             togglePin(expandedNoteId); });
         expandedEditBtn.addEventListener("click", toggleExpandedNoteEditMode);
-        expandedWideBtn.addEventListener("click", toggleExpandedNoteWide);
         expandedLineBtn.addEventListener("click", insertExpandedHorizontalLine);
         expandedListBtn.addEventListener("click", event => { event.stopPropagation(); toggleExpandedListMenu(); });
         expandedBulletsBtn.addEventListener("click", () => applyExpandedListFormat("bullets"));
@@ -7230,7 +7282,6 @@ ${body}` : title };
         expandedCopyToolbarBtn.addEventListener("click", copyExpandedNote);
         expandedLabelsBtn.addEventListener("click", openLabelSelector);
         expandedShareBtn.addEventListener("click", shareExpandedNote);
-        expandedFontBtn.addEventListener("click", toggleExpandedNoteFont);
         expandedDeleteBtn.addEventListener("click", () => { if (expandedNoteId) {
             closeExpandedMoreMenu();
             deleteNoteById(expandedNoteId);
@@ -7325,7 +7376,7 @@ ${body}` : title };
         updateSearchUi();
         applyDesktopCalendarPreference();
         updateFocusViewButton();
-        applyExpandedNoteFont();
+        applyExpandedNoteLayout();
         renderGlobalResults();
         renderGlobalTasks();
         applyActivityFilter();
