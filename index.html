@@ -3987,6 +3987,7 @@ body.notes-focus-active .note-body {
         <div class="event-editor-grid"><div class="event-editor-field"><label for="eventDurationInput">Duration</label><select id="eventDurationInput"><option value="30">30 minutes</option><option value="60">1 hour</option><option value="90">1 hour 30 minutes</option><option value="120">2 hours</option><option value="150">2 hours 30 minutes</option><option value="180">3 hours</option><option value="custom">Custom</option></select></div><div class="event-editor-field" id="eventCustomDurationField" hidden><label for="eventCustomDurationInput">Minutes</label><input id="eventCustomDurationInput" type="number" min="30" max="1440" step="30" value="30" /></div></div>
         <label for="eventRepeatInput">Repeat</label><select id="eventRepeatInput"><option value="none">Does not repeat</option><option value="daily">Daily</option><option value="weekdays">Weekdays</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="custom">Custom</option></select>
         <div class="event-recurrence-options" id="eventRecurrenceOptions" hidden><div class="event-editor-grid"><div class="event-editor-field"><label for="eventRepeatIntervalInput">Repeat every</label><input id="eventRepeatIntervalInput" type="number" min="1" max="99" value="1" /></div><div class="event-editor-field"><label for="eventRepeatUnitInput">Unit</label><select id="eventRepeatUnitInput"><option value="day">Day</option><option value="week">Week</option><option value="month">Month</option><option value="year">Year</option></select></div></div><div class="event-editor-field" id="eventWeekdaysField" hidden><label>On days</label><div class="event-weekdays" id="eventWeekdays"></div></div><div class="event-editor-grid"><div class="event-editor-field"><label for="eventRepeatEndInput">Ends</label><select id="eventRepeatEndInput"><option value="never">Never</option><option value="date">On date</option><option value="count">After occurrences</option></select></div><div class="event-editor-field" id="eventRepeatEndValueField" hidden><label for="eventRepeatEndValue">End value</label><input id="eventRepeatEndValue" type="date" /></div></div></div>
+        <div class="task-note-section" id="eventNoteSection"><span class="task-note-label">Note</span><span class="task-note-actions"><button class="plain-btn task-note-btn" id="eventCreateNoteBtn" type="button">Create note</button><button class="plain-btn task-note-btn" id="eventLinkNoteBtn" type="button">Link existing</button><button class="plain-btn task-note-btn" id="eventOpenNoteBtn" type="button" hidden>Open note</button><button class="plain-btn task-note-unlink" id="eventUnlinkNoteBtn" type="button" hidden>Unlink</button></span><span class="task-note-help" id="eventNoteHelp"></span></div>
       </div>
       <div class="event-series-scope" id="eventSeriesScope" hidden><label for="eventSeriesScopeInput">Apply changes to</label><select id="eventSeriesScopeInput"><option value="this">This event</option><option value="future">This and future events</option><option value="all">All events in the series</option></select></div>
       <div class="event-editor-actions"><button class="plain-btn delete-note-btn" id="deleteEventBtn" type="button" hidden>Delete</button><button class="plain-btn event-copy-btn" id="copyEventBtn" type="button" hidden>Copy</button><span></span><button class="plain-btn" id="cancelEventBtn" type="button">Cancel</button><button class="plain-btn event-save-btn" id="saveEventBtn" type="button">Save</button></div>
@@ -4022,7 +4023,7 @@ body.notes-focus-active .note-body {
   </div>
   <div class="modal-backdrop" id="taskNotePickerModal" aria-hidden="true">
     <section class="task-note-picker-panel" role="dialog" aria-modal="true" aria-label="Link existing note">
-      <div class="task-note-picker-head"><p class="task-note-picker-title">Link existing note</p><button class="plain-btn" id="closeTaskNotePickerBtn" type="button">Close</button></div>
+      <div class="task-note-picker-head"><p class="task-note-picker-title" id="taskNotePickerTitle">Link existing note</p><button class="plain-btn" id="closeTaskNotePickerBtn" type="button">Close</button></div>
       <div class="task-note-picker-body">
         <input id="taskNotePickerSearch" type="text" placeholder="Search note title, body or labels..." autocomplete="off" />
         <div class="task-note-picker-list" id="taskNotePickerList"></div>
@@ -4034,7 +4035,7 @@ body.notes-focus-active .note-body {
   </div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true">
-    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by time horizon and filter them with Task tags.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Select a note card to open it, and use Labels to filter notes.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Today, This month, and Someday. Add Task tags such as Home, Work, or Waiting for context.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>Quick Start</h3><ul><li>+ Task creates a Task.</li><li>+ Note creates a Note or List.</li><li>+ Event creates an Event.</li></ul><h3>Navigation</h3><ul><li>Today = today's timeline.</li><li>Tasks = Inbox, Today, This Month and Someday.</li><li>Notes = Notes, checklists and lists.</li><li>More = Activity, Events, Calendar, Export, Import and Help.</li></ul><h3>Tasks</h3><ul><li>Add Tags to organise Tasks.</li><li>Schedule Tasks to dates and times.</li><li>Link Tasks to Notes.</li></ul><h3>Notes &amp; Lists</h3><ul><li>Create Notes, checklists, numbered lists and bullet lists.</li><li>Use Labels to organise Notes.</li><li>Use All Notes to see every Note.</li></ul><h3>Backup</h3><ul><li>Export creates a complete backup.</li><li>Import restores a backup.</li></ul><h3>Privacy</h3><ul><li>Data stays on your device.</li><li>No account required.</li></ul></div></div></section>
+    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by time horizon and filter them with Task tags.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Select a note card to open it, and use Labels to filter notes.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Today, This month, and Someday. Add Task tags such as Home, Work, or Waiting for context.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>Quick Start</h3><ul><li>+ Task creates a Task.</li><li>+ Note creates a Note or List.</li><li>+ Event creates an Event.</li></ul><h3>Navigation</h3><ul><li>Today = today's timeline.</li><li>Tasks = Inbox, Today, This Month and Someday.</li><li>Notes = Notes, checklists and lists.</li><li>More = Activity, Events, Calendar, Export, Import and Help.</li></ul><h3>Tasks</h3><ul><li>Add Tags to organise Tasks.</li><li>Schedule Tasks to dates and times.</li><li>Link Tasks to Notes.</li></ul><h3>Events</h3><ul><li>Create a Note or link an existing Note to an Event.</li></ul><h3>Notes &amp; Lists</h3><ul><li>Create Notes, checklists, numbered lists and bullet lists.</li><li>Use Labels to organise Notes.</li><li>Use All Notes to see every Note.</li></ul><h3>Backup</h3><ul><li>Export creates a complete backup.</li><li>Import restores a backup.</li></ul><h3>Privacy</h3><ul><li>Data stays on your device.</li><li>No account required.</li></ul></div></div></section>
   </div>
 
   <script>
@@ -4219,6 +4220,7 @@ body.notes-focus-active .note-body {
         const taskNotePickerModal = el("taskNotePickerModal");
         const taskNotePickerSearch = el("taskNotePickerSearch");
         const taskNotePickerList = el("taskNotePickerList");
+        const taskNotePickerTitle = el("taskNotePickerTitle");
         const closeTaskNotePickerBtn = el("closeTaskNotePickerBtn");
         const closeTaskEditorBtn = el("closeTaskEditorBtn");
         const cancelTaskEditorBtn = el("cancelTaskEditorBtn");
@@ -4263,6 +4265,11 @@ body.notes-focus-active .note-body {
         const cancelEventBtn = el("cancelEventBtn");
         const saveEventBtn = el("saveEventBtn");
         const deleteEventBtn = el("deleteEventBtn");
+        const eventCreateNoteBtn = el("eventCreateNoteBtn");
+        const eventLinkNoteBtn = el("eventLinkNoteBtn");
+        const eventOpenNoteBtn = el("eventOpenNoteBtn");
+        const eventUnlinkNoteBtn = el("eventUnlinkNoteBtn");
+        const eventNoteHelp = el("eventNoteHelp");
         const labelModal = el("labelModal");
         const closeLabelBtn = el("closeLabelBtn");
         const labelInput = el("labelInput");
@@ -4313,6 +4320,7 @@ body.notes-focus-active .note-body {
         let editingEventOccurrenceDate = "";
         let editingTaskId = null;
         let editingTaskContext = null;
+        let notePickerTarget = "task";
         let taskEditorFocusTarget = "text";
         let showPastEvents = false;
         let activityEntries = normalizeActivityEntries(loadJson(ACTIVITY_KEY, []));
@@ -4499,6 +4507,7 @@ body.notes-focus-active .note-body {
                 seriesId: typeof item.seriesId === "string" ? item.seriesId : "",
                 originalDate: fromKey(item.originalDate) ? item.originalDate : "",
                 cancelled: Boolean(item.cancelled),
+                noteLink: normalizeTaskNoteLink(item.noteLink),
                 createdAt: item.createdAt && !Number.isNaN(new Date(item.createdAt).getTime()) ? item.createdAt : new Date().toISOString()
             })).filter(item => item.title || item.cancelled).sort(compareEvents);
         }
@@ -4705,7 +4714,7 @@ body.notes-focus-active .note-body {
             }
             setTimeout(() => openExpandedNote(note.id, true), 0);
         }
-        function allAvailableNotesForTaskLink() {
+        function allAvailableNotesForLink() {
             const available = [];
             allDateKeys().slice().sort().reverse().forEach(dateKey => {
                 normalizeNotes(readDateData(dateKey).notes).forEach(note => {
@@ -4716,7 +4725,7 @@ body.notes-focus-active .note-body {
         }
         function renderTaskNotePicker() {
             const query = taskNotePickerSearch.value.trim().toLowerCase();
-            const available = allAvailableNotesForTaskLink().filter(({ note }) => !query || `${note.title || ""} ${note.body || ""} ${(note.labels || []).join(" ")}`.toLowerCase().includes(query));
+            const available = allAvailableNotesForLink().filter(({ note }) => !query || `${note.title || ""} ${note.body || ""} ${(note.labels || []).join(" ")}`.toLowerCase().includes(query));
             taskNotePickerList.innerHTML = "";
             if (!available.length) {
                 const empty = document.createElement("div");
@@ -4737,13 +4746,15 @@ body.notes-focus-active .note-body {
                 const date = fromKey(dateKey);
                 meta.textContent = `${date ? displayDate(date) : dateKey}${note.labels.length ? " · " + note.labels.join(" · ") : ""}`;
                 button.append(title, meta);
-                button.addEventListener("click", () => linkExistingNoteToEditingTask(note.id, dateKey));
+                button.addEventListener("click", () => notePickerTarget === "event" ? linkExistingNoteToEditingEvent(note.id, dateKey) : linkExistingNoteToEditingTask(note.id, dateKey));
                 taskNotePickerList.appendChild(button);
             });
         }
         function openTaskNotePicker() {
             const found = saveEditingTaskChangesBeforeNote();
             if (!found || linkedNoteForTask(found.task)) return updateTaskNoteControls();
+            notePickerTarget = "task";
+            taskNotePickerTitle.textContent = "Link existing note";
             taskNotePickerSearch.value = "";
             renderTaskNotePicker();
             taskNotePickerModal.classList.add("open");
@@ -4765,6 +4776,101 @@ body.notes-focus-active .note-body {
             closeTaskNotePicker();
             updateTaskNoteControls();
             renderGlobalTasks();
+        }
+        function editingEventRecord() {
+            if (!editingEventId) return null;
+            const id = editingEventId.includes("@") ? editingEventId.split("@")[0] : editingEventId;
+            const event = events.find(item => item.id === id);
+            if (!event) return null;
+            return event.seriesId ? events.find(item => item.id === event.seriesId) || event : event;
+        }
+        function linkedNoteForEvent(event) {
+            const link = normalizeTaskNoteLink(event && event.noteLink);
+            if (!link) return null;
+            const note = normalizeNotes(readDateData(link.dateKey).notes).find(item => item.id === link.noteId && !item.deleted);
+            return note ? { link, note } : null;
+        }
+        function updateEventNoteControls() {
+            const event = editingEventRecord();
+            const linked = event ? linkedNoteForEvent(event) : null;
+            eventCreateNoteBtn.hidden = Boolean(linked);
+            eventLinkNoteBtn.hidden = Boolean(linked);
+            eventOpenNoteBtn.hidden = !linked;
+            eventUnlinkNoteBtn.hidden = !linked;
+            eventCreateNoteBtn.disabled = !event;
+            eventLinkNoteBtn.disabled = !event;
+            eventNoteHelp.textContent = linked ? `Linked: ${linked.note.title || "Untitled"}` : event ? "Create a new Note or link an existing Note. A Note can be shared by multiple Tasks and Events." : "Save the Event before creating or linking its Note.";
+            if (event && event.noteLink && !linked) { event.noteLink = null; saveEvents(); }
+        }
+        function createNoteForEditingEvent() {
+            const event = editingEventRecord();
+            if (!event || linkedNoteForEvent(event)) return updateEventNoteControls();
+            const dateKey = fromKey(event.date) ? event.date : toKey(selectedDate);
+            const data = readDateData(dateKey);
+            const note = { id: createId(), title: event.title || "Event note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
+            data.notes = orderNotes([note].concat(normalizeNotes(data.notes)));
+            data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+            data.focus = data.focus || "";
+            data.evening = data.evening || "";
+            writeDateData(dateKey, data);
+            event.noteLink = { noteId: note.id, dateKey };
+            saveEvents();
+            closeEventEditor();
+            const targetDate = fromKey(dateKey);
+            if (targetDate) { notesDate = targetDate; loadNotesForIndependentDate(); }
+            setTimeout(() => openExpandedNote(note.id, true), 0);
+        }
+        function openEventNotePicker() {
+            const event = editingEventRecord();
+            if (!event || linkedNoteForEvent(event)) return updateEventNoteControls();
+            notePickerTarget = "event";
+            taskNotePickerTitle.textContent = "Link existing note to Event";
+            taskNotePickerSearch.value = "";
+            renderTaskNotePicker();
+            taskNotePickerModal.classList.add("open");
+            taskNotePickerModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => taskNotePickerSearch.focus(), 0);
+        }
+        function linkExistingNoteToEditingEvent(noteId, dateKey) {
+            const event = editingEventRecord();
+            const note = normalizeNotes(readDateData(dateKey).notes).find(item => item.id === noteId && !item.deleted);
+            if (!event || !note) return;
+            event.noteLink = { noteId, dateKey };
+            saveEvents();
+            closeTaskNotePicker();
+            updateEventNoteControls();
+            renderSelectedDateEvents();
+            renderEvents();
+        }
+        function openLinkedNoteForEditingEvent() {
+            const event = editingEventRecord();
+            const linked = event ? linkedNoteForEvent(event) : null;
+            if (!linked) return updateEventNoteControls();
+            closeEventEditor();
+            const targetDate = fromKey(linked.link.dateKey);
+            if (targetDate) { notesDate = targetDate; loadNotesForIndependentDate(); }
+            setTimeout(() => openExpandedNote(linked.note.id), 0);
+        }
+        function unlinkNoteFromEditingEvent() {
+            const event = editingEventRecord();
+            if (!event) return;
+            event.noteLink = null;
+            saveEvents();
+            updateEventNoteControls();
+            renderSelectedDateEvents();
+            renderEvents();
+        }
+        function linkedEventsForNote(noteId) { return events.filter(event => event.noteLink && event.noteLink.noteId === noteId); }
+        function clearEventNoteLinks(noteId) {
+            let changed = false;
+            events.forEach(event => { if (event.noteLink && event.noteLink.noteId === noteId) { event.noteLink = null; changed = true; } });
+            if (changed) { saveEvents(); renderSelectedDateEvents(); renderEvents(); }
+            return changed;
+        }
+        function updateLinkedEventNoteDate(noteId, dateKey) {
+            let changed = false;
+            events.forEach(event => { if (event.noteLink && event.noteLink.noteId === noteId) { event.noteLink = { noteId, dateKey }; changed = true; } });
+            if (changed) saveEvents();
         }
         function linkedTasksForNote(noteId) {
             const matches = [];
@@ -4932,7 +5038,7 @@ body.notes-focus-active .note-body {
                 const button = document.createElement("button");
                 button.type = "button";
                 button.className = "event-strip-item";
-                button.textContent = `${event.time ? eventTimeLabel(event) + "  " : ""}${event.title}`;
+                button.textContent = `${event.time ? eventTimeLabel(event) + "  " : ""}${event.title}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
                 button.title = `Edit ${event.title}`;
                 button.addEventListener("click", () => openEventEditor(event.id));
                 eventsStripList.appendChild(button);
@@ -4955,7 +5061,7 @@ body.notes-focus-active .note-body {
             when.textContent = `${dateText}${event.time ? " · " + eventTimeLabel(event) : " · All day"}`;
             const title = document.createElement("span");
             title.className = "event-row-title";
-            title.textContent = event.title;
+            title.textContent = `${event.title}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
             row.append(when, title);
             row.addEventListener("click", () => openEventEditor(event.id));
             return row;
@@ -5018,10 +5124,10 @@ body.notes-focus-active .note-body {
             eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
             const duration=event?event.durationMinutes||30:30;eventDurationInput.value=[30,60,90,120,150,180].includes(duration)?String(duration):"custom";eventCustomDurationInput.value=String(duration);
             const master=event&&event.seriesId?events.find(item=>item.id===event.seriesId):event;const rule=master&&master.recurrence?master.recurrence:null;eventRepeatInput.value=rule?rule.type:"none";eventRepeatIntervalInput.value=String(rule?rule.interval:1);eventRepeatUnitInput.value=rule?rule.unit:"week";eventRepeatEndInput.value=rule?rule.endType:"never";eventRepeatEndValue.value=rule?(rule.endType==="date"?rule.endDate:String(rule.count)):"";renderEventWeekdays(rule?rule.weekdays:[]);
-            deleteEventBtn.hidden=!event;copyEventBtn.hidden=!event;eventSeriesScope.hidden=!(event&&(event.seriesId||event.recurrence));eventSeriesScopeInput.value="this";updateEventEditorOptions();eventModal.classList.add("open");eventModal.setAttribute("aria-hidden","false");setTimeout(()=>eventTitleInput.focus(),0);
+            deleteEventBtn.hidden=!event;copyEventBtn.hidden=!event;eventSeriesScope.hidden=!(event&&(event.seriesId||event.recurrence));eventSeriesScopeInput.value="this";updateEventEditorOptions();updateEventNoteControls();eventModal.classList.add("open");eventModal.setAttribute("aria-hidden","false");setTimeout(()=>eventTitleInput.focus(),0);
         }
         function closeEventEditor(){eventModal.classList.remove("open");eventModal.setAttribute("aria-hidden","true");editingEventId=null;editingEventOccurrenceDate="";}
-        function copyEditingEvent(){const id=editingEventId;let event=id&&id.includes("@")?eventsForDate(editingEventOccurrenceDate).find(item=>item.id===id):events.find(item=>item.id===id);if(!event)return;editingEventId=null;editingEventOccurrenceDate="";eventEditorTitle.textContent="Copy Event";deleteEventBtn.hidden=true;copyEventBtn.hidden=true;eventSeriesScope.hidden=true;eventRepeatInput.value="none";renderEventWeekdays([]);updateEventEditorOptions();eventTitleInput.focus();}
+        function copyEditingEvent(){const id=editingEventId;let event=id&&id.includes("@")?eventsForDate(editingEventOccurrenceDate).find(item=>item.id===id):events.find(item=>item.id===id);if(!event)return;editingEventId=null;editingEventOccurrenceDate="";eventEditorTitle.textContent="Copy Event";deleteEventBtn.hidden=true;copyEventBtn.hidden=true;eventSeriesScope.hidden=true;eventRepeatInput.value="none";renderEventWeekdays([]);updateEventEditorOptions();updateEventNoteControls();eventTitleInput.focus();}
         function removeSeriesPlannerLinks(seriesId, predicate = () => true) {
             const master = events.find(item => item.id === seriesId);
             const exceptionIds = new Set(events.filter(item => item.seriesId === seriesId).map(item => item.id));
@@ -5052,7 +5158,8 @@ body.notes-focus-active .note-body {
         }
         function saveEventFromEditor(){
             const title=eventTitleInput.value.trim(),date=eventDateInput.value;if(!title){alert("Please enter an event title.");eventTitleInput.focus();return;}if(!fromKey(date)||!isWithinRange(fromKey(date))){alert("Please select a valid event date.");return;}
-            const draft={title,date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor()};
+            const currentNoteLink=editingEventRecord()?normalizeTaskNoteLink(editingEventRecord().noteLink):null;
+            const draft={title,date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor(),noteLink:currentNoteLink};
             let savedEvent=null,previousSnapshot=null;
             if(editingEventId&&editingEventId.includes("@")){
                 const [seriesId,originalDate]=editingEventId.split("@");const master=events.find(item=>item.id===seriesId);if(!master)return;const scope=eventSeriesScopeInput.value;
@@ -6500,9 +6607,12 @@ ${body}` : title };
             if (!note)
                 return;
             const linkedTasks = linkedTasksForNote(id);
-            if (linkedTasks.length > 1 && !confirm(`This note is linked to ${linkedTasks.length} tasks. Delete it anyway? The tasks will remain, but their note links will be removed.`))
+            const linkedEvents = linkedEventsForNote(id);
+            const linkedCount = linkedTasks.length + linkedEvents.length;
+            if (linkedCount > 1 && !confirm(`This note is linked to ${linkedTasks.length} task${linkedTasks.length === 1 ? "" : "s"} and ${linkedEvents.length} event${linkedEvents.length === 1 ? "" : "s"}. Delete it anyway? The links will be removed.`))
                 return;
             clearTaskNoteLinks(id);
+            clearEventNoteLinks(id);
             if (expandedNoteId === id)
                 closeExpandedEditor();
             if (movingNoteId === id)
@@ -6519,10 +6629,13 @@ ${body}` : title };
             if (!note)
                 return;
             const linkedTasks = linkedTasksForNote(id);
-            const warning = linkedTasks.length ? ` This note is linked to ${linkedTasks.length} task${linkedTasks.length === 1 ? "" : "s"}; those links will be removed.` : "";
+            const linkedEvents = linkedEventsForNote(id);
+            const linkedCount = linkedTasks.length + linkedEvents.length;
+            const warning = linkedCount ? ` This note is linked to ${linkedTasks.length} task${linkedTasks.length === 1 ? "" : "s"} and ${linkedEvents.length} event${linkedEvents.length === 1 ? "" : "s"}; those links will be removed.` : "";
             if (!confirm(`Permanently delete this note? This cannot be undone.${warning}`))
                 return;
             clearTaskNoteLinks(id);
+            clearEventNoteLinks(id);
             notes = notes.filter(item => item.id !== id);
             renderNotes();
             save();
@@ -7160,6 +7273,7 @@ ${body}` : title };
                 targetData.evening = "";
             writeDateData(targetKey, targetData);
             updateLinkedTaskNoteDate(movingNote.id, targetKey);
+            updateLinkedEventNoteDate(movingNote.id, targetKey);
             renderNotes();
             markDateHasData(sourceKey);
             markDateHasData(targetKey);
@@ -7619,6 +7733,10 @@ ${body}` : title };
         saveEventBtn.addEventListener("click", saveEventFromEditor);
         deleteEventBtn.addEventListener("click", deleteEditingEvent);
         copyEventBtn.addEventListener("click", copyEditingEvent);
+        eventCreateNoteBtn.addEventListener("click", createNoteForEditingEvent);
+        eventLinkNoteBtn.addEventListener("click", openEventNotePicker);
+        eventOpenNoteBtn.addEventListener("click", openLinkedNoteForEditingEvent);
+        eventUnlinkNoteBtn.addEventListener("click", unlinkNoteFromEditingEvent);
         eventDurationInput.addEventListener("change", updateEventEditorOptions);
         eventTimeInput.addEventListener("input", updateEventEditorOptions);
         eventRepeatInput.addEventListener("change", updateEventEditorOptions);
