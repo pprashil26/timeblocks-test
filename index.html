@@ -2680,6 +2680,7 @@ button.note-label-chip {
 }
 .events-panel.open { display: block; }
 .events-toolbar { margin-bottom: 9px; }
+#eventTagFilter { width:auto;max-width:130px;height:28px;padding:3px 7px;border:1px solid var(--line);border-radius:9px;background:var(--page);color:var(--ink);font-size:11px; }
 .event-group { margin-top: 12px; }
 .event-group:first-child { margin-top: 0; }
 .event-group-title {
@@ -3960,7 +3961,7 @@ body.notes-focus-active .note-body {
         <div id="activityLog"></div>
       </div>
       <div class="events-panel" id="eventsPanel" hidden>
-        <div class="events-toolbar"><span class="events-title">Events</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Events">⛶</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link workspace-add-icon" id="eventsPanelAddBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div>
+        <div class="events-toolbar"><span class="events-title">Events</span><select id="eventTagFilter" aria-label="Filter Events by tag"><option value="">All tags</option></select><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Events">⛶</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link workspace-add-icon" id="eventsPanelAddBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div>
         <div id="eventsList"></div>
       </div>
       <div class="link-preview expanded-links" id="expandedLinks"></div>
@@ -3983,6 +3984,7 @@ body.notes-focus-active .note-body {
       <div class="event-editor-head"><p class="event-editor-title" id="eventEditorTitle">New Event</p><button class="plain-btn" id="closeEventBtn" type="button">Close</button></div>
       <div class="event-editor-body">
         <label for="eventTitleInput">Event</label><input id="eventTitleInput" type="text" maxlength="120" placeholder="Event title" autocomplete="off" />
+        <label for="eventTagInput">Tag <span class="event-optional">optional</span></label><input id="eventTagInput" type="text" maxlength="40" list="eventTagSuggestions" placeholder="Work, Family, Health..." autocomplete="off" /><datalist id="eventTagSuggestions"></datalist>
         <div class="event-editor-grid"><div class="event-editor-field"><label for="eventDateInput">Date</label><input id="eventDateInput" type="date" /></div><div class="event-editor-field"><label for="eventTimeInput">Time <span class="event-optional">optional</span></label><input id="eventTimeInput" type="time" /></div></div>
         <div class="event-editor-grid"><div class="event-editor-field"><label for="eventDurationInput">Duration</label><select id="eventDurationInput"><option value="30">30 minutes</option><option value="60">1 hour</option><option value="90">1 hour 30 minutes</option><option value="120">2 hours</option><option value="150">2 hours 30 minutes</option><option value="180">3 hours</option><option value="custom">Custom</option></select></div><div class="event-editor-field" id="eventCustomDurationField" hidden><label for="eventCustomDurationInput">Minutes</label><input id="eventCustomDurationInput" type="number" min="30" max="1440" step="30" value="30" /></div></div>
         <label for="eventRepeatInput">Repeat</label><select id="eventRepeatInput"><option value="none">Does not repeat</option><option value="daily">Daily</option><option value="weekdays">Weekdays</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="custom">Custom</option></select>
@@ -4244,6 +4246,9 @@ body.notes-focus-active .note-body {
         const eventModal = el("eventModal");
         const eventEditorTitle = el("eventEditorTitle");
         const eventTitleInput = el("eventTitleInput");
+        const eventTagInput = el("eventTagInput");
+        const eventTagSuggestions = el("eventTagSuggestions");
+        const eventTagFilter = el("eventTagFilter");
         const eventDateInput = el("eventDateInput");
         const eventTimeInput = el("eventTimeInput");
         const eventDurationInput = el("eventDurationInput");
@@ -4323,6 +4328,7 @@ body.notes-focus-active .note-body {
         let notePickerTarget = "task";
         let taskEditorFocusTarget = "text";
         let showPastEvents = false;
+        let activeEventTagFilter = "";
         let activityEntries = normalizeActivityEntries(loadJson(ACTIVITY_KEY, []));
         let activityHideCompleted = localStorage.getItem(ACTIVITY_HIDE_COMPLETED_KEY) === "true";
         let activeTaskContext = "Today";
@@ -4485,7 +4491,7 @@ body.notes-focus-active .note-body {
             if (!parsed.cleanQuery || !parsed.types.size) return { results: [], parsed };
             const results = [];
             if (parsed.types.has("notes")) allDateKeys().forEach(dateKey => { const data = readDateData(dateKey); normalizeNotes(data.notes).filter(note => !note.deleted).forEach(note => { if (noteMatchesGlobalSearch(note, parsed.cleanQuery)) results.push({ type: "note", dateKey, note }); }); });
-            if (parsed.types.has("events")) events.filter(event => !event.cancelled).forEach(event => { if (event.title.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "event", event }); });
+            if (parsed.types.has("events")) events.filter(event => !event.cancelled).forEach(event => { if (`${event.title} ${event.tag || ""}`.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "event", event }); });
             if (parsed.types.has("tasks")) TASK_CONTEXTS.forEach(context => { (globalTasks[context] || []).forEach(task => { if (`${task.text || ""} ${normalizeTaskTags(task.tags).join(" ")}`.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "task", context, task }); }); });
             return { results, parsed };
         }
@@ -4500,6 +4506,7 @@ body.notes-focus-active .note-body {
             if (!Array.isArray(raw)) return [];
             return raw.map(item => ({
                 id: item.id || createId("event"), title: typeof item.title === "string" ? item.title.trim() : "",
+                tag: typeof item.tag === "string" ? item.tag.trim().slice(0,40) : "",
                 date: fromKey(item.date) ? item.date : toKey(getToday()),
                 time: /^([01]\d|2[0-3]):[0-5]\d$/.test(item.time || "") ? item.time : "",
                 durationMinutes: Math.max(30, Math.min(1440, Math.round((Number(item.durationMinutes) || 30) / 30) * 30)),
@@ -5038,7 +5045,7 @@ body.notes-focus-active .note-body {
                 const button = document.createElement("button");
                 button.type = "button";
                 button.className = "event-strip-item";
-                button.textContent = `${event.time ? eventTimeLabel(event) + "  " : ""}${event.title}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
+                button.textContent = `${event.time ? eventTimeLabel(event) + "  " : ""}${event.title}${event.tag ? "  #" + event.tag : ""}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
                 button.title = `Edit ${event.title}`;
                 button.addEventListener("click", () => openEventEditor(event.id));
                 eventsStripList.appendChild(button);
@@ -5061,16 +5068,23 @@ body.notes-focus-active .note-body {
             when.textContent = `${dateText}${event.time ? " · " + eventTimeLabel(event) : " · All day"}`;
             const title = document.createElement("span");
             title.className = "event-row-title";
-            title.textContent = `${event.title}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
+            title.textContent = `${event.title}${event.tag ? "  #" + event.tag : ""}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
             row.append(when, title);
             row.addEventListener("click", () => openEventEditor(event.id));
             return row;
         }
         function renderEvents() {
             eventsList.innerHTML = "";
+            const tags = Array.from(new Set(events.map(event => event.tag).filter(Boolean))).sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:"base"}));
+            if (activeEventTagFilter && !tags.includes(activeEventTagFilter)) activeEventTagFilter = "";
+            eventTagFilter.innerHTML = '<option value="">All tags</option>';
+            tags.forEach(tag => { const option=document.createElement("option");option.value=tag;option.textContent=tag;eventTagFilter.appendChild(option); });
+            eventTagFilter.value = activeEventTagFilter;
+            eventTagSuggestions.innerHTML = "";
+            tags.forEach(tag => { const option=document.createElement("option");option.value=tag;eventTagSuggestions.appendChild(option); });
             const today = getToday();
             const windowEvents = [];
-            for (let offset = -365; offset <= 730; offset += 1) { const date = new Date(today); date.setDate(date.getDate() + offset); if (isWithinRange(date)) windowEvents.push(...eventsForDate(toKey(date))); }
+            for (let offset = -365; offset <= 730; offset += 1) { const date = new Date(today); date.setDate(date.getDate() + offset); if (isWithinRange(date)) windowEvents.push(...eventsForDate(toKey(date)).filter(event => !activeEventTagFilter || event.tag === activeEventTagFilter)); }
             const groups = [
                 ["Today", windowEvents.filter(event => eventPhase(event) === "today")],
                 ["Upcoming", windowEvents.filter(event => eventPhase(event) === "upcoming")],
@@ -5121,7 +5135,7 @@ body.notes-focus-active .note-body {
             if(eventId&&eventId.includes("@")){const [masterId,dateKey]=eventId.split("@");const master=events.find(item=>item.id===masterId);if(master){event=eventForOccurrence(master,dateKey);occurrenceDate=dateKey;}}
             else event=eventId?events.find(item=>item.id===eventId):null;
             editingEventId=event?event.id:null;editingEventOccurrenceDate=occurrenceDate;
-            eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
+            eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventTagInput.value=event?event.tag||"":"";eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
             const duration=event?event.durationMinutes||30:30;eventDurationInput.value=[30,60,90,120,150,180].includes(duration)?String(duration):"custom";eventCustomDurationInput.value=String(duration);
             const master=event&&event.seriesId?events.find(item=>item.id===event.seriesId):event;const rule=master&&master.recurrence?master.recurrence:null;eventRepeatInput.value=rule?rule.type:"none";eventRepeatIntervalInput.value=String(rule?rule.interval:1);eventRepeatUnitInput.value=rule?rule.unit:"week";eventRepeatEndInput.value=rule?rule.endType:"never";eventRepeatEndValue.value=rule?(rule.endType==="date"?rule.endDate:String(rule.count)):"";renderEventWeekdays(rule?rule.weekdays:[]);
             deleteEventBtn.hidden=!event;copyEventBtn.hidden=!event;eventSeriesScope.hidden=!(event&&(event.seriesId||event.recurrence));eventSeriesScopeInput.value="this";updateEventEditorOptions();updateEventNoteControls();eventModal.classList.add("open");eventModal.setAttribute("aria-hidden","false");setTimeout(()=>eventTitleInput.focus(),0);
@@ -5159,13 +5173,13 @@ body.notes-focus-active .note-body {
         function saveEventFromEditor(){
             const title=eventTitleInput.value.trim(),date=eventDateInput.value;if(!title){alert("Please enter an event title.");eventTitleInput.focus();return;}if(!fromKey(date)||!isWithinRange(fromKey(date))){alert("Please select a valid event date.");return;}
             const currentNoteLink=editingEventRecord()?normalizeTaskNoteLink(editingEventRecord().noteLink):null;
-            const draft={title,date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor(),noteLink:currentNoteLink};
+            const draft={title,tag:eventTagInput.value.trim().slice(0,40),date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor(),noteLink:currentNoteLink};
             const isNewEvent=!editingEventId;
             let savedEvent=null,previousSnapshot=null;
             if(editingEventId&&editingEventId.includes("@")){
                 const [seriesId,originalDate]=editingEventId.split("@");const master=events.find(item=>item.id===seriesId);if(!master)return;const scope=eventSeriesScopeInput.value;
                 if(scope==="this"){removeLinkedEventTimeblock(eventForOccurrence(master,originalDate));events=events.filter(item=>!(item.seriesId===seriesId&&item.originalDate===originalDate));savedEvent={id:createId("event"),...draft,recurrence:null,seriesId,originalDate,cancelled:false,createdAt:new Date().toISOString()};events.push(savedEvent);}
-                else if(scope==="all"){removeSeriesPlannerLinks(seriesId);master.title=draft.title;master.time=draft.time;master.durationMinutes=draft.durationMinutes;master.recurrence=draft.recurrence||master.recurrence;savedEvent=eventForOccurrence(master,originalDate);}
+                else if(scope==="all"){removeSeriesPlannerLinks(seriesId);master.title=draft.title;master.tag=draft.tag;master.time=draft.time;master.durationMinutes=draft.durationMinutes;master.recurrence=draft.recurrence||master.recurrence;savedEvent=eventForOccurrence(master,originalDate);}
                 else {removeSeriesPlannerLinks(seriesId,d=>d>=originalDate);if(master.recurrence){master.recurrence.endType="date";const before=fromKey(originalDate);before.setDate(before.getDate()-1);master.recurrence.endDate=toKey(before);}savedEvent={id:createId("event"),...draft,createdAt:new Date().toISOString(),seriesId:"",originalDate:"",cancelled:false};events.push(savedEvent);}
             } else if(editingEventId){
                 const current=events.find(item=>item.id===editingEventId);if(!current)return;previousSnapshot={...current};removeLinkedEventTimeblock(previousSnapshot);Object.assign(current,draft);savedEvent=current;
@@ -5176,7 +5190,7 @@ body.notes-focus-active .note-body {
         }
         function deleteEditingEvent(){
             if(!editingEventId||!confirm("Delete this event?"))return;
-            if(editingEventId.includes("@")){const [seriesId,originalDate]=editingEventId.split("@");const master=events.find(item=>item.id===seriesId);if(!master)return;const scope=eventSeriesScopeInput.value;removeLinkedEventTimeblock(eventForOccurrence(master,originalDate));if(scope==="this")events.push({id:createId("event"),title:"",date:originalDate,time:"",durationMinutes:30,recurrence:null,seriesId,originalDate,cancelled:true,createdAt:new Date().toISOString()});else if(scope==="all"){removeSeriesPlannerLinks(seriesId);events=events.filter(item=>item.id!==seriesId&&item.seriesId!==seriesId);}else{removeSeriesPlannerLinks(seriesId,d=>d>=originalDate);master.recurrence.endType="date";const before=fromKey(originalDate);before.setDate(before.getDate()-1);master.recurrence.endDate=toKey(before);}}
+            if(editingEventId.includes("@")){const [seriesId,originalDate]=editingEventId.split("@");const master=events.find(item=>item.id===seriesId);if(!master)return;const scope=eventSeriesScopeInput.value;removeLinkedEventTimeblock(eventForOccurrence(master,originalDate));if(scope==="this")events.push({id:createId("event"),title:"",tag:"",date:originalDate,time:"",durationMinutes:30,recurrence:null,seriesId,originalDate,cancelled:true,createdAt:new Date().toISOString()});else if(scope==="all"){removeSeriesPlannerLinks(seriesId);events=events.filter(item=>item.id!==seriesId&&item.seriesId!==seriesId);}else{removeSeriesPlannerLinks(seriesId,d=>d>=originalDate);master.recurrence.endType="date";const before=fromKey(originalDate);before.setDate(before.getDate()-1);master.recurrence.endDate=toKey(before);}}
             else {const deleting=events.find(event=>event.id===editingEventId);if(deleting&&deleting.recurrence)removeSeriesPlannerLinks(deleting.id);removeLinkedEventTimeblock(deleting);events=events.filter(event=>event.id!==editingEventId);}
             saveEvents();closeEventEditor();loadSelectedDate();renderSelectedDateEvents();renderEvents();buildCalendar();
         }
@@ -7731,6 +7745,7 @@ ${body}` : title };
         viewEventsBtn.addEventListener("click", openEvents);
         eventsPanelAddBtn.addEventListener("click", () => openEventEditor());
         eventsPastBtn.addEventListener("click", () => { showPastEvents = !showPastEvents; renderEvents(); });
+        eventTagFilter.addEventListener("change", () => { activeEventTagFilter = eventTagFilter.value; renderEvents(); });
         closeEventBtn.addEventListener("click", closeEventEditor);
         cancelEventBtn.addEventListener("click", closeEventEditor);
         saveEventBtn.addEventListener("click", saveEventFromEditor);
