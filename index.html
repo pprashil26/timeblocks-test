@@ -3244,7 +3244,16 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   textarea[data-time].planner-empty-slot { cursor: pointer; }
   textarea[data-time].planner-empty-slot:hover, textarea[data-time].planner-empty-slot:focus { background: var(--soft); outline: 2px solid rgba(123,146,133,.30); outline-offset: -2px; }
 }
-@media (max-width: 759px) { #plannerCreateModal { display: none !important; } }
+@media (max-width: 759px) {
+  #plannerCreateModal { padding: 12px; }
+  #plannerCreateModal .planner-create-panel { width: min(390px, 100%); }
+  #plannerCreateModal .planner-create-body { gap: 9px; }
+  #plannerCreateModal .planner-create-body select,
+  #plannerCreateModal .planner-create-body input { min-height: 42px; font-size: 16px; }
+  #plannerCreateModal .planner-create-actions button { min-height: 40px; padding: 7px 13px; }
+  textarea[data-time].planner-empty-slot { cursor: pointer; }
+  textarea[data-time].planner-empty-slot:focus { background: var(--soft); outline: 2px solid rgba(123,146,133,.30); outline-offset: -2px; }
+}
 
 
 /* Desktop-only minimal-colour workspace refinement */
@@ -5279,7 +5288,6 @@ body.notes-focus-active .note-body {
             }, 0);
         }
         function openPlannerCreate(timeId) {
-            if (isMobileViewport()) return;
             plannerCreateTime = timeId;
             plannerCreateType.value = "task";
             plannerCreateText.value = "";
@@ -5298,7 +5306,7 @@ body.notes-focus-active .note-body {
                 const task = { id: createId("task"), text, status: "not-started", done: false, highlighted: false, tags: [], date: dateKey, time: plannerCreateTime, noteLink: null, createdAt: new Date().toISOString() };
                 globalTasks.Today.unshift(task); saveTasks(); populateTaskTimeblock(task, false); renderGlobalTasks();
             } else if (type === "event") {
-                const event = { id: createId("event"), title: text, date: dateKey, time: plannerCreateTime, durationMinutes: 30, recurrence: null, seriesId: "", originalDate: "", cancelled: false, createdAt: new Date().toISOString() };
+                const event = { id: createId("event"), title: text, tag: "", date: dateKey, time: plannerCreateTime, durationMinutes: 30, recurrence: null, seriesId: "", originalDate: "", cancelled: false, createdAt: new Date().toISOString() };
                 events.push(event); saveEvents(); populateEventTimeblock(event, false); renderEvents(); buildCalendar();
             } else {
                 const [hour, minute] = plannerCreateTime.split(":").map(Number);
@@ -6543,10 +6551,10 @@ ${body}` : title };
             });
             if (!linkedEvent && !linkedTask && !linkedActivity && !box.value.trim()) {
                 box.classList.add("planner-empty-slot");
-                box.addEventListener("focus", () => { if (!isMobileViewport() && !box.value.trim()) { box.blur(); openPlannerCreate(timeId); } });
-                box.addEventListener("click", () => { if (!isMobileViewport() && !box.value.trim()) openPlannerCreate(timeId); });
+                box.addEventListener("focus", () => { if (!box.value.trim()) { box.blur(); openPlannerCreate(timeId); } });
+                box.addEventListener("click", () => { if (!box.value.trim()) openPlannerCreate(timeId); });
             }
-            box.addEventListener("input", () => { autoGrow(box); box.classList.toggle("planner-empty-slot", !isMobileViewport() && !box.value.trim()); save(); });
+            box.addEventListener("input", () => { autoGrow(box); box.classList.toggle("planner-empty-slot", !box.value.trim()); save(); });
             box.addEventListener("keydown", event => {
                 if (event.defaultPrevented || (box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock") || box.classList.contains("activity-timeblock"))) return;
                 if (event.key === "Enter" && !event.shiftKey) {
