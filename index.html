@@ -5160,6 +5160,7 @@ body.notes-focus-active .note-body {
             const title=eventTitleInput.value.trim(),date=eventDateInput.value;if(!title){alert("Please enter an event title.");eventTitleInput.focus();return;}if(!fromKey(date)||!isWithinRange(fromKey(date))){alert("Please select a valid event date.");return;}
             const currentNoteLink=editingEventRecord()?normalizeTaskNoteLink(editingEventRecord().noteLink):null;
             const draft={title,date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor(),noteLink:currentNoteLink};
+            const isNewEvent=!editingEventId;
             let savedEvent=null,previousSnapshot=null;
             if(editingEventId&&editingEventId.includes("@")){
                 const [seriesId,originalDate]=editingEventId.split("@");const master=events.find(item=>item.id===seriesId);if(!master)return;const scope=eventSeriesScopeInput.value;
@@ -5169,7 +5170,9 @@ body.notes-focus-active .note-body {
             } else if(editingEventId){
                 const current=events.find(item=>item.id===editingEventId);if(!current)return;previousSnapshot={...current};removeLinkedEventTimeblock(previousSnapshot);Object.assign(current,draft);savedEvent=current;
             } else {savedEvent={id:createId("event"),...draft,seriesId:"",originalDate:"",cancelled:false,createdAt:new Date().toISOString()};events.push(savedEvent);}
-            saveEvents();if(savedEvent.recurrence){const occ=eventForOccurrence(savedEvent,savedEvent.date);populateEventTimeblock(occ);}else populateEventTimeblock(savedEvent);closeEventEditor();if(toKey(selectedDate)===savedEvent.date||(previousSnapshot&&toKey(selectedDate)===previousSnapshot.date))loadSelectedDate();renderSelectedDateEvents();renderEvents();buildCalendar();
+            saveEvents();if(savedEvent.recurrence){const occ=eventForOccurrence(savedEvent,savedEvent.date);populateEventTimeblock(occ);}else populateEventTimeblock(savedEvent);if(toKey(selectedDate)===savedEvent.date||(previousSnapshot&&toKey(selectedDate)===previousSnapshot.date))loadSelectedDate();renderSelectedDateEvents();renderEvents();buildCalendar();
+            if(isNewEvent){editingEventId=savedEvent.id;editingEventOccurrenceDate="";eventEditorTitle.textContent="Edit Event";deleteEventBtn.hidden=false;copyEventBtn.hidden=false;eventSeriesScope.hidden=!savedEvent.recurrence;updateEventNoteControls();const original=saveEventBtn.textContent;saveEventBtn.textContent="Saved ✓";saveEventBtn.disabled=true;setTimeout(()=>{saveEventBtn.textContent=original;saveEventBtn.disabled=false;},900);return;}
+            closeEventEditor();
         }
         function deleteEditingEvent(){
             if(!editingEventId||!confirm("Delete this event?"))return;
