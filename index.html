@@ -3462,6 +3462,40 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   }
 }
 
+
+/* Note list formatting: bullets, numbering and checklists */
+.expanded-list-wrap { position: relative; display: inline-flex; }
+.expanded-list-menu {
+  display: none;
+  position: absolute;
+  top: 34px;
+  right: 0;
+  z-index: 42;
+  min-width: 154px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--page);
+  box-shadow: 0 14px 34px rgba(46, 57, 50, .14);
+}
+.expanded-list-menu.open { display: grid; gap: 3px; }
+.expanded-list-menu .plain-btn {
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 8px;
+  color: var(--ink);
+  text-align: left;
+  text-decoration: none;
+}
+.expanded-list-menu .plain-btn:hover,
+.expanded-list-menu .plain-btn:focus-visible { background: var(--soft); }
+.expanded-list-toolbar-btn { width: auto; min-width: 38px; padding: 0 7px; font-size: 11px; font-weight: 700; }
+@media (max-width: 759px) {
+  .expanded-list-toolbar-btn { min-width: 40px; padding-inline: 6px; }
+  .expanded-list-menu { position: fixed; top: auto; right: 12px; bottom: 12px; left: 12px; min-width: 0; }
+  .expanded-list-menu .plain-btn { min-height: 42px; padding: 9px 11px; font-size: 13px; }
+}
+
 </style>
 </head>
 <body>
@@ -3579,7 +3613,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" id="expandedNoteShell" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
-      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="icon-btn expanded-copy-toolbar-btn" id="expandedCopyToolbarBtn" type="button" title="Copy note" aria-label="Copy note">Copy</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="icon-btn expanded-font-toolbar-btn" id="expandedFontBtn" type="button" title="Use larger note font" aria-pressed="false">Aa</button><button class="icon-btn" id="expandedWideBtn" type="button" title="Toggle wide note view">↔</button><button class="icon-btn" id="expandedLineBtn" type="button" title="Insert horizontal line"><span class="expanded-line-icon" aria-hidden="true">─</span><span class="expanded-line-text">Insert line</span></button><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedCopyBtn" type="button" hidden>Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move note</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete note</button></span></span></div>
+      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="icon-btn expanded-copy-toolbar-btn" id="expandedCopyToolbarBtn" type="button" title="Copy note" aria-label="Copy note">Copy</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="icon-btn expanded-font-toolbar-btn" id="expandedFontBtn" type="button" title="Use larger note font" aria-pressed="false">Aa</button><button class="icon-btn" id="expandedWideBtn" type="button" title="Toggle wide note view">↔</button><button class="icon-btn" id="expandedLineBtn" type="button" title="Insert horizontal line"><span class="expanded-line-icon" aria-hidden="true">─</span><span class="expanded-line-text">Insert line</span></button><span class="expanded-list-wrap"><button class="icon-btn expanded-list-toolbar-btn" id="expandedListBtn" type="button" title="List formatting" aria-expanded="false">List</button><span class="expanded-list-menu" id="expandedListMenu"><button class="plain-btn" id="expandedBulletsBtn" type="button">• Bulleted list</button><button class="plain-btn" id="expandedNumbersBtn" type="button">1. Numbered list</button><button class="plain-btn" id="expandedChecklistBtn" type="button">☐ Checklist</button><button class="plain-btn" id="expandedCheckItemBtn" type="button">✓ Check/uncheck item</button><button class="plain-btn" id="expandedPlainBtn" type="button">Plain text</button></span></span><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedCopyBtn" type="button" hidden>Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move note</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete note</button></span></span></div>
       <div class="note-label-chips expanded-label-chips" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
@@ -3809,6 +3843,13 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         const expandedEditBtn = el("expandedEditBtn");
         const expandedWideBtn = el("expandedWideBtn");
         const expandedLineBtn = el("expandedLineBtn");
+        const expandedListBtn = el("expandedListBtn");
+        const expandedListMenu = el("expandedListMenu");
+        const expandedBulletsBtn = el("expandedBulletsBtn");
+        const expandedNumbersBtn = el("expandedNumbersBtn");
+        const expandedChecklistBtn = el("expandedChecklistBtn");
+        const expandedCheckItemBtn = el("expandedCheckItemBtn");
+        const expandedPlainBtn = el("expandedPlainBtn");
         const expandedMoreBtn = el("expandedMoreBtn");
         const expandedMoreMenu = el("expandedMoreMenu");
         const expandedMoveBtn = el("expandedMoveBtn");
@@ -6093,9 +6134,11 @@ ${body}` : title };
             expandedEditBtn.title = "Edit note";
             expandedEditBtn.setAttribute("aria-pressed", "false");
             expandedLineBtn.hidden = true;
+            expandedListBtn.hidden = true;
             expandedLinks.hidden = true;
             expandedNoteTools.hidden = false;
             closeExpandedMoreMenu();
+            closeExpandedListMenu();
             applyExpandedNoteWide();
             if (globalTasksPanel.parentElement === expandedNoteShell) {
                 globalTasksPanel.hidden = true;
@@ -6123,6 +6166,8 @@ ${body}` : title };
             expandedEditBtn.setAttribute("aria-pressed", String(expandedNoteEditing));
             expandedEditBtn.classList.toggle("active", expandedNoteEditing);
             expandedLineBtn.hidden = !expandedNoteEditing;
+            expandedListBtn.hidden = !expandedNoteEditing;
+            if (!expandedNoteEditing) closeExpandedListMenu();
             noteModal.classList.toggle("note-view-mode", !expandedNoteEditing);
             if (focusEditor) {
                 setTimeout(() => {
@@ -6429,6 +6474,92 @@ ${body}` : title };
                 moveWorkspacePanelsToSidebar();
                 showDesktopWorkspacePanel(desktopWorkspacePanel);
             }
+        }
+        function closeExpandedListMenu() {
+            expandedListMenu.classList.remove("open");
+            expandedListBtn.setAttribute("aria-expanded", "false");
+        }
+        function toggleExpandedListMenu() {
+            if (!expandedNoteEditing || expandedBody.readOnly || expandedBody.hidden)
+                return;
+            closeExpandedMoreMenu();
+            const open = !expandedListMenu.classList.contains("open");
+            expandedListMenu.classList.toggle("open", open);
+            expandedListBtn.setAttribute("aria-expanded", String(open));
+        }
+        function stripNoteListMarker(line) {
+            return line.replace(/^(\s*)(?:[•*-]\s+|\d+\.\s+|[☐☑]\s+)/, "$1");
+        }
+        function expandedBodyLineRange() {
+            const value = expandedBody.value;
+            const selectionStart = expandedBody.selectionStart ?? value.length;
+            const selectionEnd = expandedBody.selectionEnd ?? selectionStart;
+            const start = value.lastIndexOf("\n", Math.max(0, selectionStart - 1)) + 1;
+            const nextBreak = value.indexOf("\n", selectionEnd);
+            const end = nextBreak === -1 ? value.length : nextBreak;
+            return { value, start, end, selectionStart, selectionEnd };
+        }
+        function applyExpandedListFormat(type) {
+            if (!expandedNoteId || !expandedNoteEditing || expandedBody.readOnly || expandedBody.hidden)
+                return;
+            const range = expandedBodyLineRange();
+            const sourceLines = range.value.slice(range.start, range.end).split("\n");
+            let number = 1;
+            const formatted = sourceLines.map(line => {
+                if (!line.trim()) return line;
+                const indent = (line.match(/^\s*/) || [""])[0];
+                const content = stripNoteListMarker(line).slice(indent.length);
+                if (type === "bullets") return `${indent}• ${content}`;
+                if (type === "numbers") return `${indent}${number++}. ${content}`;
+                if (type === "checklist") return `${indent}☐ ${content}`;
+                return `${indent}${content}`;
+            }).join("\n");
+            expandedBody.setRangeText(formatted, range.start, range.end, "select");
+            syncExpandedToCard();
+            closeExpandedListMenu();
+            expandedBody.focus();
+        }
+        function toggleExpandedChecklistItem() {
+            if (!expandedNoteId || !expandedNoteEditing || expandedBody.readOnly || expandedBody.hidden)
+                return;
+            const range = expandedBodyLineRange();
+            const lines = range.value.slice(range.start, range.end).split("\n");
+            const toggled = lines.map(line => {
+                if (/^(\s*)☐\s+/.test(line)) return line.replace(/^(\s*)☐\s+/, "$1☑ ");
+                if (/^(\s*)☑\s+/.test(line)) return line.replace(/^(\s*)☑\s+/, "$1☐ ");
+                return line;
+            }).join("\n");
+            expandedBody.setRangeText(toggled, range.start, range.end, "select");
+            syncExpandedToCard();
+            closeExpandedListMenu();
+            expandedBody.focus();
+        }
+        function continueExpandedListOnEnter(event) {
+            if (event.key !== "Enter" || event.shiftKey || event.ctrlKey || event.altKey || event.metaKey || !expandedNoteEditing || expandedBody.readOnly)
+                return;
+            const value = expandedBody.value;
+            const start = expandedBody.selectionStart ?? value.length;
+            const end = expandedBody.selectionEnd ?? start;
+            if (start !== end)
+                return;
+            const lineStart = value.lastIndexOf("\n", Math.max(0, start - 1)) + 1;
+            const currentLine = value.slice(lineStart, start);
+            const marker = /^(\s*)(•\s+|\d+\.\s+|[☐☑]\s+)/.exec(currentLine);
+            if (!marker)
+                return;
+            event.preventDefault();
+            const content = currentLine.slice(marker[0].length);
+            if (!content.trim()) {
+                expandedBody.setRangeText("", lineStart, start, "end");
+            }
+            else {
+                let nextMarker = marker[2];
+                const numberMatch = /^(\d+)\.\s+$/.exec(nextMarker);
+                if (numberMatch) nextMarker = `${Number(numberMatch[1]) + 1}. `;
+                if (/^☑\s+$/.test(nextMarker)) nextMarker = "☐ ";
+                expandedBody.setRangeText(`\n${marker[1]}${nextMarker}`, start, end, "end");
+            }
+            expandedBody.dispatchEvent(new Event("input", { bubbles: true }));
         }
         function insertExpandedHorizontalLine() {
             if (!expandedNoteId || expandedBody.readOnly || expandedBody.hidden)
@@ -6998,6 +7129,8 @@ ${body}` : title };
         notesMoreBtn.addEventListener("click", event => { event.stopPropagation(); toggleNotesMoreMenu(); });
         notesMoreMenu.addEventListener("click", event => event.stopPropagation());
         document.addEventListener("click", event => {
+            if (!expandedListMenu.contains(event.target) && event.target !== expandedListBtn)
+                closeExpandedListMenu();
             if (!notesMoreMenu.contains(event.target) && event.target !== notesMoreBtn)
                 closeNotesMoreMenu();
             if (!mobileNotesMoreMenu.contains(event.target) && event.target !== mobileNotesMoreBtn) {
@@ -7081,7 +7214,14 @@ ${body}` : title };
         expandedEditBtn.addEventListener("click", toggleExpandedNoteEditMode);
         expandedWideBtn.addEventListener("click", toggleExpandedNoteWide);
         expandedLineBtn.addEventListener("click", insertExpandedHorizontalLine);
-        expandedMoreBtn.addEventListener("click", event => { event.stopPropagation(); toggleExpandedMoreMenu(); });
+        expandedListBtn.addEventListener("click", event => { event.stopPropagation(); toggleExpandedListMenu(); });
+        expandedBulletsBtn.addEventListener("click", () => applyExpandedListFormat("bullets"));
+        expandedNumbersBtn.addEventListener("click", () => applyExpandedListFormat("numbers"));
+        expandedChecklistBtn.addEventListener("click", () => applyExpandedListFormat("checklist"));
+        expandedCheckItemBtn.addEventListener("click", toggleExpandedChecklistItem);
+        expandedPlainBtn.addEventListener("click", () => applyExpandedListFormat("plain"));
+        expandedBody.addEventListener("keydown", continueExpandedListOnEnter);
+        expandedMoreBtn.addEventListener("click", event => { event.stopPropagation(); closeExpandedListMenu(); toggleExpandedMoreMenu(); });
         expandedMoveBtn.addEventListener("click", () => { if (expandedNoteId) {
             closeExpandedMoreMenu();
             openMoveNote(expandedNoteId);
