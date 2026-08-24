@@ -11,6 +11,35 @@ jobs:
       - name: Checkout test repo
         uses: actions/checkout@v4
 
+      - name: Confirm required PWA files exist
+        run: |
+          required_files=(
+            "index.html"
+            "manifest.webmanifest"
+            "service-worker.js"
+            "logo.png"
+            "icon-192.png"
+            "icon-512.png"
+            "icon-maskable-512.png"
+            "apple-touch-icon.png"
+          )
+
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "Missing required file: $file"
+              exit 1
+            fi
+          done
+
+          echo "All required PWA files are available."
+
+      - name: Validate PWA files
+        run: |
+          python -m json.tool manifest.webmanifest > /dev/null
+          node --check service-worker.js
+
+          echo "Manifest and service worker validation passed."
+
       - name: Checkout live repo
         uses: actions/checkout@v4
         with:
@@ -18,20 +47,49 @@ jobs:
           token: ${{ secrets.LIVE_REPO_TOKEN }}
           path: live-repo
 
-      - name: Copy test index.html to live repo
+      - name: Copy tested PWA files to live repo
         run: |
           cp index.html live-repo/index.html
+          cp manifest.webmanifest live-repo/manifest.webmanifest
+          cp service-worker.js live-repo/service-worker.js
+          cp logo.png live-repo/logo.png
+          cp icon-192.png live-repo/icon-192.png
+          cp icon-512.png live-repo/icon-512.png
+          cp icon-maskable-512.png live-repo/icon-maskable-512.png
+          cp apple-touch-icon.png live-repo/apple-touch-icon.png
+
+      - name: Verify copied PWA files
+        run: |
+          cmp index.html live-repo/index.html
+          cmp manifest.webmanifest live-repo/manifest.webmanifest
+          cmp service-worker.js live-repo/service-worker.js
+          cmp logo.png live-repo/logo.png
+          cmp icon-192.png live-repo/icon-192.png
+          cmp icon-512.png live-repo/icon-512.png
+          cmp icon-maskable-512.png live-repo/icon-maskable-512.png
+          cmp apple-touch-icon.png live-repo/apple-touch-icon.png
+
+          echo "All live files match the tested files."
 
       - name: Commit and push live update
         run: |
           cd live-repo
+
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+
           git add index.html
+          git add manifest.webmanifest
+          git add service-worker.js
+          git add logo.png
+          git add icon-192.png
+          git add icon-512.png
+          git add icon-maskable-512.png
+          git add apple-touch-icon.png
 
           if git diff --cached --quiet; then
             echo "No changes to promote."
           else
-            git commit -m "Promote tested fastgtd version to live"
+            git commit -m "Promote tested FAST GTD PWA version to live"
             git push
           fi
