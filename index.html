@@ -3562,6 +3562,90 @@ body.notes-focus-active .note-body {
   }
 }
 
+
+/* Shared existing Note links for Tasks */
+.task-note-picker-panel {
+  width: min(520px, 94vw);
+  max-height: min(78vh, 680px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--page);
+  box-shadow: 0 18px 50px rgba(50, 40, 28, .22);
+}
+.task-note-picker-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.task-note-picker-title {
+  margin: 0;
+  font-size: var(--font-lg);
+  font-weight: 700;
+}
+.task-note-picker-body {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 9px;
+  padding: 10px 12px 12px;
+}
+.task-note-picker-list {
+  min-height: 120px;
+  max-height: min(58vh, 520px);
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  overflow-y: auto;
+}
+.task-note-picker-item {
+  width: 100%;
+  display: grid;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.task-note-picker-item:hover,
+.task-note-picker-item:focus-visible {
+  background: var(--soft);
+  border-color: var(--entry-border);
+}
+.task-note-picker-item-title {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.task-note-picker-item-meta,
+.task-note-picker-empty {
+  color: var(--muted);
+  font-size: 10.5px;
+}
+.task-note-picker-empty {
+  padding: 18px 8px;
+  text-align: center;
+}
+@media (max-width: 759px) {
+  .task-note-actions { flex-wrap: wrap; }
+  .task-note-picker-panel { width: calc(100vw - 12px); max-height: 88dvh; }
+  .task-note-picker-list { max-height: calc(88dvh - 112px); }
+  .task-note-picker-item { min-height: 46px; padding: 9px 10px; }
+}
+
 </style>
 </head>
 <body>
@@ -3742,7 +3826,7 @@ body.notes-focus-active .note-body {
         <label for="taskEditorContext">List</label><select id="taskEditorContext"></select>
         <label for="taskEditorTags">Tags <span class="event-optional">optional</span></label><input id="taskEditorTags" type="text" maxlength="240" list="taskTagSuggestions" placeholder="Work, Home, Waiting..." autocomplete="off" /><datalist id="taskTagSuggestions"></datalist><div class="task-editor-tags-help">Separate multiple tags with commas. Task tags are independent from Note labels.</div>
         <div class="task-editor-date-row"><div><label for="taskEditorDate">Date <span class="event-optional">optional</span></label><input id="taskEditorDate" type="date" /></div><div><label for="taskEditorTime">Time <span class="event-optional">optional</span></label><input id="taskEditorTime" type="time" /></div></div>
-        <div class="task-note-section" id="taskNoteSection"><span class="task-note-label">Note</span><span class="task-note-actions"><button class="plain-btn task-note-btn" id="taskCreateNoteBtn" type="button">Create note</button><button class="plain-btn task-note-btn" id="taskOpenNoteBtn" type="button" hidden>Open note</button><button class="plain-btn task-note-unlink" id="taskUnlinkNoteBtn" type="button" hidden>Unlink</button></span><span class="task-note-help" id="taskNoteHelp"></span></div>
+        <div class="task-note-section" id="taskNoteSection"><span class="task-note-label">Note</span><span class="task-note-actions"><button class="plain-btn task-note-btn" id="taskCreateNoteBtn" type="button">Create note</button><button class="plain-btn task-note-btn" id="taskLinkNoteBtn" type="button">Link existing</button><button class="plain-btn task-note-btn" id="taskOpenNoteBtn" type="button" hidden>Open note</button><button class="plain-btn task-note-unlink" id="taskUnlinkNoteBtn" type="button" hidden>Unlink</button></span><span class="task-note-help" id="taskNoteHelp"></span></div>
       </div>
       <div class="task-editor-actions"><button class="plain-btn delete-note-btn" id="deleteTaskEditorBtn" type="button">Delete</button><button class="plain-btn event-copy-btn" id="copyTaskBtn" type="button" hidden>Copy</button><span></span><button class="plain-btn" id="cancelTaskEditorBtn" type="button">Cancel</button><button class="plain-btn task-save-btn" id="saveTaskEditorBtn" type="button">Save</button></div>
     </section>
@@ -3759,6 +3843,15 @@ body.notes-focus-active .note-body {
         <input id="plannerCreateText" type="text" maxlength="240" autocomplete="off" placeholder="What do you want to add?" />
       </div>
       <div class="planner-create-actions"><button class="plain-btn" id="cancelPlannerCreateBtn" type="button">Cancel</button><button class="plain-btn planner-create-save" id="savePlannerCreateBtn" type="button">Save</button></div>
+    </section>
+  </div>
+  <div class="modal-backdrop" id="taskNotePickerModal" aria-hidden="true">
+    <section class="task-note-picker-panel" role="dialog" aria-modal="true" aria-label="Link existing note">
+      <div class="task-note-picker-head"><p class="task-note-picker-title">Link existing note</p><button class="plain-btn" id="closeTaskNotePickerBtn" type="button">Close</button></div>
+      <div class="task-note-picker-body">
+        <input id="taskNotePickerSearch" type="text" placeholder="Search note title, body or labels..." autocomplete="off" />
+        <div class="task-note-picker-list" id="taskNotePickerList"></div>
+      </div>
     </section>
   </div>
   <div class="modal-backdrop" id="moveModal" aria-hidden="true">
@@ -3940,9 +4033,14 @@ body.notes-focus-active .note-body {
         const taskEditorDate = el("taskEditorDate");
         const taskEditorTime = el("taskEditorTime");
         const taskCreateNoteBtn = el("taskCreateNoteBtn");
+        const taskLinkNoteBtn = el("taskLinkNoteBtn");
         const taskOpenNoteBtn = el("taskOpenNoteBtn");
         const taskUnlinkNoteBtn = el("taskUnlinkNoteBtn");
         const taskNoteHelp = el("taskNoteHelp");
+        const taskNotePickerModal = el("taskNotePickerModal");
+        const taskNotePickerSearch = el("taskNotePickerSearch");
+        const taskNotePickerList = el("taskNotePickerList");
+        const closeTaskNotePickerBtn = el("closeTaskNotePickerBtn");
         const closeTaskEditorBtn = el("closeTaskEditorBtn");
         const cancelTaskEditorBtn = el("cancelTaskEditorBtn");
         const saveTaskEditorBtn = el("saveTaskEditorBtn");
@@ -4360,10 +4458,12 @@ body.notes-focus-active .note-body {
             const found = editingTaskId ? findTaskLocation(editingTaskId) : null;
             const linked = found ? linkedNoteForTask(found.task) : null;
             taskCreateNoteBtn.hidden = Boolean(linked);
+            taskLinkNoteBtn.hidden = Boolean(linked);
             taskOpenNoteBtn.hidden = !linked;
             taskUnlinkNoteBtn.hidden = !linked;
             taskCreateNoteBtn.disabled = !found;
-            taskNoteHelp.textContent = linked ? `Linked: ${linked.note.title || "Untitled"}` : found ? "Create one normal FAST GTD Note for this task." : "Save the Task before creating its Note.";
+            taskLinkNoteBtn.disabled = !found;
+            taskNoteHelp.textContent = linked ? `Linked: ${linked.note.title || "Untitled"}` : found ? "Create a new Note or link an existing Note. A Note can be shared by multiple Tasks." : "Save the Task before creating or linking its Note.";
             if (found && found.task.noteLink && !linked) {
                 found.task.noteLink = null;
                 saveTasks();
@@ -4425,6 +4525,82 @@ body.notes-focus-active .note-body {
                 loadNotesForIndependentDate();
             }
             setTimeout(() => openExpandedNote(note.id, true), 0);
+        }
+        function allAvailableNotesForTaskLink() {
+            const available = [];
+            allDateKeys().slice().sort().reverse().forEach(dateKey => {
+                normalizeNotes(readDateData(dateKey).notes).forEach(note => {
+                    if (!note.deleted) available.push({ dateKey, note });
+                });
+            });
+            return available;
+        }
+        function renderTaskNotePicker() {
+            const query = taskNotePickerSearch.value.trim().toLowerCase();
+            const available = allAvailableNotesForTaskLink().filter(({ note }) => !query || `${note.title || ""} ${note.body || ""} ${(note.labels || []).join(" ")}`.toLowerCase().includes(query));
+            taskNotePickerList.innerHTML = "";
+            if (!available.length) {
+                const empty = document.createElement("div");
+                empty.className = "task-note-picker-empty";
+                empty.textContent = query ? "No matching notes" : "No notes available to link";
+                taskNotePickerList.appendChild(empty);
+                return;
+            }
+            available.forEach(({ dateKey, note }) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "task-note-picker-item";
+                const title = document.createElement("span");
+                title.className = "task-note-picker-item-title";
+                title.textContent = `${note.pinned ? "★ " : ""}${note.title || "Untitled"}`;
+                const meta = document.createElement("span");
+                meta.className = "task-note-picker-item-meta";
+                const date = fromKey(dateKey);
+                meta.textContent = `${date ? displayDate(date) : dateKey}${note.labels.length ? " · " + note.labels.join(" · ") : ""}`;
+                button.append(title, meta);
+                button.addEventListener("click", () => linkExistingNoteToEditingTask(note.id, dateKey));
+                taskNotePickerList.appendChild(button);
+            });
+        }
+        function openTaskNotePicker() {
+            const found = saveEditingTaskChangesBeforeNote();
+            if (!found || linkedNoteForTask(found.task)) return updateTaskNoteControls();
+            taskNotePickerSearch.value = "";
+            renderTaskNotePicker();
+            taskNotePickerModal.classList.add("open");
+            taskNotePickerModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => taskNotePickerSearch.focus(), 0);
+        }
+        function closeTaskNotePicker() {
+            taskNotePickerModal.classList.remove("open");
+            taskNotePickerModal.setAttribute("aria-hidden", "true");
+            taskNotePickerSearch.value = "";
+            taskNotePickerList.innerHTML = "";
+        }
+        function linkExistingNoteToEditingTask(noteId, dateKey) {
+            const found = editingTaskId ? findTaskLocation(editingTaskId) : null;
+            const note = normalizeNotes(readDateData(dateKey).notes).find(item => item.id === noteId && !item.deleted);
+            if (!found || !note) return;
+            found.task.noteLink = { noteId, dateKey };
+            saveTasks();
+            closeTaskNotePicker();
+            updateTaskNoteControls();
+            renderGlobalTasks();
+        }
+        function linkedTasksForNote(noteId) {
+            const matches = [];
+            TASK_CONTEXTS.forEach(context => (globalTasks[context] || []).forEach(task => {
+                if (task.noteLink && task.noteLink.noteId === noteId) matches.push({ context, task });
+            }));
+            return matches;
+        }
+        function clearTaskNoteLinks(noteId) {
+            let changed = false;
+            TASK_CONTEXTS.forEach(context => (globalTasks[context] || []).forEach(task => {
+                if (task.noteLink && task.noteLink.noteId === noteId) { task.noteLink = null; changed = true; }
+            }));
+            if (changed) { saveTasks(); renderGlobalTasks(); }
+            return changed;
         }
         function openLinkedNoteForEditingTask() {
             const found = editingTaskId ? findTaskLocation(editingTaskId) : null;
@@ -6144,6 +6320,10 @@ ${body}` : title };
             const note = findNoteById(id);
             if (!note)
                 return;
+            const linkedTasks = linkedTasksForNote(id);
+            if (linkedTasks.length > 1 && !confirm(`This note is linked to ${linkedTasks.length} tasks. Delete it anyway? The tasks will remain, but their note links will be removed.`))
+                return;
+            clearTaskNoteLinks(id);
             if (expandedNoteId === id)
                 closeExpandedEditor();
             if (movingNoteId === id)
@@ -6159,8 +6339,11 @@ ${body}` : title };
             const note = findNoteById(id);
             if (!note)
                 return;
-            if (!confirm("Permanently delete this note? This cannot be undone."))
+            const linkedTasks = linkedTasksForNote(id);
+            const warning = linkedTasks.length ? ` This note is linked to ${linkedTasks.length} task${linkedTasks.length === 1 ? "" : "s"}; those links will be removed.` : "";
+            if (!confirm(`Permanently delete this note? This cannot be undone.${warning}`))
                 return;
+            clearTaskNoteLinks(id);
             notes = notes.filter(item => item.id !== id);
             renderNotes();
             save();
@@ -7014,6 +7197,10 @@ ${body}` : title };
       function handleEscapeKey() {
   clearShortcutPrefix();
 
+  if (taskNotePickerModal.classList.contains("open")) {
+    closeTaskNotePicker();
+    return;
+  }
   if (taskModal.classList.contains("open")) {
     closeTaskEditor();
     return;
@@ -7244,6 +7431,7 @@ ${body}` : title };
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
         newTaskBtn.addEventListener("click", () => openNewTaskEditor(activeTaskContext));
         taskCreateNoteBtn.addEventListener("click", createNoteForEditingTask);
+        taskLinkNoteBtn.addEventListener("click", openTaskNotePicker);
         taskOpenNoteBtn.addEventListener("click", openLinkedNoteForEditingTask);
         taskUnlinkNoteBtn.addEventListener("click", unlinkNoteFromEditingTask);
         closeTaskEditorBtn.addEventListener("click", cancelTaskEditor);
@@ -7253,6 +7441,9 @@ ${body}` : title };
         deleteTaskEditorBtn.addEventListener("click", deleteTaskFromEditor);
         taskModal.addEventListener("click", event => { if (event.target === taskModal) cancelTaskEditor(); });
         taskModal.addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && event.target instanceof HTMLInputElement) { event.preventDefault(); saveTaskFromEditor(); } });
+        closeTaskNotePickerBtn.addEventListener("click", closeTaskNotePicker);
+        taskNotePickerSearch.addEventListener("input", renderTaskNotePicker);
+        taskNotePickerModal.addEventListener("click", event => { if (event.target === taskNotePickerModal) closeTaskNotePicker(); });
         activityAddBtn.addEventListener("click", addActivityEntry);
         activityFilterBtn.addEventListener("click", toggleActivityFilter);
       exportActivityBtn.addEventListener("click", exportActivityLog);  
