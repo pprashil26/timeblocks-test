@@ -3646,6 +3646,67 @@ body.notes-focus-active .note-body {
   .task-note-picker-item { min-height: 46px; padding: 9px 10px; }
 }
 
+
+/* Final mobile homepage navigation refinement */
+@media (max-width: 759px) {
+  .mobile-home-brand .mobile-home-nav {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) 34px;
+    gap: 3px;
+  }
+  .mobile-home-brand .mobile-home-link {
+    min-width: 0;
+    white-space: nowrap;
+  }
+  .mobile-calendar-link {
+    width: 34px;
+    min-width: 34px;
+    padding-inline: 0 !important;
+    font-size: 15px !important;
+  }
+  .mobile-home-bottom {
+    display: grid;
+    gap: 2px;
+  }
+  .mobile-home-data-row {
+    min-height: 28px;
+    gap: 6px;
+  }
+  .mobile-home-data-row .mobile-home-help {
+    width: auto;
+    min-width: 20px;
+    min-height: 28px;
+    padding: 4px 3px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .mobile-home-import-status {
+    margin: 0;
+    color: rgba(111, 118, 109, .72);
+    font-size: 9px;
+    font-weight: 400;
+    line-height: 1.15;
+    text-align: center;
+  }
+  body.mobile-section-active.mobile-view-plan .sidebar {
+    display: none !important;
+  }
+}
+@media (max-width: 380px) {
+  .mobile-home-brand .mobile-home-nav {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) 30px;
+    gap: 2px;
+  }
+  .mobile-calendar-link {
+    width: 30px;
+    min-width: 30px;
+  }
+  .mobile-home-brand .mobile-home-link {
+    font-size: 10px;
+    padding-inline: 2px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3677,23 +3738,24 @@ body.notes-focus-active .note-body {
         </div>
       </div>
       <nav class="mobile-home-nav" aria-label="Navigation">
-        <button class="plain-btn mobile-home-link" id="mobileAllEventsBtn" type="button">All events</button>
-        <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Planner</button>
+        <button class="plain-btn mobile-home-link" id="mobileAllEventsBtn" type="button">Events</button>
+        <button class="plain-btn mobile-home-link" id="mobileTodayBtn" type="button">Today</button>
         <button class="plain-btn mobile-home-link" id="mobileTasksBtn" type="button">Tasks</button>
         <button class="plain-btn mobile-home-link" id="mobileNotesBtn" type="button">Notes</button>
-        <button class="plain-btn mobile-home-link mobile-home-help" id="mobileHelpBtn" type="button" title="Help" aria-label="Help">?</button>
+        <button class="plain-btn mobile-home-link mobile-calendar-link" id="mobileCalendarBtn" type="button" title="Calendar" aria-label="Calendar">📅</button>
       </nav>
     </div>
     <div class="mobile-home-bottom">
       <div class="mobile-home-data-row">
-        <div class="last-import-status mobile-home-status" data-last-import-status>Last import: Never</div>
-        <span class="mobile-home-data-separator" aria-hidden="true">·</span>
         <button class="plain-btn mobile-home-data-link mobile-export-btn" type="button">Export</button>
         <span class="mobile-home-data-separator" aria-hidden="true">·</span>
         <button class="plain-btn mobile-home-data-link mobile-import-btn" type="button">Import</button>
         <span class="mobile-home-data-separator" aria-hidden="true">·</span>
+        <button class="plain-btn mobile-home-data-link mobile-home-help" id="mobileHelpBtn" type="button" title="Help" aria-label="Help">?</button>
+        <span class="mobile-home-data-separator" aria-hidden="true">·</span>
         <button class="plain-btn mobile-home-data-link mobile-share-btn" id="mobileShareBtn" type="button" title="Share FAST GTD" aria-label="Share FAST GTD">↗ Share</button>
       </div>
+      <div class="last-import-status mobile-home-status mobile-home-import-status" data-last-import-status>Last import: Never</div>
     </div>
   </section>
 
@@ -3859,7 +3921,7 @@ body.notes-focus-active .note-body {
   </div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true">
-    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by time horizon and filter them with Task tags.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Select a note card to open it, and use Labels to filter notes.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Today, This month, and Someday. Add Task tags such as Home, Work, or Waiting for context.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>How to use</h3><ol><li>Use + Task to open the full Task editor in Inbox.</li><li>Use + Activity to record an Activity entry.</li><li>Use Planner to open Calendar and Today’s plan.</li><li>Use Notes to open notes for the selected date.</li><li>Use ? to open Help at any time.</li><li>Use Export in the homepage footer regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>In Tasks, switch between Inbox, Today, This month, and Someday, then filter the current list by tag.</li><li>In Notes, select a card to open it and use Labels to filter notes.</li><li>Select the required date in Planner before opening date-specific Notes.</li><li>Import and Last import are available in the homepage footer.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></div></section>
+    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by time horizon and filter them with Task tags.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Select a note card to open it, and use Labels to filter notes.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Today, This month, and Someday. Add Task tags such as Home, Work, or Waiting for context.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>How to use</h3><ol><li>Use + Task to open the full Task editor in Inbox.</li><li>Use + Activity to record an Activity entry.</li><li>Use Today for Today’s plan and Calendar to browse highlighted dates.</li><li>Use Notes for notes, bullets, numbered lists and checklists.</li><li>Use ? in the homepage footer to open Help.</li><li>Use Export in the homepage footer regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>In Tasks, switch between Inbox, Today, This month, and Someday, then filter the current list by tag.</li><li>In Notes, select a card to open it and use Labels to filter notes.</li><li>Use Calendar to select a date, or use the Notes date picker independently.</li><li>Export, Import, Help, Share and Last import are available in the homepage footer.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></div></section>
   </div>
 
   <script>
@@ -3911,6 +3973,7 @@ body.notes-focus-active .note-body {
         const globalResultsHead = el("globalResultsHead");
         const globalResultsList = el("globalResultsList");
         const mobileCalendarBtn = el("mobileCalendarBtn");
+        const mobileTodayBtn = el("mobileTodayBtn");
         const mobileTasksBtn = el("mobileTasksBtn");
         const mobileNotesBtn = el("mobileNotesBtn");
         const mobileAddTaskBtn = el("mobileAddTaskBtn");
@@ -5576,7 +5639,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
         function setMobileSection(section) {
             document.body.classList.remove("mobile-view-plan", "mobile-view-calendar", "mobile-view-notes");
             document.body.classList.add("mobile-section-active", `mobile-view-${section}`);
-            mobileSectionTitle.textContent = { plan: "Today's plan", calendar: "Calendar", notes: "Notes" }[section] || "Section";
+            mobileSectionTitle.textContent = { plan: "Today", calendar: "Calendar", notes: "Notes & Lists" }[section] || "Section";
             if (section === "calendar")
                 setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", false);
             if (section === "notes") {
@@ -7301,10 +7364,13 @@ ${body}` : title };
   }
 });
         globalSearchClear.addEventListener("click", clearGlobalSearch);
-        mobileCalendarBtn.addEventListener("click", () => {
+        mobileTodayBtn.addEventListener("click", () => {
             const today = getToday();
             if (isWithinRange(today))
                 selectDate(today, true);
+            setMobileSection("plan");
+        });
+        mobileCalendarBtn.addEventListener("click", () => {
             setMobileSection("calendar");
             alignMobileCalendarToCurrentMonth();
         });
