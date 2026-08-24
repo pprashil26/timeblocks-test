@@ -3729,6 +3729,43 @@ body.notes-focus-active .note-body {
   }
 }
 
+/* Simplified first-time mobile homepage */
+@media (max-width: 759px) {
+  .mobile-home-capture-simple {
+    width: min(304px, 92%);
+  }
+  .mobile-home-event-row {
+    width: 50%;
+    grid-template-columns: 1fr;
+    justify-self: center;
+  }
+  .mobile-home-nav-simple,
+  .mobile-home-brand .mobile-home-nav-simple {
+    width: min(304px, 92%);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .mobile-home-nav-simple .mobile-home-link {
+    min-height: 34px;
+    font-size: 11.25px;
+  }
+  .mobile-home-bottom {
+    min-height: 18px;
+  }
+  .mobile-home-import-status {
+    padding-top: 3px;
+  }
+}
+@media (max-width: 360px) {
+  .mobile-home-nav-simple,
+  .mobile-home-brand .mobile-home-nav-simple {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .mobile-home-event-row {
+    width: 56%;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3749,37 +3786,40 @@ body.notes-focus-active .note-body {
       <img class="mobile-home-logo" src="logo.png" alt="Timeblocks logo" />
       <p class="mobile-home-brand-motto">Finish Actions, Save Time</p>
       <p class="mobile-home-brand-tagline">A lightweight GTD app · empty your mind</p>
-      <div class="mobile-home-capture-grid" aria-label="Quick capture">
+      <div class="mobile-home-capture-grid mobile-home-capture-simple" aria-label="Quick capture">
         <div class="mobile-home-capture-row mobile-home-capture-row-top">
           <button class="plain-btn mobile-capture-pill mobile-task-capture-btn" id="mobileAddTaskBtn" type="button">＋ Task</button>
-          <button class="plain-btn mobile-capture-pill mobile-activity-capture-btn" id="mobileActivityBtn" type="button">＋ Activity</button>
-        </div>
-        <div class="mobile-home-capture-row mobile-home-capture-row-bottom">
           <button class="plain-btn mobile-quick-note-btn" id="mobileQuickNoteBtn" type="button" title="Add a quick note for today">＋ Quick note</button>
+        </div>
+        <div class="mobile-home-capture-row mobile-home-capture-row-bottom mobile-home-event-row">
           <button class="plain-btn mobile-quick-event-btn" id="mobileQuickEventBtn" type="button" title="Add an event for today">＋ Event</button>
         </div>
       </div>
-      <nav class="mobile-home-nav" aria-label="Navigation">
-        <button class="plain-btn mobile-home-link" id="mobileAllEventsBtn" type="button">Events</button>
+      <nav class="mobile-home-nav mobile-home-nav-simple" aria-label="Navigation">
         <button class="plain-btn mobile-home-link" id="mobileTodayBtn" type="button">Today</button>
         <button class="plain-btn mobile-home-link" id="mobileTasksBtn" type="button">Tasks</button>
         <button class="plain-btn mobile-home-link" id="mobileNotesBtn" type="button">Notes</button>
-        <button class="plain-btn mobile-home-link mobile-calendar-link" id="mobileCalendarBtn" type="button" title="Calendar" aria-label="Calendar">📅</button>
+        <button class="plain-btn mobile-home-link" id="mobileMoreBtn" type="button" aria-expanded="false">More</button>
       </nav>
     </div>
     <div class="mobile-home-bottom">
-      <div class="mobile-home-data-row">
-        <button class="plain-btn mobile-home-data-link mobile-export-btn" type="button">Export</button>
-        <span class="mobile-home-data-separator" aria-hidden="true">·</span>
-        <button class="plain-btn mobile-home-data-link mobile-import-btn" type="button">Import</button>
-        <span class="mobile-home-data-separator" aria-hidden="true">·</span>
-        <button class="plain-btn mobile-home-data-link mobile-home-help" id="mobileHelpBtn" type="button" title="Help" aria-label="Help">?</button>
-        <span class="mobile-home-data-separator" aria-hidden="true">·</span>
-        <button class="plain-btn mobile-home-data-link mobile-share-btn" id="mobileShareBtn" type="button" title="Share FAST GTD" aria-label="Share FAST GTD">↗ Share</button>
-      </div>
       <div class="last-import-status mobile-home-status mobile-home-import-status" data-last-import-status>Last import: Never</div>
     </div>
   </section>
+  <div class="mobile-more-backdrop" id="mobileMoreBackdrop" aria-hidden="true">
+    <section class="mobile-more-sheet" role="dialog" aria-modal="true" aria-label="More FAST GTD features">
+      <div class="mobile-more-head"><span class="mobile-more-title">More</span><button class="plain-btn" id="mobileMoreCloseBtn" type="button">Close</button></div>
+      <div class="mobile-more-list">
+        <button class="plain-btn mobile-more-item" id="mobileActivityBtn" type="button">Activity</button>
+        <button class="plain-btn mobile-more-item" id="mobileAllEventsBtn" type="button">Events</button>
+        <button class="plain-btn mobile-more-item" id="mobileCalendarBtn" type="button">Calendar</button>
+        <button class="plain-btn mobile-more-item mobile-export-btn" type="button">Export</button>
+        <button class="plain-btn mobile-more-item mobile-import-btn" type="button">Import</button>
+        <button class="plain-btn mobile-more-item" id="mobileHelpBtn" type="button">Help</button>
+        <button class="plain-btn mobile-more-item mobile-share-btn" id="mobileShareBtn" type="button">Share</button>
+      </div>
+    </section>
+  </div>
 
 
   <div class="mobile-section-bar" id="mobileSectionBar">
@@ -4005,6 +4045,9 @@ body.notes-focus-active .note-body {
         const mobileQuickNoteBtn = el("mobileQuickNoteBtn");
         const mobileQuickEventBtn = el("mobileQuickEventBtn");
         const mobileAllEventsBtn = el("mobileAllEventsBtn");
+        const mobileMoreBtn = el("mobileMoreBtn");
+        const mobileMoreBackdrop = el("mobileMoreBackdrop");
+        const mobileMoreCloseBtn = el("mobileMoreCloseBtn");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
         const mobileNotesDate = el("mobileNotesDate");
@@ -7282,6 +7325,11 @@ ${body}` : title };
       function handleEscapeKey() {
   clearShortcutPrefix();
 
+  if (mobileMoreBackdrop.classList.contains("open")) {
+    closeMobileMore();
+    return;
+  }
+
   if (taskNotePickerModal.classList.contains("open")) {
     closeTaskNotePicker();
     return;
@@ -7386,6 +7434,19 @@ ${body}` : title };
   }
 });
         globalSearchClear.addEventListener("click", clearGlobalSearch);
+        function openMobileMore() {
+            mobileMoreBackdrop.classList.add("open");
+            mobileMoreBackdrop.setAttribute("aria-hidden", "false");
+            mobileMoreBtn.setAttribute("aria-expanded", "true");
+        }
+        function closeMobileMore() {
+            mobileMoreBackdrop.classList.remove("open");
+            mobileMoreBackdrop.setAttribute("aria-hidden", "true");
+            mobileMoreBtn.setAttribute("aria-expanded", "false");
+        }
+        mobileMoreBtn.addEventListener("click", openMobileMore);
+        mobileMoreCloseBtn.addEventListener("click", closeMobileMore);
+        mobileMoreBackdrop.addEventListener("click", event => { if (event.target === mobileMoreBackdrop) closeMobileMore(); });
         mobileTodayBtn.addEventListener("click", () => {
             const today = getToday();
             if (isWithinRange(today))
@@ -7393,6 +7454,7 @@ ${body}` : title };
             setMobileSection("plan");
         });
         mobileCalendarBtn.addEventListener("click", () => {
+            closeMobileMore();
             setMobileSection("calendar");
             alignMobileCalendarToCurrentMonth();
         });
@@ -7409,15 +7471,15 @@ ${body}` : title };
             mobileTaskCaptureReturnHome = true;
             openTasksInboxShortcut();
         });
-        mobileActivityBtn.addEventListener("click", openActivity);
-        mobileHelpBtn.addEventListener("click", openHelp);
-        mobileShareBtn.addEventListener("click", shareFastGtd);
+        mobileActivityBtn.addEventListener("click", () => { closeMobileMore(); openActivity(); });
+        mobileHelpBtn.addEventListener("click", () => { closeMobileMore(); openHelp(); });
+        mobileShareBtn.addEventListener("click", () => { closeMobileMore(); shareFastGtd(); });
         mobileQuickNoteBtn.addEventListener("click", openQuickNote);
         mobileQuickEventBtn.addEventListener("click", openMobileQuickEvent);
-        mobileAllEventsBtn.addEventListener("click", openEvents);
+        mobileAllEventsBtn.addEventListener("click", () => { closeMobileMore(); openEvents(); });
         mobileHomeBtn.addEventListener("click", clearMobileSection);
-        document.querySelectorAll(".mobile-export-btn").forEach(button => button.addEventListener("click", exportBackup));
-        document.querySelectorAll(".mobile-import-btn").forEach(button => button.addEventListener("click", () => importBackupBtn.click()));
+        document.querySelectorAll(".mobile-export-btn").forEach(button => button.addEventListener("click", () => { closeMobileMore(); exportBackup(); }));
+        document.querySelectorAll(".mobile-import-btn").forEach(button => button.addEventListener("click", () => { closeMobileMore(); importBackupBtn.click(); }));
         document.querySelectorAll(".help-btn").forEach(button => button.addEventListener("click", openHelp));
         closeHelpBtn.addEventListener("click", closeHelp);
         helpModal.addEventListener("click", event => { if (event.target === helpModal)
