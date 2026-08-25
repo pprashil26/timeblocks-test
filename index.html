@@ -4037,7 +4037,7 @@ body.notes-focus-active .note-body {
             <button class="plain-btn nav-day-btn" id="nextDayBtn" type="button">›</button>
           </div>
         </div>
-        <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus view" aria-label="Focus view">⛶</button><button class="plain-btn today-tasks-btn" id="todayTasksBtn" type="button" title="Open Today tasks">Today tasks</button><button class="plain-btn print-today-btn" id="printTodayBtn" type="button" title="Print Today card">Print card</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
+        <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus view" aria-label="Focus view">⛶</button><button class="plain-btn today-tasks-btn" id="todayTasksBtn" type="button" title="Open Today tasks">Today tasks</button><button class="plain-btn print-today-btn" id="printTodayBtn" type="button" title="Print Today card">Print card</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="events-strip" id="eventsStrip" aria-label="Events for selected date"><div class="events-strip-head"><span class="events-strip-title">Events</span><div class="events-strip-list" id="eventsStripList"></div><span class="events-strip-actions"><button class="plain-btn" id="viewEventsBtn" type="button">All events</button><button class="plain-btn event-add-link" id="addEventBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div></section>
@@ -4275,7 +4275,6 @@ body.notes-focus-active .note-body {
         const addEventBtn = el("addEventBtn");
         const viewEventsBtn = el("viewEventsBtn");
         const selectedDateText = el("selectedDateText");
-        const clearBtn = el("clearBtn");
         const focusViewBtn = el("focusViewBtn");
         const todayTasksBtn = el("todayTasksBtn");
         const printTodayBtn = el("printTodayBtn");
@@ -8034,22 +8033,7 @@ ${body}` : title };
     handleEscapeKey();
   }
 });
-        clearBtn.addEventListener("click", () => {
-            if (!confirm(`Clear all entries for ${displayDate(selectedDate)}?`))
-                return;
-            if (noteModal.classList.contains("open"))
-                closeExpandedEditor();
-            if (moveModal.classList.contains("open"))
-                closeMoveNote();
-            localStorage.removeItem(storageKey);
-            focusInput.value = "";
-            notes = [];
-            renderNotes();
-            document.querySelectorAll("textarea[data-time]").forEach(box => { box.value = ""; autoGrow(box); });
-            document.querySelectorAll(".timeblock-status[data-time]").forEach(button => { button.dataset.status = "planned"; button.textContent = TIMEBLOCK_STATUSES[0].icon; button.title = `Status: ${TIMEBLOCK_STATUSES[0].label}. Click to change.`; button.setAttribute("aria-label", button.title); TIMEBLOCK_STATUSES.forEach(item => button.classList.toggle(`timeblock-status-${item.id}`, item.id === "planned")); });
-            markDateHasData(toKey(selectedDate));
-            highlightCurrentTimeBlock();
-        });
+
         todayTasksBtn.addEventListener("click", openTodayTasksWorkspace);
         printTodayBtn.addEventListener("click", printTodayCard);
         todayBtn.addEventListener("click", () => { const today = getToday(); if (isWithinRange(today))
