@@ -2471,18 +2471,18 @@ button.note-label-chip {
     font-size: 19px;
   }
 
-  body.mobile-notes-menu-open { overflow: hidden; }
-  .mobile-notes-menu-backdrop { position:fixed;inset:0;display:none;background:rgba(52,56,50,.28);backdrop-filter:blur(1px);z-index:79; }
+  .mobile-notes-menu-backdrop { position:fixed;inset:0;display:none;background:transparent;z-index:79; }
   .mobile-notes-menu-backdrop.open { display:block; }
   .mobile-notes-more-menu {
     display: none;
     position: fixed;
-    top: auto;
-    right: 12px;
-    bottom: 12px;
-    left: 12px;
+    top: 0;
+    right: auto;
+    bottom: auto;
+    left: 0;
     z-index: 80;
-    min-width: 0;
+    width: 176px;
+    min-width: 176px;
     padding: 6px;
     border: 1px solid var(--line);
     border-radius: 12px;
@@ -7340,7 +7340,7 @@ ${body}` : title };
             return results.sort((a, b) => b.dateKey.localeCompare(a.dateKey) || (a.note.title || "").localeCompare(b.note.title || "", undefined, { sensitivity: "base" }));
         }
         function renderGlobalPinnedSection() {
-            const mobileDateMode = isMobileViewport() && notesSidebar.classList.contains("mobile-notes-open") && !mobileNotesAll;
+            const mobileDateMode = isMobileViewport() && !mobileNotesAll && (document.body.classList.contains("mobile-view-notes") || notesSidebar.classList.contains("mobile-notes-open"));
             if ((isMobileViewport() && !mobileDateMode) || notesBinOpen || notesFocusView || isLabelsWorkspace() || notesPinnedOnly) return new Set();
             const pinned = collectGlobalPinnedNotes(); if (!pinned.length) return new Set();
             const section = document.createElement("section"); section.className = "global-pinned-section";
@@ -7701,12 +7701,18 @@ ${body}` : title };
         });
         mobileNotesAddBtn.addEventListener("click", () => addNoteBtn.click());
         function setMobileNotesMenu(open) {
+            if (open && mobileNotesMoreMenu.parentElement !== document.body) document.body.appendChild(mobileNotesMoreMenu);
+            if (open) {
+                const buttonRect = mobileNotesMoreBtn.getBoundingClientRect();
+                const menuWidth = 176;
+                const left = Math.max(8, Math.min(window.innerWidth - menuWidth - 8, buttonRect.right - menuWidth));
+                mobileNotesMoreMenu.style.left = `${left}px`;
+                mobileNotesMoreMenu.style.top = `${Math.min(window.innerHeight - 112, buttonRect.bottom + 6)}px`;
+            }
             mobileNotesMoreMenu.classList.toggle("open", open);
             mobileNotesMenuBackdrop.classList.toggle("open", open);
             mobileNotesMenuBackdrop.setAttribute("aria-hidden", String(!open));
             mobileNotesMoreBtn.setAttribute("aria-expanded", String(open));
-            document.body.classList.toggle("mobile-notes-menu-open", open);
-            if (open && mobileNotesMoreMenu.parentElement !== document.body) document.body.appendChild(mobileNotesMoreMenu);
         }
         mobileNotesMoreBtn.addEventListener("click", event => {
             event.stopPropagation();
