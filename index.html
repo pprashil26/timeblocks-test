@@ -3823,55 +3823,21 @@ body.notes-focus-active .note-body {
 }
 
 
-/* Notes label filtering: one visible dropdown on desktop and mobile. */
-@media (min-width: 760px) {
-  #notesFocusScope { justify-content:flex-start; }
-  #notesLabelFilter { display:inline-flex;min-width:150px;width:auto; }
-}
-@media (max-width: 759px) {
-  body.mobile-section-active.mobile-view-notes #notesToggle { display:none !important; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-toolbar { grid-template-columns:minmax(0,1fr) 38px 38px !important;align-items:center;gap:7px; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot { min-width:0; }
-  body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope { display:block !important;margin:0;padding:0;border:0;background:transparent; }
-  body.mobile-section-active.mobile-view-notes #notesScopeDateBtn,
-  body.mobile-section-active.mobile-view-notes #notesScopeAllBtn { display:none !important; }
-  body.mobile-section-active.mobile-view-notes #notesLabelFilter { display:block !important;width:100%;min-width:0;min-height:38px;margin:0;padding:6px 30px 6px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:13px; }
-  body.mobile-section-active.mobile-view-notes #mobileNotesAddBtn,
-  body.mobile-section-active.mobile-view-notes #mobileNotesMoreBtn { width:38px;min-width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center; }
-}
+.task-archive-btn.active { background:var(--selected);border-color:var(--entry-border);color:var(--ink); }
+.task-archive-head { display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px;padding:7px 9px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:12px; }
+.task-archive-row { grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px; }
+.task-archive-text { color:var(--ink);font-size:13px;font-weight:650; }
+.task-archive-meta { margin-top:3px;color:var(--muted);font-size:10.5px; }
+.task-archive-status { min-height:32px;max-width:125px;padding:4px 24px 4px 7px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font-size:11px; }
+.task-archive-delete { color:#8a4d45;font-size:11px; }
+@media (max-width:759px) { .task-archive-row { grid-template-columns:1fr;align-items:stretch; } .task-archive-status { max-width:none;width:100%; } .task-archive-delete { justify-self:end; } }
 
-/* Simplified global Notes model */
-.mobile-notes-date, .notes-date-picker, #notesScopeDateBtn, #notesScopeAllBtn, #sortNotesBtn, #mobileNotesSortBtn { display:none !important; }
-.notes-filter-scope { width:auto;justify-content:flex-start; }
-.mobile-notes-menu-backdrop { position:fixed;inset:0;display:none;background:transparent;z-index:79; }
-.mobile-notes-menu-backdrop.open { display:block; }
-.mobile-notes-more-menu { position:fixed !important;top:0;right:auto !important;bottom:auto;left:0;z-index:80;width:176px;min-width:176px; }
-@media (min-width:760px) {
-  #notesFocusScope { display:flex;justify-content:flex-start;margin-bottom:8px; }
-  #notesLabelFilter { display:inline-flex;min-width:150px;width:auto; }
-  .notes-sidebar.desktop-all-notes { height:auto;max-height:none;align-self:start;overflow:visible; }
-  .notes-sidebar.desktop-all-notes .notes-wrap, .notes-sidebar.desktop-all-notes #notesList { overflow:visible; }
-}
-@media (max-width:759px) {
-  body.mobile-section-active.mobile-view-notes #notesToggle { display:none !important; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-toolbar { display:grid !important;grid-template-columns:1fr !important;gap:5px; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-primary-row { display:grid;grid-template-columns:145px minmax(0,1fr) 38px;align-items:stretch;gap:7px; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot { grid-column:1;width:145px;height:38px;min-width:0; }
-  body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope { display:block !important;width:145px;height:38px;margin:0;padding:0;border:0;background:transparent; }
-  body.mobile-section-active.mobile-view-notes #notesLabelFilter { display:block !important;box-sizing:border-box;width:145px;max-width:145px;min-width:0;height:38px;min-height:38px;margin:0;padding:0 28px 0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:12px;line-height:36px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;appearance:auto; }
-  body.mobile-section-active.mobile-view-notes #mobileNotesAddBtn { grid-column:3;position:relative;z-index:2;box-sizing:border-box;width:38px;min-width:38px;height:38px;min-height:38px;margin:0;padding:0;border-width:1px;border-radius:10px;display:inline-flex !important;align-items:center;justify-content:center;visibility:visible;opacity:1; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row { display:flex;align-items:center;justify-content:flex-end;gap:8px;min-height:22px;padding:0 2px;color:var(--muted);font-size:11px; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn { min-height:22px;padding:1px 2px;border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:600;text-decoration:none; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn:hover, body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn:focus-visible { color:var(--ink);background:transparent;text-decoration:underline; }
-}
-@media (max-width:380px) {
-  body.mobile-section-active.mobile-view-notes .mobile-notes-primary-row { grid-template-columns:125px minmax(0,1fr) 38px;gap:5px; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot,
-  body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope,
-  body.mobile-section-active.mobile-view-notes #notesLabelFilter { width:125px;max-width:125px; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row { gap:6px;font-size:10.5px; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn { font-size:10.5px; }
-}
+/* Locked simplified global Notes model */
+.mobile-notes-date,.notes-date-picker,#notesScopeDateBtn,#notesScopeAllBtn,#sortNotesBtn,#mobileNotesSortBtn { display:none!important; }
+.notes-filter-scope{width:auto;justify-content:flex-start;}
+@media(min-width:760px){#notesFocusScope{display:flex;justify-content:flex-start;margin-bottom:8px;}#notesLabelFilter{display:inline-flex;min-width:150px;width:auto;}.notes-sidebar.desktop-all-notes{height:auto;max-height:none;align-self:start;overflow:visible;}.notes-sidebar.desktop-all-notes .notes-wrap,.notes-sidebar.desktop-all-notes #notesList{overflow:visible;}}
+@media(max-width:759px){body.mobile-section-active.mobile-view-notes #notesToggle{display:none!important;}body.mobile-section-active.mobile-view-notes .mobile-notes-toolbar{display:grid!important;grid-template-columns:1fr!important;gap:5px;}body.mobile-section-active.mobile-view-notes .mobile-notes-primary-row{display:grid;grid-template-columns:145px minmax(0,1fr) 38px;align-items:stretch;gap:7px;}body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot{grid-column:1;width:145px;height:38px;min-width:0;}body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope{display:block!important;width:145px;height:38px;margin:0;padding:0;border:0;background:transparent;}body.mobile-section-active.mobile-view-notes #notesLabelFilter{display:block!important;box-sizing:border-box;width:145px;max-width:145px;height:38px;min-height:38px;margin:0;padding:0 28px 0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:12px;line-height:36px;}body.mobile-section-active.mobile-view-notes #mobileNotesAddBtn{grid-column:3;position:relative;z-index:2;box-sizing:border-box;width:38px;min-width:38px;height:38px;min-height:38px;margin:0;padding:0;display:inline-flex!important;align-items:center;justify-content:center;visibility:visible;opacity:1;}body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-height:22px;padding:0 2px;color:var(--muted);font-size:11px;}body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn{min-height:22px;padding:1px 2px;border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:600;}}
+@media(max-width:380px){body.mobile-section-active.mobile-view-notes .mobile-notes-primary-row{grid-template-columns:125px minmax(0,1fr) 38px;gap:5px;}body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot,body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope,body.mobile-section-active.mobile-view-notes #notesLabelFilter{width:125px;max-width:125px;}}
 </style>
 </head>
 <body>
@@ -3976,7 +3942,7 @@ body.notes-focus-active .note-body {
       <div class="notes-wrap" id="notesWorkspacePanel">
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
-        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
+        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn notes-labels-btn" id="notesLabelsBtn" type="button" title="Filter notes by label">Labels</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
         <div class="notes-focus-scope notes-filter-scope" id="notesFocusScope" aria-label="Notes filters"><select class="notes-label-filter show" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
         <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-primary-row"><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note">＋</button></div><div class="mobile-notes-secondary-row"><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button><span aria-hidden="true">·</span><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button></div></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
@@ -3992,9 +3958,10 @@ body.notes-focus-active .note-body {
       <div class="note-label-chips expanded-label-chips" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
-        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
+        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn" id="clearDoneTasksBtn" type="button">Archive completed tasks</button><button class="plain-btn icon-btn task-archive-btn" id="taskArchiveBtn" type="button" title="Open completed task archive" aria-label="Open completed task archive">▣</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
         <div class="task-contexts" id="taskContexts"></div>
         <div class="task-filter-row" aria-label="Task tag filters"><span class="task-filter-label">Tags</span><div class="task-tag-filters" id="taskTagFilter" role="group" aria-label="Filter current task list by tag"></div></div>
+        <div class="task-archive-head" id="taskArchiveHead" hidden><strong>Completed Tasks Archive</strong><button class="plain-btn" id="closeTaskArchiveBtn" type="button">Back to tasks</button></div>
         <div class="task-list" id="globalTaskList"></div>
       </div>
       <div class="activity-panel" id="activityPanel" hidden>
@@ -4101,6 +4068,7 @@ body.notes-focus-active .note-body {
         const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
         const COMPACT_KEY = "timeblocks:notesCompact";
         const TASKS_KEY = "timeblocks:globalTasks";
+        const TASK_ARCHIVE_KEY = "timeblocks:taskArchive";
         const EVENTS_KEY = "timeblocks:events";
         const ACTIVITY_KEY = "timeblocks:activityLog";
         const ACTIVITY_HIDE_COMPLETED_KEY = "timeblocks:activityHideCompleted";
@@ -4202,6 +4170,7 @@ body.notes-focus-active .note-body {
         const notesNoResults = el("notesNoResults");
         const addNoteBtn = el("addNoteBtn");
         const notesFocusBtn = el("notesFocusBtn");
+        const notesLabelsBtn = el("notesLabelsBtn");
         const notesFocusScope = el("notesFocusScope");
         const notesLabelFilter = el("notesLabelFilter");
         const mobileNotesToolbar = el("mobileNotesToolbar");
@@ -4270,6 +4239,9 @@ body.notes-focus-active .note-body {
         const copyTaskBtn = el("copyTaskBtn");
         const deleteTaskEditorBtn = el("deleteTaskEditorBtn");
         const clearDoneTasksBtn = el("clearDoneTasksBtn");
+        const taskArchiveBtn = el("taskArchiveBtn");
+        const taskArchiveHead = el("taskArchiveHead");
+        const closeTaskArchiveBtn = el("closeTaskArchiveBtn");
         const tasksFocusBtn = el("tasksFocusBtn");
         const activityPanel = el("activityPanel");
         const activityInput = el("activityInput");
@@ -4359,6 +4331,8 @@ body.notes-focus-active .note-body {
         let workspaceFocusPanel = null;
         let globalSearchQuery = "";
         let globalTasks = normalizeTaskLists(loadJson(TASKS_KEY, null));
+        let archivedTasks = normalizeArchivedTasks(loadJson(TASK_ARCHIVE_KEY, []));
+        let taskArchiveOpen = false;
         let events = normalizeEvents(loadJson(EVENTS_KEY, []));
         let plannerCreateTime = "";
         let editingEventId = null;
@@ -4532,7 +4506,7 @@ body.notes-focus-active .note-body {
             const results = [];
             if (parsed.types.has("notes")) allDateKeys().forEach(dateKey => { const data = readDateData(dateKey); normalizeNotes(data.notes).filter(note => !note.deleted).forEach(note => { if (noteMatchesGlobalSearch(note, parsed.cleanQuery)) results.push({ type: "note", dateKey, note }); }); });
             if (parsed.types.has("events")) events.filter(event => !event.cancelled).forEach(event => { if (`${event.title} ${event.tag || ""}`.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "event", event }); });
-            if (parsed.types.has("tasks")) TASK_CONTEXTS.forEach(context => { (globalTasks[context] || []).forEach(task => { if (`${task.text || ""} ${normalizeTaskTags(task.tags).join(" ")}`.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "task", context, task }); }); });
+            if (parsed.types.has("tasks")) { TASK_CONTEXTS.forEach(context => { (globalTasks[context] || []).forEach(task => { if (`${task.text || ""} ${normalizeTaskTags(task.tags).join(" ")}`.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "task", context, task }); }); }); archivedTasks.forEach(task => { if (`${task.text || ""} ${normalizeTaskTags(task.tags).join(" ")}`.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "task", context: "Archive", task }); }); }
             return { results, parsed };
         }
         function normalizeRecurrence(raw) {
@@ -5606,6 +5580,21 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             TASK_CONTEXTS.forEach(context => { if (Array.isArray(raw[context])) empty[context] = raw[context].map(task => normalizeTask(task)); });
             return empty;
         }
+        function normalizeArchivedTasks(raw) {
+            if (!Array.isArray(raw)) return [];
+            return raw.map(item => {
+                const task = normalizeTask(item);
+                task.archivedAt = item.archivedAt && !Number.isNaN(new Date(item.archivedAt).getTime()) ? item.archivedAt : new Date().toISOString();
+                task.sourceContext = TASK_CONTEXTS.includes(item.sourceContext) ? item.sourceContext : "Inbox";
+                task.status = "completed";
+                task.done = true;
+                return task;
+            }).sort((a, b) => new Date(b.archivedAt).getTime() - new Date(a.archivedAt).getTime());
+        }
+        function saveArchivedTasks() {
+            archivedTasks = normalizeArchivedTasks(archivedTasks);
+            localStorage.setItem(TASK_ARCHIVE_KEY, JSON.stringify(archivedTasks));
+        }
         function normalizeTask(task) {
             const status = TASK_STATUSES.some(item => item.id === task.status) ? task.status : (task.done ? "completed" : "not-started");
             const createdAt = task.createdAt && !Number.isNaN(new Date(task.createdAt).getTime()) ? task.createdAt : "";
@@ -5635,6 +5624,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
         function allTaskTags() {
             const tags = new Map();
             TASK_CONTEXTS.forEach(context => (globalTasks[context] || []).forEach(task => normalizeTaskTags(task.tags).forEach(tag => tags.set(tag.toLowerCase(), tag))));
+            archivedTasks.forEach(task => normalizeTaskTags(task.tags).forEach(tag => tags.set(tag.toLowerCase(), tag)));
             return Array.from(tags.values()).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
         }
         function updateTaskTagFilter() {
@@ -5741,7 +5731,45 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             saveTasks();
             renderGlobalTasks();
         }
+        function renderTaskArchive() {
+            taskArchiveHead.hidden = false;
+            taskContexts.hidden = true;
+            taskTagFilter.closest(".task-filter-row").hidden = true;
+            clearDoneTasksBtn.hidden = true;
+            taskArchiveBtn.classList.add("active");
+            globalTaskList.innerHTML = "";
+            archivedTasks.forEach(task => {
+                const row = document.createElement("div"); row.className = "task-row task-archive-row";
+                const content = document.createElement("div"); content.className = "task-content";
+                const text = document.createElement("div"); text.className = "task-archive-text"; text.textContent = task.text || "Task";
+                const meta = document.createElement("div"); meta.className = "task-archive-meta";
+                const archivedDate = new Date(task.archivedAt); meta.textContent = `${task.sourceContext} · Archived ${archivedDate.toLocaleDateString()}`;
+                const link = linkedNoteForTask(task); if (link) meta.textContent += ` · Note: ${link.note.title || "Untitled"}`;
+                content.append(text, meta);
+                const status = document.createElement("select"); status.className = "task-archive-status"; status.setAttribute("aria-label", `Reactivate ${task.text}`);
+                [{id:"completed",label:"Completed"},{id:"not-started",label:"Not started"},{id:"started",label:"Started"},{id:"waiting",label:"Waiting"}].forEach(item => { const option=document.createElement("option"); option.value=item.id; option.textContent=item.label; status.appendChild(option); });
+                status.value = "completed";
+                status.addEventListener("change", () => {
+                    if (status.value === "completed") return;
+                    archivedTasks = archivedTasks.filter(item => item.id !== task.id);
+                    task.status = status.value; task.done = false; delete task.archivedAt; delete task.sourceContext;
+                    globalTasks.Inbox.unshift(task); saveArchivedTasks(); saveTasks(); renderGlobalTasks();
+                });
+                const del = document.createElement("button"); del.type="button"; del.className="plain-btn task-archive-delete"; del.textContent="Delete permanently";
+                del.addEventListener("click", () => { if (!confirm("Permanently delete this archived task? The associated note will be kept.")) return; archivedTasks = archivedTasks.filter(item => item.id !== task.id); saveArchivedTasks(); renderGlobalTasks(); });
+                row.append(content, status, del); globalTaskList.appendChild(row);
+            });
+            if (!archivedTasks.length) { const empty=document.createElement("div"); empty.className="task-empty"; empty.textContent="No archived tasks"; globalTaskList.appendChild(empty); }
+        }
+        function openTaskArchive() { taskArchiveOpen = true; renderGlobalTasks(); }
+        function closeTaskArchive() { taskArchiveOpen = false; renderGlobalTasks(); }
         function renderGlobalTasks() {
+            if (taskArchiveOpen) { renderTaskArchive(); return; }
+            taskArchiveHead.hidden = true;
+            taskContexts.hidden = false;
+            taskTagFilter.closest(".task-filter-row").hidden = false;
+            clearDoneTasksBtn.hidden = false;
+            taskArchiveBtn.classList.remove("active");
             renderTaskContexts();
             updateTaskTagFilter();
             globalTaskList.innerHTML = "";
@@ -5882,11 +5910,13 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             if (!tasksToRender.length) { const empty = document.createElement("div"); empty.className = "task-empty"; empty.textContent = activeTaskTagFilter ? `No tasks tagged “${activeTaskTagFilter}” in ${activeTaskContext}` : `No tasks in ${activeTaskContext}`; globalTaskList.appendChild(empty); }
         }
         function clearDoneTasks() {
-            const cleared = activeTasks().filter(task => task.done);
-            cleared.forEach(removeLinkedTaskTimeblock);
+            const completed = activeTasks().filter(task => task.done);
+            if (!completed.length) { alert("No completed tasks to archive in this list."); return; }
+            const archivedAt = new Date().toISOString();
+            completed.forEach(task => { removeLinkedTaskTimeblock(task); archivedTasks.unshift({ ...task, status: "completed", done: true, archivedAt, sourceContext: activeTaskContext }); });
             globalTasks[activeTaskContext] = activeTasks().filter(task => !task.done);
-            saveTasks();
-            if (cleared.some(task => task.date === toKey(selectedDate))) loadSelectedDate();
+            saveArchivedTasks(); saveTasks();
+            if (completed.some(task => task.date === toKey(selectedDate))) loadSelectedDate();
             renderGlobalTasks();
         }
         function isMobileViewport() { return window.matchMedia("(max-width: 759px)").matches; }
@@ -6000,6 +6030,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 preferences: { notesCompact, activeTaskContext },
                 quote: favouriteQuote,
                 tasks: globalTasks,
+                archivedTasks,
                 events,
                 activity: activityEntries,
                 data
@@ -6047,6 +6078,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 globalTasks = normalizeTaskLists(backup.tasks);
                 saveTasks();
             }
+            if (Array.isArray(backup.archivedTasks)) {
+                archivedTasks = normalizeArchivedTasks(backup.archivedTasks);
+                saveArchivedTasks();
+            }
             if (Array.isArray(backup.events)) {
                 events = normalizeEvents(backup.events);
                 saveEvents();
@@ -6068,9 +6103,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             alert(`Imported ${entries.length} saved date(s).`);
         }
         function notesDateKey() { return toKey(notesDate); }
-        function loadNotesForIndependentDate() {
-            notes = orderNotes(normalizeNotes(readDateData(notesDateKey()).notes));
-        }
+        function loadNotesForIndependentDate() { notes = orderNotes(normalizeNotes(readDateData(notesDateKey()).notes)); }
         function readSavedData() { storageKey = selectedStorageKey(); saved = readDateData(toKey(selectedDate)); loadNotesForIndependentDate(); }
         function hasNotesData(data) { return Array.isArray(data.notes) ? normalizeNotes(data.notes).some(note => !note.deleted && ((note.title || "").trim() || (note.body || "").trim())) : Boolean((data.notes || "").trim()); }
         function hasSavedDataForDate(key) {
@@ -6283,13 +6316,9 @@ ${body}` : title };
             notesSidebar.classList.toggle("desktop-all-notes", desktopNotesMode && !notesBinOpen);
             notesFocusScope.classList.toggle("labels-mode", labelsMode);
             notesFocusScope.classList.toggle("mobile-scope", mobileMode);
-            if (mobileMode && notesFocusScope.parentElement !== mobileNotesScopeSlot)
-                mobileNotesScopeSlot.appendChild(notesFocusScope);
-            else if (!mobileMode && notesFocusScope.parentElement !== notesWorkspacePanel)
-                notesWorkspacePanel.insertBefore(notesFocusScope, mobileNotesToolbar);
-            notesLabelFilter.classList.add("show");
-            updateLabelFilterOptions();
-            mobileNotesToolbar.hidden = !mobileMode || notesBinOpen;
+            if (mobileMode && notesFocusScope.parentElement !== mobileNotesScopeSlot) mobileNotesScopeSlot.appendChild(notesFocusScope);
+            else if (!mobileMode && notesFocusScope.parentElement !== notesWorkspacePanel) notesWorkspacePanel.insertBefore(notesFocusScope, mobileNotesToolbar);
+            notesLabelFilter.classList.add("show"); updateLabelFilterOptions(); mobileNotesToolbar.hidden = !mobileMode || notesBinOpen;
         }
         function collectAllFocusNotes() {
             const results = [];
@@ -6347,9 +6376,7 @@ ${body}` : title };
                     : "No labelled notes yet";
             }
             else {
-                notesNoResults.textContent = notesLabelFilterValue
-                    ? `No notes with label “${notesLabelFilterValue}”`
-                    : "No notes yet. Tap + to create your first note.";
+                notesNoResults.textContent = notesLabelFilterValue ? `No notes with label “${notesLabelFilterValue}”` : "No notes yet. Tap + to create your first note.";
             }
             notesNoResults.classList.toggle("show", results.length === 0);
             applyNotesCompact();
@@ -6791,7 +6818,7 @@ ${body}` : title };
                 const active = panel === "notes" ? (desktopWorkspacePanel === "notes" || desktopWorkspacePanel === "labels") : desktopWorkspacePanel === panel;
                 button.classList.toggle("active", active);button.setAttribute("aria-selected",String(active));
             });
-            // Labels are filtered through the shared dropdown; no separate button state.
+            notesLabelsBtn.classList.toggle("active",desktopWorkspacePanel === "labels");
         }
         function applyWorkspaceFocusState() {
             const active = !isMobileViewport() && Boolean(workspaceFocusPanel);
@@ -7311,27 +7338,20 @@ ${body}` : title };
             if (isMobileViewport() || notesBinOpen || notesFocusView || isLabelsWorkspace() || notesPinnedOnly) return new Set();
             const pinned = collectGlobalPinnedNotes(); if (!pinned.length) return new Set();
             const section = document.createElement("section"); section.className = "global-pinned-section";
-            const head = document.createElement("div"); head.className = "global-pinned-head"; const title = document.createElement("div"); title.className = "global-pinned-title"; title.textContent = `★ Pinned Notes (${pinned.length})`; head.appendChild(title);
+            const head = document.createElement("div"); head.className = "global-pinned-head"; const title = document.createElement("div"); title.className = "global-pinned-title"; title.textContent = `Pinned · ${pinned.length}`; head.appendChild(title);
             if (pinned.length > 3) { const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "plain-btn global-pinned-toggle"; toggle.textContent = globalPinnedExpanded ? "Show less" : `Show all pinned (${pinned.length})`; toggle.addEventListener("click", () => { globalPinnedExpanded = !globalPinnedExpanded; renderNotes(); }); head.appendChild(toggle); }
             const list = document.createElement("div"); list.className = "global-pinned-list";
             (globalPinnedExpanded ? pinned : pinned.slice(0, 3)).forEach(result => { const button = document.createElement("button"); button.type = "button"; button.className = "global-pinned-note"; const noteTitle = document.createElement("span"); noteTitle.className = "global-pinned-note-title"; noteTitle.textContent = `★ ${result.note.title || "Untitled"}`; const noteDate = document.createElement("span"); noteDate.className = "global-pinned-note-date"; const parsed = fromKey(result.dateKey); noteDate.textContent = parsed ? parsed.toLocaleDateString(undefined, { day: "numeric", month: "short" }) : result.dateKey; button.append(noteTitle, noteDate); button.addEventListener("click", () => openAllFocusNote(result.dateKey, result.note.id)); list.appendChild(button); });
             section.append(head, list); notesList.appendChild(section); return new Set(pinned.filter(result => result.dateKey === toKey(selectedDate)).map(result => result.note.id));
         }
         function renderNotes() {
-            notesList.innerHTML = "";
-            notes = orderNotes(notes);
-            applyNotesFocusScope();
-            if (!notesBinOpen) {
-                renderAllFocusNotes();
-                return;
-            }
+            notesList.innerHTML = ""; notes = orderNotes(notes); applyNotesFocusScope();
+            if (!notesBinOpen) { renderAllFocusNotes(); return; }
             const visibleNotes = notes.filter(note => note.deleted);
             visibleNotes.forEach(note => notesList.appendChild(createTrashCard(note)));
             notesNoResults.textContent = visibleNotes.length ? "" : "Recycle bin is empty";
             notesNoResults.classList.toggle("show", !visibleNotes.length);
-            document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
-            applyNotesCompact();
-            updateSearchUi();
+            document.querySelectorAll(".note-body").forEach(autoGrowNoteBody); applyNotesCompact(); updateSearchUi();
         }
         function highlightCurrentTimeBlock() {
             document.querySelectorAll(".slot.current-slot, .slot.current-first-15, .slot.current-last-15").forEach(slot => {
@@ -7679,6 +7699,7 @@ ${body}` : title };
             openExpandedNote(newNote.id, true, "title");
         });
         workspaceNotesTab.addEventListener("click", () => showDesktopWorkspacePanel("notes"));
+        notesLabelsBtn.addEventListener("click", toggleNotesLabelsWorkspace);
         workspaceTasksTab.addEventListener("click", () => showDesktopWorkspacePanel("tasks"));
         workspaceActivityTab.addEventListener("click", () => showDesktopWorkspacePanel("activity"));
         workspaceEventsTab.addEventListener("click", () => showDesktopWorkspacePanel("events"));
@@ -7713,6 +7734,8 @@ ${body}` : title };
         addTaskInboxBtn.addEventListener("click", openTasksInboxShortcut);
         addTaskTodayBtn.addEventListener("click", openTasksTodayShortcut);
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
+        taskArchiveBtn.addEventListener("click", openTaskArchive);
+        closeTaskArchiveBtn.addEventListener("click", closeTaskArchive);
         newTaskBtn.addEventListener("click", () => openNewTaskEditor(activeTaskContext));
         taskCreateNoteBtn.addEventListener("click", createNoteForEditingTask);
         taskLinkNoteBtn.addEventListener("click", openTaskNotePicker);
