@@ -3855,17 +3855,20 @@ body.notes-focus-active .note-body {
 @media (max-width:759px) {
   body.mobile-section-active.mobile-view-notes #notesToggle { display:none !important; }
   body.mobile-section-active.mobile-view-notes .mobile-notes-toolbar { display:grid !important;grid-template-columns:1fr !important;gap:5px; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-primary-row { display:grid;grid-template-columns:minmax(0,1fr) 38px;align-items:stretch;gap:7px; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot { width:auto;height:38px;min-width:0; }
-  body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope { display:block !important;width:100%;height:38px;margin:0;padding:0;border:0;background:transparent; }
-  body.mobile-section-active.mobile-view-notes #notesLabelFilter { display:block !important;box-sizing:border-box;width:100%;max-width:none;min-width:0;height:38px;min-height:38px;margin:0;padding:0 28px 0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:12px;line-height:36px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;appearance:auto; }
-  body.mobile-section-active.mobile-view-notes #mobileNotesAddBtn { box-sizing:border-box;width:38px;min-width:38px;height:38px;min-height:38px;margin:0;padding:0;border-width:1px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-primary-row { display:grid;grid-template-columns:145px minmax(0,1fr) 38px;align-items:stretch;gap:7px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot { grid-column:1;width:145px;height:38px;min-width:0; }
+  body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope { display:block !important;width:145px;height:38px;margin:0;padding:0;border:0;background:transparent; }
+  body.mobile-section-active.mobile-view-notes #notesLabelFilter { display:block !important;box-sizing:border-box;width:145px;max-width:145px;min-width:0;height:38px;min-height:38px;margin:0;padding:0 28px 0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:12px;line-height:36px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;appearance:auto; }
+  body.mobile-section-active.mobile-view-notes #mobileNotesAddBtn { grid-column:3;position:relative;z-index:2;box-sizing:border-box;width:38px;min-width:38px;height:38px;min-height:38px;margin:0;padding:0;border-width:1px;border-radius:10px;display:inline-flex !important;align-items:center;justify-content:center;visibility:visible;opacity:1; }
   body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row { display:flex;align-items:center;justify-content:flex-end;gap:8px;min-height:22px;padding:0 2px;color:var(--muted);font-size:11px; }
   body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn { min-height:22px;padding:1px 2px;border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:600;text-decoration:none; }
   body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn:hover, body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn:focus-visible { color:var(--ink);background:transparent;text-decoration:underline; }
 }
 @media (max-width:380px) {
-  body.mobile-section-active.mobile-view-notes .mobile-notes-primary-row { grid-template-columns:minmax(0,1fr) 38px;gap:5px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-primary-row { grid-template-columns:125px minmax(0,1fr) 38px;gap:5px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot,
+  body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope,
+  body.mobile-section-active.mobile-view-notes #notesLabelFilter { width:125px;max-width:125px; }
   body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row { gap:6px;font-size:10.5px; }
   body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn { font-size:10.5px; }
 }
