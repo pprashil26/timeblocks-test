@@ -6817,7 +6817,7 @@ ${body}` : title };
                 const active = panel === "notes" ? (desktopWorkspacePanel === "notes" || desktopWorkspacePanel === "labels") : desktopWorkspacePanel === panel;
                 button.classList.toggle("active", active);button.setAttribute("aria-selected",String(active));
             });
-            notesLabelsBtn.classList.toggle("active",desktopWorkspacePanel === "labels");
+            // Labels are filtered through the shared dropdown; no separate button state.
         }
         function applyWorkspaceFocusState() {
             const active = !isMobileViewport() && Boolean(workspaceFocusPanel);
