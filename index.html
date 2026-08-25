@@ -3854,18 +3854,20 @@ body.notes-focus-active .note-body {
 }
 @media (max-width:759px) {
   body.mobile-section-active.mobile-view-notes #notesToggle { display:none !important; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-toolbar { grid-template-columns:140px 1fr 38px 38px !important;align-items:stretch;gap:7px; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot { width:140px;height:38px;min-width:0;align-self:stretch; }
-  body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope { display:block !important;width:140px;height:38px;margin:0;padding:0;border:0;background:transparent; }
-  body.mobile-section-active.mobile-view-notes #notesLabelFilter { display:block !important;box-sizing:border-box;width:140px;max-width:140px;min-width:0;height:38px;min-height:38px;margin:0;padding:0 28px 0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:12px;line-height:36px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;appearance:auto; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-more-wrap { width:38px;height:38px;align-self:stretch; }
-  body.mobile-section-active.mobile-view-notes #mobileNotesAddBtn, body.mobile-section-active.mobile-view-notes #mobileNotesMoreBtn { box-sizing:border-box;width:38px;min-width:38px;height:38px;min-height:38px;margin:0;padding:0;border-width:1px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;vertical-align:top; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-toolbar { display:grid !important;grid-template-columns:1fr !important;gap:5px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-primary-row { display:grid;grid-template-columns:minmax(0,1fr) 38px;align-items:stretch;gap:7px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot { width:auto;height:38px;min-width:0; }
+  body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope { display:block !important;width:100%;height:38px;margin:0;padding:0;border:0;background:transparent; }
+  body.mobile-section-active.mobile-view-notes #notesLabelFilter { display:block !important;box-sizing:border-box;width:100%;max-width:none;min-width:0;height:38px;min-height:38px;margin:0;padding:0 28px 0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:12px;line-height:36px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;appearance:auto; }
+  body.mobile-section-active.mobile-view-notes #mobileNotesAddBtn { box-sizing:border-box;width:38px;min-width:38px;height:38px;min-height:38px;margin:0;padding:0;border-width:1px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row { display:flex;align-items:center;justify-content:flex-end;gap:8px;min-height:22px;padding:0 2px;color:var(--muted);font-size:11px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn { min-height:22px;padding:1px 2px;border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:600;text-decoration:none; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn:hover, body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn:focus-visible { color:var(--ink);background:transparent;text-decoration:underline; }
 }
 @media (max-width:380px) {
-  body.mobile-section-active.mobile-view-notes .mobile-notes-toolbar { grid-template-columns:126px 1fr 38px 38px !important;gap:5px; }
-  body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot,
-  body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope,
-  body.mobile-section-active.mobile-view-notes #notesLabelFilter { width:126px;max-width:126px;height:38px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-primary-row { grid-template-columns:minmax(0,1fr) 38px;gap:5px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row { gap:6px;font-size:10.5px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn { font-size:10.5px; }
 }
 </style>
 </head>
@@ -3973,14 +3975,13 @@ body.notes-focus-active .note-body {
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
         <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
         <div class="notes-focus-scope notes-filter-scope" id="notesFocusScope" aria-label="Notes filters"><select class="notes-label-filter show" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
-        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note">＋</button><span class="mobile-notes-more-wrap"><button class="plain-btn mobile-notes-more-btn" id="mobileNotesMoreBtn" type="button" aria-expanded="false">⋯</button><span class="mobile-notes-more-menu" id="mobileNotesMoreMenu"><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button></span></span></div>
+        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-primary-row"><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note">＋</button></div><div class="mobile-notes-secondary-row"><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button><span aria-hidden="true">·</span><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button></div></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
       <div class="workspace-panel-host" id="workspacePanelHost"></div>
     </aside>
   </div>
 
-  <div class="mobile-notes-menu-backdrop" id="mobileNotesMenuBackdrop" aria-hidden="true"></div>
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" id="expandedNoteShell" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
@@ -4203,9 +4204,6 @@ body.notes-focus-active .note-body {
         const mobileNotesToolbar = el("mobileNotesToolbar");
         const mobileNotesScopeSlot = el("mobileNotesScopeSlot");
         const mobileNotesAddBtn = el("mobileNotesAddBtn");
-        const mobileNotesMoreBtn = el("mobileNotesMoreBtn");
-        const mobileNotesMoreMenu = el("mobileNotesMoreMenu");
-        const mobileNotesMenuBackdrop = el("mobileNotesMenuBackdrop");
         const mobileNotesMoveAllBtn = el("mobileNotesMoveAllBtn");
         const mobileNotesBinBtn = el("mobileNotesBinBtn");
         const moveAllNotesBtn = el("moveAllNotesBtn");
@@ -7645,28 +7643,8 @@ ${body}` : title };
             closeHelp(); });
         notesSearchBtn.addEventListener("click", openSearch);
         mobileNotesAddBtn.addEventListener("click", () => addNoteBtn.click());
-        function setMobileNotesMenu(open) {
-            if (open && mobileNotesMoreMenu.parentElement !== document.body) document.body.appendChild(mobileNotesMoreMenu);
-            if (open) {
-                const buttonRect = mobileNotesMoreBtn.getBoundingClientRect();
-                const menuWidth = 176;
-                const left = Math.max(8, Math.min(window.innerWidth - menuWidth - 8, buttonRect.right - menuWidth));
-                mobileNotesMoreMenu.style.left = `${left}px`;
-                mobileNotesMoreMenu.style.top = `${Math.min(window.innerHeight - 112, buttonRect.bottom + 6)}px`;
-            }
-            mobileNotesMoreMenu.classList.toggle("open", open);
-            mobileNotesMenuBackdrop.classList.toggle("open", open);
-            mobileNotesMenuBackdrop.setAttribute("aria-hidden", String(!open));
-            mobileNotesMoreBtn.setAttribute("aria-expanded", String(open));
-        }
-        mobileNotesMoreBtn.addEventListener("click", event => {
-            event.stopPropagation();
-            setMobileNotesMenu(!mobileNotesMoreMenu.classList.contains("open"));
-        });
-        mobileNotesMenuBackdrop.addEventListener("click", () => setMobileNotesMenu(false));
-        mobileNotesMoreMenu.addEventListener("click", event => event.stopPropagation());
-        mobileNotesMoveAllBtn.addEventListener("click", () => { setMobileNotesMenu(false); moveAllNotesBtn.click(); });
-        mobileNotesBinBtn.addEventListener("click", () => { setMobileNotesMenu(false); notesBinBtn.click(); });
+        mobileNotesBinBtn.addEventListener("click", () => notesBinBtn.click());
+        mobileNotesMoveAllBtn.addEventListener("click", () => moveAllNotesBtn.click());
         notesSearchClear.addEventListener("click", clearSearch);
         notesSearchInput.addEventListener("input", () => { notesSearchQuery = notesSearchInput.value; renderNotes(); });
         notesSearchInput.addEventListener("keydown", event => { if (event.key === "Escape")
@@ -7678,8 +7656,6 @@ ${body}` : title };
                 closeExpandedListMenu();
             if (!notesMoreMenu.contains(event.target) && event.target !== notesMoreBtn)
                 closeNotesMoreMenu();
-            if (!mobileNotesMoreMenu.contains(event.target) && event.target !== mobileNotesMoreBtn && event.target !== mobileNotesMenuBackdrop)
-                setMobileNotesMenu(false);
             if (!event.target.closest || !event.target.closest(".task-row"))
                 closeTaskMoveMenus();
         });
