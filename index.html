@@ -3848,6 +3848,16 @@ body.notes-focus-active .note-body {
 .mobile-notes-date, .notes-date-chip, #notesScopeDateBtn, #notesScopeAllBtn { display:none !important; }
 .notes-filter-scope { width:auto; justify-content:flex-start; }
 @media (min-width:760px) { .notes-filter-scope { margin-bottom:8px; } }
+
+/* Mobile Notes: stable toolbar, native label picker and no panel Hide control. */
+@media (max-width: 759px) {
+  body.mobile-section-active.mobile-view-notes #notesToggle { display:none !important; }
+  body.mobile-section-active.mobile-view-notes .notes-head { justify-content:flex-start; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-toolbar { grid-template-columns:1fr 38px 38px; gap:6px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot { position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%); }
+  body.mobile-section-active.mobile-view-notes #notesLabelFilter { position:fixed;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none; }
+  body.mobile-section-active.mobile-view-notes #mobileNotesLabelsBtn { justify-self:start;min-width:84px; }
+}
 </style>
 </head>
 <body>
@@ -3954,7 +3964,7 @@ body.notes-focus-active .note-body {
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
         <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn notes-labels-btn" id="notesLabelsBtn" type="button" title="Filter notes by label">Labels</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
         <div class="notes-focus-scope notes-filter-scope" id="notesFocusScope" aria-label="Notes filters"><select class="notes-label-filter show" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
-        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-tool" id="mobileNotesLabelsBtn" type="button">Labels</button><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note to selected date">＋</button><span class="mobile-notes-more-wrap"><button class="plain-btn mobile-notes-more-btn" id="mobileNotesMoreBtn" type="button" aria-expanded="false">⋯</button><span class="mobile-notes-more-menu" id="mobileNotesMoreMenu"><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button></span></span></div>
+        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-tool" id="mobileNotesLabelsBtn" type="button">Labels</button><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note to selected date">＋</button><span class="mobile-notes-more-wrap"><button class="plain-btn mobile-notes-more-btn" id="mobileNotesMoreBtn" type="button" aria-expanded="false">⋯</button><span class="mobile-notes-more-menu" id="mobileNotesMoreMenu"><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button></span></span></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
       <div class="workspace-panel-host" id="workspacePanelHost"></div>
@@ -6329,7 +6339,9 @@ ${body}` : title };
                     : "No labelled notes yet";
             }
             else {
-                notesNoResults.textContent = "No notes found across saved dates";
+                notesNoResults.textContent = notesLabelFilterValue
+                    ? `No notes with label “${notesLabelFilterValue}”`
+                    : "No notes yet. Tap + to create your first note.";
             }
             notesNoResults.classList.toggle("show", results.length === 0);
             applyNotesCompact();
@@ -7292,7 +7304,7 @@ ${body}` : title };
             if ((isMobileViewport() && !mobileDateMode) || notesBinOpen || notesFocusView || isLabelsWorkspace() || notesPinnedOnly) return new Set();
             const pinned = collectGlobalPinnedNotes(); if (!pinned.length) return new Set();
             const section = document.createElement("section"); section.className = "global-pinned-section";
-            const head = document.createElement("div"); head.className = "global-pinned-head"; const title = document.createElement("div"); title.className = "global-pinned-title"; title.textContent = `Pinned · ${pinned.length}`; head.appendChild(title);
+            const head = document.createElement("div"); head.className = "global-pinned-head"; const title = document.createElement("div"); title.className = "global-pinned-title"; title.textContent = `★ Pinned Notes (${pinned.length})`; head.appendChild(title);
             if (pinned.length > 3) { const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "plain-btn global-pinned-toggle"; toggle.textContent = globalPinnedExpanded ? "Show less" : `Show all pinned (${pinned.length})`; toggle.addEventListener("click", () => { globalPinnedExpanded = !globalPinnedExpanded; renderNotes(); }); head.appendChild(toggle); }
             const list = document.createElement("div"); list.className = "global-pinned-list";
             (globalPinnedExpanded ? pinned : pinned.slice(0, 3)).forEach(result => { const button = document.createElement("button"); button.type = "button"; button.className = "global-pinned-note"; const noteTitle = document.createElement("span"); noteTitle.className = "global-pinned-note-title"; noteTitle.textContent = `★ ${result.note.title || "Untitled"}`; const noteDate = document.createElement("span"); noteDate.className = "global-pinned-note-date"; const parsed = fromKey(result.dateKey); noteDate.textContent = parsed ? parsed.toLocaleDateString(undefined, { day: "numeric", month: "short" }) : result.dateKey; button.append(noteTitle, noteDate); button.addEventListener("click", () => openAllFocusNote(result.dateKey, result.note.id)); list.appendChild(button); });
@@ -7627,13 +7639,11 @@ ${body}` : title };
             closeHelp(); });
         notesSearchBtn.addEventListener("click", openSearch);
         mobileNotesLabelsBtn.addEventListener("click", () => {
-            const open = !notesLabelFilter.classList.contains("mobile-open");
-            notesLabelFilter.classList.toggle("mobile-open", open);
-            mobileNotesLabelsBtn.classList.toggle("active", open || Boolean(notesLabelFilterValue));
-            mobileNotesLabelsBtn.setAttribute("aria-pressed", String(open));
-            if (open) {
-                updateLabelFilterOptions();
+            updateLabelFilterOptions();
+            if (typeof notesLabelFilter.showPicker === "function") notesLabelFilter.showPicker();
+            else {
                 notesLabelFilter.focus();
+                notesLabelFilter.click();
             }
         });
         mobileNotesAddBtn.addEventListener("click", () => addNoteBtn.click());
@@ -7677,7 +7687,6 @@ ${body}` : title };
         });
         notesLabelFilter.addEventListener("change", () => {
             notesLabelFilterValue = notesLabelFilter.value;
-            notesLabelFilter.classList.remove("mobile-open");
             mobileNotesLabelsBtn.classList.toggle("active", Boolean(notesLabelFilterValue));
             mobileNotesLabelsBtn.setAttribute("aria-pressed", "false");
             renderNotes();
