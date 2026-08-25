@@ -3942,25 +3942,26 @@ body.notes-focus-active .note-body {
 .print-today-sheet { display:none; }
 @media (min-width:760px) { .print-today-btn { display:inline-flex;min-height:28px;align-items:center;padding:4px 9px;border:1px solid #c9b96e;border-radius:9px;background:#fff8df;color:#604f17;font-weight:750;line-height:1;text-decoration:none!important; } .print-today-btn:hover,.print-today-btn:focus-visible{background:#fff2c2;border-color:#b7a653;color:#4f4014;text-decoration:none;} }
 @media print {
-  @page { size:A5 portrait; margin:8mm; }
+  @page { size:A5 portrait; margin:7mm; }
   html,body { width:auto!important;min-height:0!important;margin:0!important;padding:0!important;background:#fff!important;color:#222!important;display:block!important; }
   body > *:not(.print-today-sheet) { display:none!important; }
   .print-today-sheet[hidden] { display:block!important; }
   .print-today-sheet { display:block!important;width:100%;font-family:Arial,Helvetica,sans-serif;color:#24231f; }
-  .print-card-brand { font-size:9pt;font-weight:800;letter-spacing:.16em;text-transform:uppercase; }
-  .print-card-date { margin:2mm 0 5mm;font-family:Georgia,serif;font-size:19pt;line-height:1.05; }
-  .print-card-section { break-inside:avoid;border-top:.35mm solid #272620;padding-top:2.2mm;margin-top:3.5mm; }
-  .print-card-label { margin-bottom:2mm;font-size:7pt;font-weight:800;letter-spacing:.14em;text-transform:uppercase; }
-  .print-card-focus-text { min-height:15mm;font-family:Georgia,serif;font-size:13pt;line-height:1.25; }
-  .print-card-columns { display:grid;grid-template-columns:1fr 1.08fr;gap:6mm; }
-  .print-card-item { display:grid;grid-template-columns:5mm 1fr;gap:1mm;margin:0 0 1.7mm;font-size:8.6pt;line-height:1.25; }
-  .print-card-check { font-size:10pt;line-height:1; }
+  .print-card-header { display:flex;align-items:flex-end;justify-content:space-between;gap:5mm;margin-bottom:3.5mm;padding-bottom:2.5mm;border-bottom:.45mm solid #272620; }
+  .print-card-brand { flex:0 0 auto;font-size:8pt;font-weight:800;letter-spacing:.16em;text-transform:uppercase; }
+  .print-card-date { font-family:Georgia,serif;font-size:13pt;line-height:1;text-align:right; }
+  .print-card-columns { display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:5mm;align-items:start; }
+  .print-card-column { min-width:0; }
+  .print-card-label { margin-bottom:2mm;padding-bottom:1.5mm;border-bottom:.3mm solid #272620;font-size:7pt;font-weight:800;letter-spacing:.14em;text-transform:uppercase; }
+  .print-card-item { display:grid;grid-template-columns:4.5mm minmax(0,1fr);gap:1mm;margin:0;padding:1.45mm 0;border-bottom:.2mm solid #ddd8cf;font-size:8.1pt;line-height:1.2;break-inside:avoid; }
+  .print-card-item.completed { color:#777;text-decoration:line-through; }
+  .print-card-check { font-size:9pt;line-height:1; }
   .print-card-empty { color:#777;font-size:8pt;font-style:italic; }
-  .print-card-plan-row { display:grid;grid-template-columns:17mm 1fr;gap:2mm;padding:1.2mm 0;border-bottom:.2mm solid #d7d2c8;font-size:8pt;line-height:1.2; }
-  .print-card-plan-row span:first-child { color:#666;font-size:7.5pt;font-variant-numeric:tabular-nums; }
-  .print-card-notes { margin-top:4mm; }
-  .print-card-writing-lines { height:25mm;background:repeating-linear-gradient(to bottom,transparent 0,transparent 6mm,#c9c4ba 6.2mm); }
-  .print-card-quote { min-height:5mm;margin-top:4mm;color:#555;font-family:Georgia,serif;font-size:8pt;font-style:italic;text-align:center; }
+  .print-card-plan-row { display:grid;grid-template-columns:15mm minmax(0,1fr);gap:1.5mm;min-height:4.65mm;align-items:center;padding:.55mm 1mm;border:.2mm solid #cfc9be;border-bottom:0;font-size:7.4pt;line-height:1.08;break-inside:avoid; }
+  .print-card-plan-row:last-child { border-bottom:.2mm solid #cfc9be; }
+  .print-card-plan-row.empty { background:#faf9f6; }
+  .print-card-plan-time { color:#555;font-size:6.9pt;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap; }
+  .print-card-plan-text { min-width:0;overflow-wrap:anywhere; }
 }
 </style>
 </head>
@@ -4076,19 +4077,11 @@ body.notes-focus-active .note-body {
   </div>
 
   <section class="print-today-sheet" id="printTodaySheet" aria-label="Printable Today card" hidden>
-    <div class="print-card-brand">FAST GTD</div>
-    <div class="print-card-date" id="printCardDate"></div>
-    <section class="print-card-section print-card-focus"><div class="print-card-label">Focus</div><div class="print-card-focus-text" id="printCardFocus"></div></section>
+    <header class="print-card-header"><div class="print-card-brand">FAST GTD</div><div class="print-card-date" id="printCardDate"></div></header>
     <div class="print-card-columns">
-      <div>
-        <section class="print-card-section"><div class="print-card-label">Top 3</div><div id="printCardTopTasks"></div></section>
-        <section class="print-card-section"><div class="print-card-label">Tasks</div><div id="printCardTasks"></div></section>
-        <section class="print-card-section"><div class="print-card-label">Events</div><div id="printCardEvents"></div></section>
-      </div>
-      <section class="print-card-section print-card-plan"><div class="print-card-label">Plan</div><div id="printCardPlan"></div></section>
+      <section class="print-card-column print-card-tasks"><div class="print-card-label">Today’s Tasks</div><div id="printCardTasks"></div></section>
+      <section class="print-card-column print-card-plan"><div class="print-card-label">Timeblocks</div><div id="printCardPlan"></div></section>
     </div>
-    <section class="print-card-section print-card-notes"><div class="print-card-label">Notes</div><div class="print-card-writing-lines"></div></section>
-    <div class="print-card-quote" id="printCardQuote"></div>
   </section>
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" id="expandedNoteShell" role="dialog" aria-modal="true" aria-label="Expanded note editor">
@@ -4288,12 +4281,8 @@ body.notes-focus-active .note-body {
         const printTodayBtn = el("printTodayBtn");
         const printTodaySheet = el("printTodaySheet");
         const printCardDate = el("printCardDate");
-        const printCardFocus = el("printCardFocus");
-        const printCardTopTasks = el("printCardTopTasks");
         const printCardTasks = el("printCardTasks");
-        const printCardEvents = el("printCardEvents");
         const printCardPlan = el("printCardPlan");
-        const printCardQuote = el("printCardQuote");
         const activityBtn = el("activityBtn");
         const addTaskInboxBtn = el("addTaskInboxBtn");
         const addTaskTodayBtn = el("addTaskTodayBtn");
@@ -7562,30 +7551,54 @@ ${body}` : title };
             currentSlot.classList.add("current-slot", isFirstFifteen ? "current-first-15" : "current-last-15");
             currentSlot.title = `Current block: ${isFirstFifteen ? "first" : "last"} 15 minutes`;
         }
-        function appendPrintItems(container, items, emptyText) {
-            container.innerHTML = "";
-            if (!items.length) { const empty = document.createElement("div"); empty.className = "print-card-empty"; empty.textContent = emptyText; container.appendChild(empty); return; }
-            items.forEach(item => { const row = document.createElement("div"); row.className = "print-card-item"; const mark = document.createElement("span"); mark.className = "print-card-check"; mark.textContent = "□"; const text = document.createElement("span"); text.textContent = item; row.append(mark, text); container.appendChild(row); });
+        function renderPrintTasks(tasks) {
+            printCardTasks.innerHTML = "";
+            if (!tasks.length) {
+                const empty = document.createElement("div");
+                empty.className = "print-card-empty";
+                empty.textContent = "No Today tasks";
+                printCardTasks.appendChild(empty);
+                return;
+            }
+            tasks.forEach(task => {
+                const row = document.createElement("div");
+                row.className = "print-card-item";
+                row.classList.toggle("completed", Boolean(task.done));
+                const mark = document.createElement("span");
+                mark.className = "print-card-check";
+                mark.textContent = task.done ? "☑" : "□";
+                const text = document.createElement("span");
+                text.textContent = task.text || "Task";
+                row.append(mark, text);
+                printCardTasks.appendChild(row);
+            });
+        }
+        function renderPrintTimeblocks(entries) {
+            printCardPlan.innerHTML = "";
+            for (let total = 8 * 60; total < 24 * 60; total += 30) {
+                const time = `${pad(Math.floor(total / 60))}:${pad(total % 60)}`;
+                const text = String(entries[time] || "").trim();
+                const row = document.createElement("div");
+                row.className = "print-card-plan-row";
+                row.classList.toggle("empty", !text);
+                const when = document.createElement("span");
+                when.className = "print-card-plan-time";
+                when.textContent = new Date(2000, 0, 1, ...time.split(":").map(Number)).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+                const value = document.createElement("span");
+                value.className = "print-card-plan-text";
+                value.textContent = text.replace(/^(Task|Event|Activity):\s*/i, "");
+                row.append(when, value);
+                printCardPlan.appendChild(row);
+            }
         }
         function buildPrintTodayCard() {
             const today = getToday();
             const dateKey = toKey(today);
             const data = readDateData(dateKey);
             printCardDate.textContent = today.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-            printCardFocus.textContent = String(data.focus || "").trim() || "Write today's main focus here";
-            const todayTasks = orderTasks(globalTasks.Today || []).filter(task => !task.done);
-            const topTasks = todayTasks.filter(task => task.highlighted).concat(todayTasks.filter(task => !task.highlighted)).slice(0, 3);
-            const topIds = new Set(topTasks.map(task => task.id));
-            appendPrintItems(printCardTopTasks, topTasks.map(task => task.text || "Task"), "Choose your top three");
-            appendPrintItems(printCardTasks, todayTasks.filter(task => !topIds.has(task.id)).slice(0, 7).map(task => task.text || "Task"), "No additional Today tasks");
-            const todayEvents = eventsForDate(dateKey).map(event => `${event.time ? eventTimeLabel(event) : "All day"}  ${event.title}`);
-            appendPrintItems(printCardEvents, todayEvents.slice(0, 6), "No events today");
+            renderPrintTasks(orderTasks(globalTasks.Today || []));
             const entries = data.entries && typeof data.entries === "object" ? data.entries : {};
-            const planItems = Object.entries(entries).filter(([, text]) => String(text || "").trim()).sort(([a], [b]) => a.localeCompare(b));
-            printCardPlan.innerHTML = "";
-            if (!planItems.length) { const empty = document.createElement("div"); empty.className = "print-card-empty"; empty.textContent = "No time blocks planned"; printCardPlan.appendChild(empty); }
-            planItems.slice(0, 14).forEach(([time, text]) => { const row = document.createElement("div"); row.className = "print-card-plan-row"; const when = document.createElement("span"); when.textContent = new Date(2000,0,1,...time.split(":").map(Number)).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}); const value = document.createElement("span"); value.textContent = String(text).replace(/^(Task|Event|Activity):\s*/i, ""); row.append(when, value); printCardPlan.appendChild(row); });
-            printCardQuote.textContent = favouriteQuote.trim() ? `“${favouriteQuote.trim()}”` : "";
+            renderPrintTimeblocks(entries);
         }
         function printTodayCard() {
             save();
