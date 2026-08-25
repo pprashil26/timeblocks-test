@@ -2474,16 +2474,18 @@ button.note-label-chip {
 
   .mobile-notes-more-menu {
     display: none;
-    position: absolute;
-    top: 41px;
-    right: 0;
-    z-index: 30;
-    min-width: 172px;
+    position: fixed;
+    top: auto;
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    z-index: 80;
+    min-width: 0;
     padding: 6px;
     border: 1px solid var(--line);
     border-radius: 12px;
     background: var(--page);
-    box-shadow: 0 14px 34px rgba(46, 57, 50, .14);
+    box-shadow: 0 18px 50px rgba(46, 57, 50, .24);
   }
 
   .mobile-notes-more-menu.open {
@@ -2492,7 +2494,7 @@ button.note-label-chip {
   }
 
   .mobile-notes-more-menu .plain-btn {
-    min-height: 38px;
+    min-height: 46px;
     padding: 8px 10px;
     color: var(--ink);
     text-align: left;
@@ -3327,6 +3329,9 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   .notes-sidebar.desktop-all-notes { height: auto; max-height: none; align-self: start; overflow: visible; }
   .notes-sidebar.desktop-all-notes .notes-wrap { flex: 0 0 auto; min-height: 0; overflow: visible; }
   .notes-sidebar.desktop-all-notes #notesList { overflow: visible; }
+  .notes-sidebar.desktop-date-notes { height:auto;max-height:none;align-self:start;overflow:visible; }
+  .notes-sidebar.desktop-date-notes .notes-wrap { flex:0 0 auto;min-height:0;overflow:visible; }
+  .notes-sidebar.desktop-date-notes #notesList { overflow:visible; }
 }
 
 /* Desktop workspace Focus feature retired: Calendar visibility is controlled independently. */
@@ -6296,6 +6301,7 @@ ${body}` : title };
             const allActive = mobileMode ? mobileNotesAll : labelsMode || (desktopNotesMode && notesFocusAll) || (notesFocusView && notesFocusAll);
             notesFocusScope.classList.toggle("show", !notesBinOpen && (mobileMode || (!isMobileViewport() && (desktopNotesMode || notesFocusView || labelsMode))));
             notesSidebar.classList.toggle("desktop-all-notes", desktopNotesMode && allActive && !notesBinOpen);
+            notesSidebar.classList.toggle("desktop-date-notes", desktopNotesMode && !allActive && !notesBinOpen);
             notesFocusScope.classList.toggle("labels-mode", labelsMode);
             notesFocusScope.classList.toggle("mobile-scope", mobileMode);
             if (mobileMode && notesFocusScope.parentElement !== mobileNotesScopeSlot)
@@ -7343,14 +7349,15 @@ ${body}` : title };
             return results.sort((a, b) => b.dateKey.localeCompare(a.dateKey) || (a.note.title || "").localeCompare(b.note.title || "", undefined, { sensitivity: "base" }));
         }
         function renderGlobalPinnedSection() {
-            if (isMobileViewport() || notesBinOpen || notesFocusView || isLabelsWorkspace() || notesPinnedOnly) return new Set();
+            const mobileDateMode = isMobileViewport() && notesSidebar.classList.contains("mobile-notes-open") && !mobileNotesAll;
+            if ((isMobileViewport() && !mobileDateMode) || notesBinOpen || notesFocusView || isLabelsWorkspace() || notesPinnedOnly) return new Set();
             const pinned = collectGlobalPinnedNotes(); if (!pinned.length) return new Set();
             const section = document.createElement("section"); section.className = "global-pinned-section";
             const head = document.createElement("div"); head.className = "global-pinned-head"; const title = document.createElement("div"); title.className = "global-pinned-title"; title.textContent = `Pinned · ${pinned.length}`; head.appendChild(title);
             if (pinned.length > 3) { const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "plain-btn global-pinned-toggle"; toggle.textContent = globalPinnedExpanded ? "Show less" : `Show all pinned (${pinned.length})`; toggle.addEventListener("click", () => { globalPinnedExpanded = !globalPinnedExpanded; renderNotes(); }); head.appendChild(toggle); }
             const list = document.createElement("div"); list.className = "global-pinned-list";
             (globalPinnedExpanded ? pinned : pinned.slice(0, 3)).forEach(result => { const button = document.createElement("button"); button.type = "button"; button.className = "global-pinned-note"; const noteTitle = document.createElement("span"); noteTitle.className = "global-pinned-note-title"; noteTitle.textContent = `★ ${result.note.title || "Untitled"}`; const noteDate = document.createElement("span"); noteDate.className = "global-pinned-note-date"; const parsed = fromKey(result.dateKey); noteDate.textContent = parsed ? parsed.toLocaleDateString(undefined, { day: "numeric", month: "short" }) : result.dateKey; button.append(noteTitle, noteDate); button.addEventListener("click", () => openAllFocusNote(result.dateKey, result.note.id)); list.appendChild(button); });
-            section.append(head, list); notesList.appendChild(section); return new Set(pinned.filter(result => result.dateKey === toKey(selectedDate)).map(result => result.note.id));
+            section.append(head, list); notesList.appendChild(section); return new Set(pinned.filter(result => result.dateKey === notesDateKey()).map(result => result.note.id));
         }
         function renderNotes() {
             notesList.innerHTML = "";
