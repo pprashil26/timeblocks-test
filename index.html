@@ -4010,6 +4010,34 @@ body.notes-focus-active .note-body {
   .print-card-plan-time { color:#555;font-size:6.9pt;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap; }
   .print-card-plan-text { min-width:0;overflow-wrap:anywhere; }
 }
+
+/* Event highlighting and compact mobile Event cards */
+.event-highlight-option { display:flex;align-items:center;gap:7px;min-height:30px;color:var(--ink)!important;font-weight:650!important; }
+.event-highlight-option input { width:16px;height:16px;margin:0;accent-color:#c9b96e; }
+.event-highlight { width:26px;min-width:26px;height:26px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;color:var(--muted);font-size:15px;line-height:1; }
+.event-highlight.active { color:var(--pin);background:rgba(247,231,189,.42);font-weight:800; }
+.event-strip-item { display:inline-grid;grid-template-columns:26px minmax(0,1fr);align-items:center;padding:1px 5px 1px 2px; }
+.event-strip-item.highlighted { border-color:#c9b96e!important;box-shadow:inset 3px 0 0 #c9b96e; }
+.event-strip-open { min-width:0;display:inline-flex;align-items:center;gap:6px;padding:3px 4px;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;overflow:hidden; }
+.event-strip-open span:last-child { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.event-strip-time { flex:0 0 auto;font-size:10.5px;font-variant-numeric:tabular-nums; }
+.event-row { grid-template-columns:28px minmax(0,1fr);align-items:center;gap:5px;padding:5px 7px; }
+.event-row.highlighted { border-color:#c9b96e;box-shadow:inset 3px 0 0 #c9b96e; }
+.event-row-open { min-width:0;display:grid;gap:2px;padding:1px 0;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer; }
+.event-when { display:flex;align-items:baseline;gap:7px; }
+.event-time-primary { color:var(--ink);font-size:11.5px;font-weight:800;font-variant-numeric:tabular-nums; }
+.event-row-title { overflow-wrap:anywhere; }
+@media (min-width:760px) { .event-row.highlighted { background:#fff; } }
+@media (max-width:759px) {
+  #noteModal:has(#eventsPanel.open) .events-toolbar { align-items:center;gap:6px; }
+  #noteModal:has(#eventsPanel.open) .events-title { white-space:nowrap; }
+  #noteModal:has(#eventsPanel.open) #eventTagFilter { min-width:0;max-width:115px; }
+  #noteModal:has(#eventsPanel.open) .event-list { gap:6px; }
+  #noteModal:has(#eventsPanel.open) .event-row { min-height:44px;border-radius:12px;background:#fff; }
+  #noteModal:has(#eventsPanel.open) .event-highlight { width:30px;min-width:30px;height:30px;font-size:17px; }
+  #noteModal:has(#eventsPanel.open) .event-time-primary { font-size:12px; }
+  #noteModal:has(#eventsPanel.open) .event-row-title { font-size:13px;line-height:1.25; }
+}
 </style>
 </head>
 <body>
@@ -4087,7 +4115,7 @@ body.notes-focus-active .note-body {
         <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus view" aria-label="Focus view">⛶</button><button class="plain-btn today-tasks-btn" id="todayTasksBtn" type="button" title="Open Today tasks">Today tasks</button><button class="plain-btn print-today-btn" id="printTodayBtn" type="button" title="Print Today card">Print card</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
-      <section class="events-strip" id="eventsStrip" aria-label="Events for selected date"><div class="events-strip-head"><span class="events-strip-title">Events</span><div class="events-strip-list" id="eventsStripList"></div><span class="events-strip-actions"><button class="plain-btn" id="viewEventsBtn" type="button">All events</button><button class="plain-btn event-add-link" id="addEventBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div></section>
+      <section class="events-strip" id="eventsStrip" aria-label="Events for selected date"><div class="events-strip-head"><span class="events-strip-title" id="eventsStripTitle">Events</span><div class="events-strip-list" id="eventsStripList"></div><span class="events-strip-actions"><button class="plain-btn" id="viewEventsBtn" type="button">All events</button><button class="plain-btn event-add-link" id="addEventBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to midnight"></section>
       <section class="quote-block" aria-label="Favourite quote or reminder"><div class="quote-line"><label class="quote-label" for="quoteInput">Quote</label><input id="quoteInput" type="text" placeholder="Favourite quote, mantra or reminder..." autocomplete="off" /></div></section>
       <footer><span class="footer-actions"><span>Saved locally on this device</span><span>·</span><button class="plain-btn backup-btn" id="exportBackupBtn" type="button">Export</button><span>·</span><button class="plain-btn backup-btn" id="importBackupBtn" type="button">Import</button><span>·</span><button class="plain-btn backup-btn help-btn" type="button">Help</button><input accept=".txt,text/plain,application/json" hidden id="importBackupInput" type="file" /></span><div class="last-import-status" data-last-import-status>Last import: Never</div><div
@@ -4157,7 +4185,7 @@ body.notes-focus-active .note-body {
         <div id="activityLog"></div>
       </div>
       <div class="events-panel" id="eventsPanel" hidden>
-        <div class="events-toolbar"><span class="events-title">Events</span><select id="eventTagFilter" aria-label="Filter Events by tag"><option value="">All tags</option></select><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Events">⛶</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link workspace-add-icon" id="eventsPanelAddBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div>
+        <div class="events-toolbar"><span class="events-title" id="eventsTitle">Events</span><select id="eventTagFilter" aria-label="Filter Events by tag"><option value="">All tags</option></select><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Events">⛶</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link workspace-add-icon" id="eventsPanelAddBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div>
         <div id="eventsList"></div>
       </div>
       <div class="link-preview expanded-links" id="expandedLinks"></div>
@@ -4180,6 +4208,7 @@ body.notes-focus-active .note-body {
       <div class="event-editor-head"><p class="event-editor-title" id="eventEditorTitle">New Event</p><button class="plain-btn" id="closeEventBtn" type="button">Close</button></div>
       <div class="event-editor-body">
         <label for="eventTitleInput">Event</label><input id="eventTitleInput" type="text" maxlength="120" placeholder="Event title" autocomplete="off" />
+        <label class="event-highlight-option" for="eventHighlightInput"><input id="eventHighlightInput" type="checkbox" /> Highlight this event</label>
         <label for="eventTagInput">Tag <span class="event-optional">optional</span></label><input id="eventTagInput" type="text" maxlength="40" list="eventTagSuggestions" placeholder="Work, Family, Health..." autocomplete="off" /><datalist id="eventTagSuggestions"></datalist>
         <div class="event-editor-grid"><div class="event-editor-field"><label for="eventDateInput">Date</label><input id="eventDateInput" type="date" /></div><div class="event-editor-field"><label for="eventTimeInput">Time <span class="event-optional">optional</span></label><input id="eventTimeInput" type="time" /></div></div>
         <div class="event-editor-grid"><div class="event-editor-field"><label for="eventDurationInput">Duration</label><select id="eventDurationInput"><option value="30">30 minutes</option><option value="60">1 hour</option><option value="90">1 hour 30 minutes</option><option value="120">2 hours</option><option value="150">2 hours 30 minutes</option><option value="180">3 hours</option><option value="custom">Custom</option></select></div><div class="event-editor-field" id="eventCustomDurationField" hidden><label for="eventCustomDurationInput">Minutes</label><input id="eventCustomDurationInput" type="number" min="30" max="1440" step="30" value="30" /></div></div>
@@ -4319,6 +4348,7 @@ body.notes-focus-active .note-body {
         const timeline = el("timeline");
         const eventsStrip = el("eventsStrip");
         const eventsStripList = el("eventsStripList");
+        const eventsStripTitle = el("eventsStripTitle");
         const addEventBtn = el("addEventBtn");
         const viewEventsBtn = el("viewEventsBtn");
         const selectedDateText = el("selectedDateText");
@@ -4437,6 +4467,7 @@ body.notes-focus-active .note-body {
         const activityLog = el("activityLog");
         const eventsPanel = el("eventsPanel");
         const eventsList = el("eventsList");
+        const eventsTitle = el("eventsTitle");
         const eventsFocusBtn = el("eventsFocusBtn");
         const eventsPastBtn = el("eventsPastBtn");
         const eventsPanelAddBtn = el("eventsPanelAddBtn");
@@ -4444,6 +4475,7 @@ body.notes-focus-active .note-body {
         const eventEditorTitle = el("eventEditorTitle");
         const eventTitleInput = el("eventTitleInput");
         const eventTagInput = el("eventTagInput");
+        const eventHighlightInput = el("eventHighlightInput");
         const eventTagSuggestions = el("eventTagSuggestions");
         const eventTagFilter = el("eventTagFilter");
         const eventDateInput = el("eventDateInput");
@@ -4706,6 +4738,7 @@ body.notes-focus-active .note-body {
             return raw.map(item => ({
                 id: item.id || createId("event"), title: typeof item.title === "string" ? item.title.trim() : "",
                 tag: typeof item.tag === "string" ? item.tag.trim().slice(0,40) : "",
+                highlighted: Boolean(item.highlighted),
                 date: fromKey(item.date) ? item.date : toKey(getToday()),
                 time: /^([01]\d|2[0-3]):[0-5]\d$/.test(item.time || "") ? item.time : "",
                 durationMinutes: Math.max(30, Math.min(1440, Math.round((Number(item.durationMinutes) || 30) / 30) * 30)),
@@ -5235,41 +5268,86 @@ body.notes-focus-active .note-body {
             removeLinkedTaskTimeblock(found.task); globalTasks[found.context] = globalTasks[found.context].filter(item => item.id !== found.task.id); saveTasks(); closeTaskEditor(); renderGlobalTasks();
             if (found.task.date === toKey(selectedDate)) loadSelectedDate();
         }
+        function toggleEventHighlight(eventId) {
+            const occurrence = eventId && eventId.includes("@");
+            const baseId = occurrence ? eventId.split("@")[0] : eventId;
+            const event = events.find(item => item.id === baseId);
+            if (!event) return;
+            event.highlighted = !event.highlighted;
+            saveEvents();
+            renderSelectedDateEvents();
+            renderEvents();
+        }
         function renderSelectedDateEvents() {
             const selectedKey = toKey(selectedDate);
             const selectedEvents = eventsForDate(selectedKey);
             eventsStripList.innerHTML = "";
             eventsStrip.classList.toggle("has-events", selectedEvents.length > 0);
+            eventsStripTitle.textContent = `Events (${selectedEvents.length})`;
             selectedEvents.forEach(event => {
-                const button = document.createElement("button");
-                button.type = "button";
-                button.className = "event-strip-item";
-                button.textContent = `${event.time ? eventTimeLabel(event) + "  " : ""}${event.title}${event.tag ? "  #" + event.tag : ""}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
-                button.title = `Edit ${event.title}`;
-                button.addEventListener("click", () => openEventEditor(event.id));
-                eventsStripList.appendChild(button);
+                const item = document.createElement("span");
+                item.className = "event-strip-item";
+                item.classList.toggle("highlighted", Boolean(event.highlighted));
+                const highlight = document.createElement("button");
+                highlight.type = "button";
+                highlight.className = "plain-btn event-highlight";
+                highlight.classList.toggle("active", Boolean(event.highlighted));
+                highlight.textContent = event.highlighted ? "★" : "☆";
+                highlight.title = event.highlighted ? "Remove event highlight" : "Highlight event";
+                highlight.setAttribute("aria-label", highlight.title);
+                highlight.addEventListener("click", clickEvent => { clickEvent.stopPropagation(); toggleEventHighlight(event.id); });
+                const open = document.createElement("button");
+                open.type = "button";
+                open.className = "event-strip-open";
+                const time = document.createElement("strong");
+                time.className = "event-strip-time";
+                time.textContent = event.time ? eventTimeLabel(event) : "All day";
+                const title = document.createElement("span");
+                title.textContent = `${event.title}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
+                open.append(time, title);
+                open.title = `Edit ${event.title}`;
+                open.addEventListener("click", () => openEventEditor(event.id));
+                item.append(highlight, open);
+                eventsStripList.appendChild(item);
             });
             if (!selectedEvents.length) {
                 const empty = document.createElement("span");
                 empty.className = "events-strip-empty";
-                empty.textContent = "No events for this date";
+                empty.textContent = "No events today. Use + to add one.";
                 eventsStripList.appendChild(empty);
             }
         }
         function createEventRow(event) {
-            const row = document.createElement("button");
-            row.type = "button";
+            const row = document.createElement("div");
             row.className = `event-row event-${eventPhase(event)}`;
+            row.classList.toggle("highlighted", Boolean(event.highlighted));
+            const highlight = document.createElement("button");
+            highlight.type = "button";
+            highlight.className = "plain-btn event-highlight";
+            highlight.classList.toggle("active", Boolean(event.highlighted));
+            highlight.textContent = event.highlighted ? "★" : "☆";
+            highlight.title = event.highlighted ? "Remove event highlight" : "Highlight event";
+            highlight.setAttribute("aria-label", highlight.title);
+            highlight.addEventListener("click", clickEvent => { clickEvent.stopPropagation(); toggleEventHighlight(event.id); });
+            const open = document.createElement("button");
+            open.type = "button";
+            open.className = "event-row-open";
             const date = fromKey(event.date);
             const dateText = eventPhase(event) === "today" ? "Today" : date ? displayDate(date) : event.date;
             const when = document.createElement("span");
             when.className = "event-when";
-            when.textContent = `${dateText}${event.time ? " · " + eventTimeLabel(event) : " · All day"}`;
+            const time = document.createElement("strong");
+            time.className = "event-time-primary";
+            time.textContent = event.time ? eventTimeLabel(event) : "All day";
+            const dateLabel = document.createElement("span");
+            dateLabel.textContent = dateText;
+            when.append(time, dateLabel);
             const title = document.createElement("span");
             title.className = "event-row-title";
-            title.textContent = `${event.title}${event.tag ? "  #" + event.tag : ""}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
-            row.append(when, title);
-            row.addEventListener("click", () => openEventEditor(event.id));
+            title.textContent = `${event.title}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
+            open.append(when, title);
+            open.addEventListener("click", () => openEventEditor(event.id));
+            row.append(highlight, open);
             return row;
         }
         function renderEvents() {
@@ -5296,7 +5374,7 @@ body.notes-focus-active .note-body {
                 section.className = "event-group";
                 const heading = document.createElement("div");
                 heading.className = "event-group-title";
-                heading.textContent = label;
+                heading.textContent = `${label} (${items.length})`;
                 const list = document.createElement("div");
                 list.className = "event-list";
                 if (!items.length) {
@@ -5311,6 +5389,7 @@ body.notes-focus-active .note-body {
                 section.append(heading, list);
                 eventsList.appendChild(section);
             });
+            eventsTitle.textContent = `Events (${windowEvents.filter(event => eventPhase(event) !== "past" || showPastEvents).length})`;
             eventsPastBtn.textContent = showPastEvents ? "Hide past" : "Show past";
             eventsPastBtn.setAttribute("aria-expanded", String(showPastEvents));
         }
@@ -5334,7 +5413,7 @@ body.notes-focus-active .note-body {
             if(eventId&&eventId.includes("@")){const [masterId,dateKey]=eventId.split("@");const master=events.find(item=>item.id===masterId);if(master){event=eventForOccurrence(master,dateKey);occurrenceDate=dateKey;}}
             else event=eventId?events.find(item=>item.id===eventId):null;
             editingEventId=event?event.id:null;editingEventOccurrenceDate=occurrenceDate;
-            eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventTagInput.value=event?event.tag||"":"";eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
+            eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventTagInput.value=event?event.tag||"":"";eventHighlightInput.checked=Boolean(event&&event.highlighted);eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
             const duration=event?event.durationMinutes||30:30;eventDurationInput.value=[30,60,90,120,150,180].includes(duration)?String(duration):"custom";eventCustomDurationInput.value=String(duration);
             const master=event&&event.seriesId?events.find(item=>item.id===event.seriesId):event;const rule=master&&master.recurrence?master.recurrence:null;eventRepeatInput.value=rule?rule.type:"none";eventRepeatIntervalInput.value=String(rule?rule.interval:1);eventRepeatUnitInput.value=rule?rule.unit:"week";eventRepeatEndInput.value=rule?rule.endType:"never";eventRepeatEndValue.value=rule?(rule.endType==="date"?rule.endDate:String(rule.count)):"";renderEventWeekdays(rule?rule.weekdays:[]);
             deleteEventBtn.hidden=!event;copyEventBtn.hidden=!event;eventSeriesScope.hidden=!(event&&(event.seriesId||event.recurrence));eventSeriesScopeInput.value="this";updateEventEditorOptions();updateEventNoteControls();eventModal.classList.add("open");eventModal.setAttribute("aria-hidden","false");setTimeout(()=>eventTitleInput.focus(),0);
@@ -5372,7 +5451,7 @@ body.notes-focus-active .note-body {
         function saveEventFromEditor(){
             const title=eventTitleInput.value.trim(),date=eventDateInput.value;if(!title){alert("Please enter an event title.");eventTitleInput.focus();return;}if(!fromKey(date)||!isWithinRange(fromKey(date))){alert("Please select a valid event date.");return;}
             const currentNoteLink=editingEventRecord()?normalizeTaskNoteLink(editingEventRecord().noteLink):null;
-            const draft={title,tag:eventTagInput.value.trim().slice(0,40),date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor(),noteLink:currentNoteLink};
+            const draft={title,tag:eventTagInput.value.trim().slice(0,40),highlighted:eventHighlightInput.checked,date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor(),noteLink:currentNoteLink};
             const isNewEvent=!editingEventId;
             let savedEvent=null,previousSnapshot=null;
             if(editingEventId&&editingEventId.includes("@")){
@@ -5497,7 +5576,7 @@ body.notes-focus-active .note-body {
                 const task = { id: createId("task"), text, status: "not-started", done: false, highlighted: false, tags: [], date: dateKey, time: plannerCreateTime, noteLink: null, createdAt: new Date().toISOString() };
                 globalTasks.Today.unshift(task); saveTasks(); populateTaskTimeblock(task, false); renderGlobalTasks();
             } else if (type === "event") {
-                const event = { id: createId("event"), title: text, date: dateKey, time: plannerCreateTime, durationMinutes: 30, recurrence: null, seriesId: "", originalDate: "", cancelled: false, createdAt: new Date().toISOString() };
+                const event = { id: createId("event"), title: text, highlighted: false, date: dateKey, time: plannerCreateTime, durationMinutes: 30, recurrence: null, seriesId: "", originalDate: "", cancelled: false, createdAt: new Date().toISOString() };
                 events.push(event); saveEvents(); populateEventTimeblock(event, false); renderEvents(); buildCalendar();
             } else {
                 const [hour, minute] = plannerCreateTime.split(":").map(Number);
