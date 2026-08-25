@@ -3843,6 +3843,11 @@ body.notes-focus-active .note-body {
   }
 }
 
+
+/* Notes always display globally; date scope controls are retired. */
+.mobile-notes-date, .notes-date-chip, #notesScopeDateBtn, #notesScopeAllBtn { display:none !important; }
+.notes-filter-scope { width:auto; justify-content:flex-start; }
+@media (min-width:760px) { .notes-filter-scope { margin-bottom:8px; } }
 </style>
 </head>
 <body>
@@ -3945,11 +3950,10 @@ body.notes-focus-active .note-body {
     <aside class="notes-sidebar" id="notesSidebar" aria-label="Lined notepad sidebar">
       <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Right sidebar panels"><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button><button class="workspace-tab" id="workspaceEventsTab" type="button" role="tab" aria-selected="false">Events</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
       <div class="notes-wrap" id="notesWorkspacePanel">
-        <div class="mobile-notes-date" id="mobileNotesDate">Notes for selected date</div>
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
         <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn notes-labels-btn" id="notesLabelsBtn" type="button" title="Filter notes by label">Labels</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
-        <div class="notes-focus-scope" id="notesFocusScope" aria-label="Notes scope"><span class="notes-date-chip" id="notesDateChip"><span aria-hidden="true">▣</span><span id="notesDateChipText">Today</span><span aria-hidden="true">▾</span><input class="notes-date-picker active" id="notesScopeDateBtn" type="date" aria-label="Select Notes date" title="Select Notes date" /></span><button class="plain-btn notes-scope-btn" id="notesScopeAllBtn" type="button">All notes</button><select class="notes-label-filter" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
+        <div class="notes-focus-scope notes-filter-scope" id="notesFocusScope" aria-label="Notes filters"><select class="notes-label-filter show" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
         <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-tool" id="mobileNotesLabelsBtn" type="button">Labels</button><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note to selected date">＋</button><span class="mobile-notes-more-wrap"><button class="plain-btn mobile-notes-more-btn" id="mobileNotesMoreBtn" type="button" aria-expanded="false">⋯</button><span class="mobile-notes-more-menu" id="mobileNotesMoreMenu"><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button></span></span></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
@@ -4126,7 +4130,6 @@ body.notes-focus-active .note-body {
         const mobileMoreCloseBtn = el("mobileMoreCloseBtn");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
-        const mobileNotesDate = el("mobileNotesDate");
         const shell = el("shell");
         const sidebar = el("sidebar");
         const sidebarToggle = el("sidebarToggle");
@@ -4178,9 +4181,6 @@ body.notes-focus-active .note-body {
         const notesFocusBtn = el("notesFocusBtn");
         const notesLabelsBtn = el("notesLabelsBtn");
         const notesFocusScope = el("notesFocusScope");
-        const notesScopeDateBtn = el("notesScopeDateBtn");
-        const notesDateChipText = el("notesDateChipText");
-        const notesScopeAllBtn = el("notesScopeAllBtn");
         const notesLabelFilter = el("notesLabelFilter");
         const mobileNotesToolbar = el("mobileNotesToolbar");
         const mobileNotesScopeSlot = el("mobileNotesScopeSlot");
@@ -4329,7 +4329,7 @@ body.notes-focus-active .note-body {
         let notesBinOpen = false;
         let notesFocusView = false;
         localStorage.removeItem(NOTE_FOCUS_KEY);
-        let notesFocusAll = false;
+        let notesFocusAll = true;
         let mobileNotesAll = true;
         let mobileTaskCaptureReturnHome = false;
         let notesLabelFilterValue = "";
@@ -6049,37 +6049,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             alert(`Imported ${entries.length} saved date(s).`);
         }
         function notesDateKey() { return toKey(notesDate); }
-        function notesDateChipLabel(date) {
-            const today = getToday();
-            const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
-            const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
-            if (isSameDay(date, today)) return "Today";
-            if (isSameDay(date, yesterday)) return "Yesterday";
-            if (isSameDay(date, tomorrow)) return "Tomorrow";
-            return date.toLocaleDateString(undefined, { day: "numeric", month: "short" });
-        }
         function loadNotesForIndependentDate() {
             notes = orderNotes(normalizeNotes(readDateData(notesDateKey()).notes));
-            notesScopeDateBtn.value = notesDateKey();
-            notesDateChipText.textContent = notesDateChipLabel(notesDate);
-            mobileNotesDate.textContent = `Notes for ${displayDate(notesDate)}`;
-        }
-        function setIndependentNotesDate(dateKey) {
-            const target = fromKey(dateKey);
-            if (!target || !isWithinRange(target)) {
-                notesScopeDateBtn.value = notesDateKey();
-                return;
-            }
-            notesDate = target;
-            localStorage.setItem(NOTES_DATE_KEY, notesDateKey());
-            notesBinOpen = false;
-            notesSearchQuery = "";
-            notesSearchInput.value = "";
-            loadNotesForIndependentDate();
-            if (isMobileViewport()) mobileNotesAll = false;
-            else notesFocusAll = false;
-            applyNotesFocusScope();
-            renderNotes();
         }
         function readSavedData() { storageKey = selectedStorageKey(); saved = readDateData(toKey(selectedDate)); loadNotesForIndependentDate(); }
         function hasNotesData(data) { return Array.isArray(data.notes) ? normalizeNotes(data.notes).some(note => !note.deleted && ((note.title || "").trim() || (note.body || "").trim())) : Boolean((data.notes || "").trim()); }
@@ -6289,41 +6260,18 @@ ${body}` : title };
             const mobileMode = isMobileViewport() && notesSidebar.classList.contains("mobile-notes-open");
             const labelsMode = isLabelsWorkspace();
             const desktopNotesMode = !isMobileViewport() && desktopWorkspacePanel === "notes";
-            const allActive = mobileMode ? mobileNotesAll : labelsMode || (desktopNotesMode && notesFocusAll) || (notesFocusView && notesFocusAll);
-            notesFocusScope.classList.toggle("show", !notesBinOpen && (mobileMode || (!isMobileViewport() && (desktopNotesMode || notesFocusView || labelsMode))));
-            notesSidebar.classList.toggle("desktop-all-notes", desktopNotesMode && allActive && !notesBinOpen);
-            notesSidebar.classList.toggle("desktop-date-notes", desktopNotesMode && !allActive && !notesBinOpen);
+            notesFocusScope.classList.toggle("show", !notesBinOpen && (mobileMode || desktopNotesMode || notesFocusView || labelsMode));
+            notesSidebar.classList.toggle("desktop-all-notes", desktopNotesMode && !notesBinOpen);
+            notesSidebar.classList.remove("desktop-date-notes");
             notesFocusScope.classList.toggle("labels-mode", labelsMode);
             notesFocusScope.classList.toggle("mobile-scope", mobileMode);
             if (mobileMode && notesFocusScope.parentElement !== mobileNotesScopeSlot)
                 mobileNotesScopeSlot.appendChild(notesFocusScope);
             else if (!mobileMode && notesFocusScope.parentElement !== notesWorkspacePanel)
                 notesWorkspacePanel.insertBefore(notesFocusScope, mobileNotesToolbar);
-            notesLabelFilter.classList.toggle("show", (allActive && labelsMode) || mobileMode);
-            if (allActive || mobileMode)
-                updateLabelFilterOptions();
-            notesScopeDateBtn.classList.toggle("active", !allActive);
-            notesScopeAllBtn.classList.toggle("active", allActive);
-            notesScopeAllBtn.setAttribute("aria-pressed", String(allActive));
+            notesLabelFilter.classList.add("show");
+            updateLabelFilterOptions();
             mobileNotesToolbar.hidden = !mobileMode || notesBinOpen;
-        }
-        function setNotesFocusScope(showAll) {
-            if (notesBinOpen)
-                return;
-            if (isMobileViewport()) {
-                mobileNotesAll = Boolean(showAll);
-                notesLabelFilterValue = "";
-                notesSearchQuery = "";
-                notesSearchInput.value = "";
-                applyNotesFocusScope();
-                renderNotes();
-                return;
-            }
-            if (desktopWorkspacePanel !== "notes" && !notesFocusView)
-                return;
-            notesFocusAll = Boolean(showAll);
-            applyNotesFocusScope();
-            renderNotes();
         }
         function collectAllFocusNotes() {
             const results = [];
@@ -7354,25 +7302,14 @@ ${body}` : title };
             notesList.innerHTML = "";
             notes = orderNotes(notes);
             applyNotesFocusScope();
-            const mobilePinnedGlobal = isMobileViewport() && notesPinnedOnly && notesSidebar.classList.contains("mobile-notes-open");
-            const desktopNotesAll = !isMobileViewport() && desktopWorkspacePanel === "notes" && notesFocusAll;
-            if (!notesBinOpen && (mobilePinnedGlobal || (isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || desktopNotesAll || (notesFocusView && notesFocusAll))))) {
+            if (!notesBinOpen) {
                 renderAllFocusNotes();
                 return;
             }
-            const pinnedIdsOnSelectedDate = renderGlobalPinnedSection();
-            const visibleNotes = notesBinOpen
-                ? notes.filter(note => note.deleted)
-                : notes.filter(note => !note.deleted && !pinnedIdsOnSelectedDate.has(note.id) && (!notesLabelFilterValue || note.labels.some(label => label.toLowerCase() === notesLabelFilterValue.toLowerCase())) && noteMatchesSearch(note));
-            visibleNotes.forEach(note => notesList.appendChild(notesBinOpen ? createTrashCard(note) : createNoteCard(note)));
-            if (notesBinOpen) {
-                notesNoResults.textContent = visibleNotes.length ? "" : "Recycle bin is empty";
-                notesNoResults.classList.toggle("show", !visibleNotes.length);
-            }
-            else {
-                notesNoResults.textContent = notesLabelFilterValue ? `No notes with label “${notesLabelFilterValue}”` : notesPinnedOnly ? "No pinned notes" : "No matching notes";
-                notesNoResults.classList.toggle("show", visibleNotes.length === 0 && (notesPinnedOnly || Boolean(notesSearchQuery)));
-            }
+            const visibleNotes = notes.filter(note => note.deleted);
+            visibleNotes.forEach(note => notesList.appendChild(createTrashCard(note)));
+            notesNoResults.textContent = visibleNotes.length ? "" : "Recycle bin is empty";
+            notesNoResults.classList.toggle("show", !visibleNotes.length);
             document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
             applyNotesCompact();
             updateSearchUi();
@@ -7738,10 +7675,6 @@ ${body}` : title };
             if (!event.target.closest || !event.target.closest(".task-row"))
                 closeTaskMoveMenus();
         });
-        notesScopeDateBtn.min = toKey(START_DATE);
-        notesScopeDateBtn.max = toKey(END_DATE);
-        notesScopeDateBtn.addEventListener("change", () => setIndependentNotesDate(notesScopeDateBtn.value));
-        notesScopeAllBtn.addEventListener("click", () => setNotesFocusScope(true));
         notesLabelFilter.addEventListener("change", () => {
             notesLabelFilterValue = notesLabelFilter.value;
             notesLabelFilter.classList.remove("mobile-open");
