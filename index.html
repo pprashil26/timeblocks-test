@@ -4038,6 +4038,27 @@ body.notes-focus-active .note-body {
   #noteModal:has(#eventsPanel.open) .event-time-primary { font-size:12px; }
   #noteModal:has(#eventsPanel.open) .event-row-title { font-size:13px;line-height:1.25; }
 }
+
+/* Mobile-only Task visibility and content-first cards */
+.task-context-count,.mobile-task-section-heading,.mobile-task-edit,.task-editor-mobile-controls{display:none;}
+@media(max-width:759px){
+#noteModal:has(#globalTasksPanel.open) .task-contexts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:0 0 8px;padding:0;overflow:visible;}
+#noteModal:has(#globalTasksPanel.open) .task-context-btn{min-width:0;min-height:38px;display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:5px 3px;font-size:10.5px;}
+#noteModal:has(#globalTasksPanel.open) .task-context-count{display:inline-flex;min-width:18px;height:18px;align-items:center;justify-content:center;padding:0 5px;border-radius:999px;background:var(--soft);color:var(--muted);font-size:9.5px;font-weight:750;}
+#noteModal:has(#globalTasksPanel.open) .task-context-btn.active .task-context-count{background:#fff;color:var(--ink);}
+#noteModal:has(#globalTasksPanel.open) .mobile-task-section-heading{display:flex;align-items:center;justify-content:space-between;min-height:25px;margin:6px 2px 1px;color:var(--muted);font-size:10px;font-weight:750;letter-spacing:.05em;text-transform:uppercase;}
+#noteModal:has(#globalTasksPanel.open) .mobile-task-section-heading:first-child{margin-top:0;}
+#noteModal:has(#globalTasksPanel.open) .mobile-task-section-heading span:last-child{min-width:19px;height:19px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--soft);font-size:9.5px;letter-spacing:0;}
+#noteModal:has(#globalTasksPanel.open) .task-row,#noteModal:has(#globalTasksPanel.open) .task-row.no-move{grid-template-columns:28px 28px minmax(0,1fr) auto;grid-template-rows:auto;grid-template-areas:"check highlight content actions";align-items:start;column-gap:6px;min-height:46px;padding:7px;}
+#noteModal:has(#globalTasksPanel.open) .task-status,#noteModal:has(#globalTasksPanel.open) .task-highlight{width:28px;height:28px;margin-top:1px;}
+#noteModal:has(#globalTasksPanel.open) .task-content{align-self:start;}
+#noteModal:has(#globalTasksPanel.open) .task-text{min-height:28px!important;height:auto!important;padding:3px 0 1px!important;font-size:14px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere;}
+#noteModal:has(#globalTasksPanel.open) .task-schedule-meta{margin-top:2px;font-size:10.5px;line-height:1.2;white-space:normal;}
+#noteModal:has(#globalTasksPanel.open) .task-row-actions{align-self:start;min-height:30px;margin:0;}
+#noteModal:has(#globalTasksPanel.open) .mobile-task-edit{display:inline-flex;min-width:38px;min-height:30px;align-items:center;justify-content:center;padding:4px 5px;color:var(--muted);font-size:11px;font-weight:650;text-decoration:none;}
+#noteModal:has(#globalTasksPanel.open) .mobile-task-edit:hover,#noteModal:has(#globalTasksPanel.open) .mobile-task-edit:focus-visible{color:var(--ink);background:var(--soft);text-decoration:none;}
+.task-editor-mobile-controls{display:grid;grid-template-columns:1fr;gap:9px;margin-top:1px;}.task-editor-mobile-controls>div{display:grid;gap:5px;}.task-editor-highlight-option{min-height:34px;display:flex;align-items:center;gap:8px;color:var(--ink)!important;font-weight:650!important;}.task-editor-highlight-option input{width:17px;height:17px;margin:0;accent-color:#c9b96e;}
+}
 </style>
 </head>
 <body>
@@ -4227,6 +4248,7 @@ body.notes-focus-active .note-body {
       <div class="task-editor-body">
         <label for="taskEditorText">Task</label><input id="taskEditorText" type="text" maxlength="240" autocomplete="off" />
         <label for="taskEditorContext">List</label><select id="taskEditorContext"></select>
+        <div class="task-editor-mobile-controls"><div><label for="taskEditorStatus">Status</label><select id="taskEditorStatus"></select></div><label class="task-editor-highlight-option" for="taskEditorHighlight"><input id="taskEditorHighlight" type="checkbox" /> Highlight this task</label></div>
         <label for="taskEditorTags">Tags <span class="event-optional">optional</span></label><input id="taskEditorTags" type="text" maxlength="240" list="taskTagSuggestions" placeholder="Work, Home, Waiting..." autocomplete="off" /><datalist id="taskTagSuggestions"></datalist><div class="task-editor-tags-help">Separate multiple tags with commas. Task tags are independent from Note labels.</div>
         <div class="task-editor-date-row"><div><label for="taskEditorDate">Date <span class="event-optional">optional</span></label><input id="taskEditorDate" type="date" /></div><div><label for="taskEditorTime">Time <span class="event-optional">optional</span></label><input id="taskEditorTime" type="time" /></div></div>
         <div class="task-note-section" id="taskNoteSection"><span class="task-note-label">Note</span><span class="task-note-actions"><button class="plain-btn task-note-btn" id="taskCreateNoteBtn" type="button">Create note</button><button class="plain-btn task-note-btn" id="taskLinkNoteBtn" type="button">Link existing</button><button class="plain-btn task-note-btn" id="taskOpenNoteBtn" type="button" hidden>Open note</button><button class="plain-btn task-note-unlink" id="taskUnlinkNoteBtn" type="button" hidden>Unlink</button></span><span class="task-note-help" id="taskNoteHelp"></span></div>
@@ -4433,6 +4455,8 @@ body.notes-focus-active .note-body {
         const taskEditorTitle = el("taskEditorTitle");
         const taskEditorText = el("taskEditorText");
         const taskEditorContext = el("taskEditorContext");
+        const taskEditorStatus = el("taskEditorStatus");
+        const taskEditorHighlight = el("taskEditorHighlight");
         const taskEditorTags = el("taskEditorTags");
         const taskTagSuggestions = el("taskTagSuggestions");
         const taskEditorDate = el("taskEditorDate");
@@ -4915,6 +4939,7 @@ body.notes-focus-active .note-body {
             removeLinkedTaskTimeblock(previous);
             found.task.text = text;
             found.task.tags = normalizeTaskTags(taskEditorTags.value.split(","));
+            found.task.status = taskEditorStatus.value; found.task.done = found.task.status === "completed"; found.task.highlighted = taskEditorHighlight.checked;
             found.task.date = date;
             found.task.time = time;
             if (targetContext !== found.context) {
@@ -5166,6 +5191,11 @@ body.notes-focus-active .note-body {
             TASK_CONTEXTS.forEach(name => { const option = document.createElement("option"); option.value = name; option.textContent = name; taskEditorContext.appendChild(option); });
             taskEditorContext.value = TASK_CONTEXTS.includes(selectedContext) ? selectedContext : "Inbox";
         }
+        function populateTaskEditorStatus(selectedStatus = "not-started") {
+            taskEditorStatus.innerHTML = "";
+            TASK_STATUSES.forEach(status => { const option = document.createElement("option"); option.value = status.id; option.textContent = status.label; taskEditorStatus.appendChild(option); });
+            taskEditorStatus.value = TASK_STATUSES.some(status => status.id === selectedStatus) ? selectedStatus : "not-started";
+        }
         function focusTaskEditorField(target = "text") {
             const field = target === "tags" ? taskEditorTags : target === "date" ? taskEditorDate : taskEditorText;
             setTimeout(() => { field.focus(); if (field === taskEditorText) field.select(); }, 0);
@@ -5175,7 +5205,7 @@ body.notes-focus-active .note-body {
             if (!found) return;
             editingTaskId = found.task.id; editingTaskContext = found.context; taskEditorFocusTarget = focusTarget;
             taskEditorTitle.textContent = "Edit Task";
-            taskEditorText.value = found.task.text; populateTaskEditorLists(found.context);
+            taskEditorText.value = found.task.text; populateTaskEditorLists(found.context); populateTaskEditorStatus(found.task.status); taskEditorHighlight.checked = Boolean(found.task.highlighted);
             taskEditorTags.value = normalizeTaskTags(found.task.tags).join(", "); updateTaskTagSuggestions();
             taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = found.task.date || ""; taskEditorTime.value = found.task.time || "";
             deleteTaskEditorBtn.hidden = false;
@@ -5186,7 +5216,7 @@ body.notes-focus-active .note-body {
         function openNewTaskEditor(context = activeTaskContext, focusTarget = "text") {
             editingTaskId = null; editingTaskContext = TASK_CONTEXTS.includes(context) ? context : "Inbox"; taskEditorFocusTarget = focusTarget;
             taskEditorTitle.textContent = "New Task";
-            taskEditorText.value = ""; populateTaskEditorLists(editingTaskContext);
+            taskEditorText.value = ""; populateTaskEditorLists(editingTaskContext); populateTaskEditorStatus("not-started"); taskEditorHighlight.checked = false;
             taskEditorTags.value = ""; updateTaskTagSuggestions();
             taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = ""; taskEditorTime.value = "";
             deleteTaskEditorBtn.hidden = true;
@@ -5202,6 +5232,8 @@ body.notes-focus-active .note-body {
             taskEditorTitle.textContent = "Copy Task";
             taskEditorText.value = found.task.text;
             populateTaskEditorLists(found.context);
+            populateTaskEditorStatus(found.task.status);
+            taskEditorHighlight.checked = Boolean(found.task.highlighted);
             taskEditorTags.value = normalizeTaskTags(found.task.tags).join(", ");
             taskEditorDate.value = found.task.date || "";
             taskEditorTime.value = found.task.time || "";
@@ -5236,7 +5268,7 @@ body.notes-focus-active .note-body {
             if (time && !date) { alert("Please select a date for the task time."); return; }
             const targetContext = TASK_CONTEXTS.includes(taskEditorContext.value) ? taskEditorContext.value : (editingTaskContext || activeTaskContext);
             if (!editingTaskId) {
-                const task = { id: createId("task"), text, status: "not-started", done: false, highlighted: false, tags: normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null, createdAt: new Date().toISOString() };
+                const task = { id: createId("task"), text, status: taskEditorStatus.value, done: taskEditorStatus.value === "completed", highlighted: taskEditorHighlight.checked, tags: normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null, createdAt: new Date().toISOString() };
                 globalTasks[targetContext].unshift(task); activeTaskContext = targetContext; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, targetContext);
                 saveTasks(); populateTaskTimeblock(task); renderGlobalTasks();
                 if (isMobileViewport() && mobileTaskCaptureReturnHome) {
@@ -5258,7 +5290,7 @@ body.notes-focus-active .note-body {
             }
             const found = findTaskLocation(editingTaskId); if (!found) return closeTaskEditor();
             const previous = { ...found.task }; removeLinkedTaskTimeblock(previous);
-            found.task.text = text; found.task.tags = normalizeTaskTags(taskEditorTags.value.split(",")); found.task.date = date; found.task.time = time;
+            found.task.text = text; found.task.tags = normalizeTaskTags(taskEditorTags.value.split(",")); found.task.status = taskEditorStatus.value; found.task.done = found.task.status === "completed"; found.task.highlighted = taskEditorHighlight.checked; found.task.date = date; found.task.time = time;
             if (targetContext !== found.context) { globalTasks[found.context] = globalTasks[found.context].filter(item => item.id !== found.task.id); globalTasks[targetContext].unshift(found.task); activeTaskContext = targetContext; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, targetContext); }
             saveTasks(); populateTaskTimeblock(found.task); closeTaskEditor(); renderGlobalTasks();
             if (toKey(selectedDate) === previous.date || toKey(selectedDate) === found.task.date) loadSelectedDate();
@@ -5938,7 +5970,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 const button = document.createElement("button");
                 button.type = "button";
                 button.className = "task-context-btn";
-                button.textContent = context;
+                const label = document.createElement("span"); label.textContent = context;
+                const count = document.createElement("span"); count.className = "task-context-count";
+                count.textContent = String((globalTasks[context] || []).filter(task => !task.done).length);
+                button.append(label, count);
                 button.classList.toggle("active", context === activeTaskContext);
                 button.addEventListener("click", () => setActiveTaskContext(context));
                 taskContexts.appendChild(button);
@@ -6063,6 +6098,19 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
         }
         function openTaskArchive() { taskArchiveOpen = true; renderGlobalTasks(); }
         function closeTaskArchive() { taskArchiveOpen = false; renderGlobalTasks(); }
+        function mobileTaskSection(task) {
+            const todayKey = toKey(getToday());
+            if (!task.date) return "No Date";
+            if (task.date < todayKey) return "Overdue";
+            if (task.date === todayKey) return "Due Today";
+            return "Upcoming";
+        }
+        function appendMobileTaskSectionHeading(label, count) {
+            const heading = document.createElement("div"); heading.className = "mobile-task-section-heading";
+            const title = document.createElement("span"); title.textContent = label;
+            const badge = document.createElement("span"); badge.textContent = String(count);
+            heading.append(title, badge); globalTaskList.appendChild(heading);
+        }
         function renderGlobalTasks() {
             if (taskArchiveOpen) { renderTaskArchive(); return; }
             taskArchiveHead.hidden = true;
@@ -6076,7 +6124,15 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             updateTaskTagFilter();
             globalTaskList.innerHTML = "";
             const tasksToRender = visibleTasks();
-            tasksToRender.forEach(task => {
+            let renderQueue = tasksToRender.map(task => ({ task, section: "" }));
+            if (isMobileViewport()) {
+                renderQueue = ["Overdue", "Due Today", "Upcoming", "No Date"].flatMap(section => {
+                    const matching = tasksToRender.filter(task => mobileTaskSection(task) === section);
+                    return matching.map((task, index) => ({ task, section: index === 0 ? section : "", sectionCount: matching.length }));
+                });
+            }
+            renderQueue.forEach(({ task, section, sectionCount }) => {
+                if (section) appendMobileTaskSectionHeading(section, sectionCount);
                 const row = document.createElement("div");
                 row.className = "task-row";
                 row.tabIndex = 0;
@@ -6201,9 +6257,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                     if (task.date === toKey(selectedDate)) loadSelectedDate();
                     renderGlobalTasks();
                 });
-                const rowActions = document.createElement("div");
-                rowActions.className = "task-row-actions";
-                if (canMoveTask) rowActions.append(tagsMeta, tags, schedule, noteButton, move, del);
+                const rowActions = document.createElement("div"); rowActions.className = "task-row-actions";
+                const edit = document.createElement("button"); edit.type = "button"; edit.className = "plain-btn mobile-task-edit"; edit.textContent = "Edit";
+                edit.title = `Edit task: ${task.text}`; edit.setAttribute("aria-label", edit.title); edit.addEventListener("click", openTaskTextEditor);
+                if (isMobileViewport()) rowActions.append(edit);
+                else if (canMoveTask) rowActions.append(tagsMeta, tags, schedule, noteButton, move, del);
                 else rowActions.append(tagsMeta, tags, schedule, noteButton, del);
                 if (canMoveTask) row.append(status, highlight, content, rowActions, moveMenu);
                 else row.append(status, highlight, content, rowActions);
