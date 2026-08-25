@@ -3937,10 +3937,58 @@ body.notes-focus-active .note-body {
   }
 }
 
-/* Printable FAST Today Card */
-.print-today-btn { display:none; }
+/* Today and Print card toolbar alignment */
 .print-today-sheet { display:none; }
-@media (min-width:760px) { .print-today-btn { display:inline-flex;min-height:28px;align-items:center;padding:4px 9px;border:1px solid #c9b96e;border-radius:9px;background:#fff8df;color:#604f17;font-weight:750;line-height:1;text-decoration:none!important; } .print-today-btn:hover,.print-today-btn:focus-visible{background:#fff2c2;border-color:#b7a653;color:#4f4014;text-decoration:none;} }
+#todayBtn,
+.print-today-btn {
+  display:inline-flex;
+  min-height:24px;
+  align-items:center;
+  justify-content:center;
+  margin:0;
+  padding:1px 0;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:var(--muted);
+  font-size:var(--font-sm);
+  font-weight:500;
+  line-height:1.25;
+  text-decoration:none;
+  vertical-align:middle;
+}
+#todayBtn:hover,
+#todayBtn:focus-visible,
+.print-today-btn:hover,
+.print-today-btn:focus-visible {
+  background:transparent;
+  color:var(--ink);
+  text-decoration:underline;
+}
+.toolbar .actions {
+  align-items:center;
+}
+@media (max-width:759px) {
+  body.mobile-section-active.mobile-view-plan .toolbar {
+    justify-content:flex-end;
+  }
+  body.mobile-section-active.mobile-view-plan .toolbar .hint {
+    display:none;
+  }
+  body.mobile-section-active.mobile-view-plan .toolbar .actions {
+    width:100%;
+    justify-content:flex-end;
+    align-items:center;
+    gap:10px;
+  }
+  body.mobile-section-active.mobile-view-plan #todayBtn,
+  body.mobile-section-active.mobile-view-plan .print-today-btn {
+    display:inline-flex!important;
+    min-height:30px;
+    padding:3px 1px;
+    font-size:12px;
+  }
+}
 @media print {
   @page { size:A5 portrait; margin:7mm; }
   html,body { width:auto!important;min-height:0!important;margin:0!important;padding:0!important;background:#fff!important;color:#222!important;display:block!important; }
