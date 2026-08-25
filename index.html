@@ -3824,13 +3824,20 @@ body.notes-focus-active .note-body {
 
 
 .task-archive-btn.active { background:var(--selected);border-color:var(--entry-border);color:var(--ink); }
-.task-archive-head { display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px;padding:7px 9px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:12px; }
-.task-archive-row { grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px; }
-.task-archive-text { color:var(--ink);font-size:13px;font-weight:650; }
+.task-archive-action-row { display:flex;justify-content:flex-end;margin:-2px 0 8px; }
+.task-archive-action-row .plain-btn { min-height:26px;padding:3px 6px;border:0;background:transparent;color:var(--muted);font-size:11px;text-decoration:none; }
+.task-archive-action-row .plain-btn:hover,.task-archive-action-row .plain-btn:focus-visible { color:var(--ink);background:transparent;text-decoration:underline; }
+.task-archive-head { display:grid;grid-template-columns:30px minmax(0,1fr);align-items:center;gap:7px;margin-bottom:9px;padding:7px 9px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:12px; }
+.task-archive-back { width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center; }
+.task-archive-card { display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:11px;background:#fff; }
+.task-archive-content { min-width:0; }
+.task-archive-text { color:var(--ink);font-size:13px;font-weight:650;line-height:1.35;overflow-wrap:anywhere; }
 .task-archive-meta { margin-top:3px;color:var(--muted);font-size:10.5px; }
-.task-archive-status { min-height:32px;max-width:125px;padding:4px 24px 4px 7px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font-size:11px; }
-.task-archive-delete { color:#8a4d45;font-size:11px; }
-@media (max-width:759px) { .task-archive-row { grid-template-columns:1fr;align-items:stretch; } .task-archive-status { max-width:none;width:100%; } .task-archive-delete { justify-self:end; } }
+.task-archive-note { display:block;max-width:100%;min-height:24px;margin-top:4px;padding:1px 0;border:0;background:transparent;color:#516f64;font-size:11px;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.task-archive-actions { display:flex;align-items:center;gap:7px; }
+.task-archive-status { box-sizing:border-box;min-height:32px;max-width:125px;padding:4px 24px 4px 7px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font-size:11px; }
+.task-archive-delete { min-height:30px;padding:3px 6px;border:0;background:transparent;color:#8a4d45;font-size:11px; }
+@media (max-width:759px) { .task-archive-action-row{justify-content:flex-start;margin-top:0}.task-archive-card{grid-template-columns:1fr;align-items:stretch}.task-archive-actions{justify-content:space-between}.task-archive-status{width:min(190px,70%);max-width:none}.task-archive-delete{margin-left:auto} }
 
 /* Locked simplified global Notes model */
 .mobile-notes-date,.notes-date-picker,#notesScopeDateBtn,#notesScopeAllBtn,#sortNotesBtn,#mobileNotesSortBtn { display:none!important; }
@@ -3958,10 +3965,11 @@ body.notes-focus-active .note-body {
       <div class="note-label-chips expanded-label-chips" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
-        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn" id="clearDoneTasksBtn" type="button">Archive completed tasks</button><button class="plain-btn icon-btn task-archive-btn" id="taskArchiveBtn" type="button" title="Open completed task archive" aria-label="Open completed task archive">▣</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
+        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn icon-btn task-archive-btn" id="taskArchiveBtn" type="button" title="Open completed task archive" aria-label="Open completed task archive">▣</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
         <div class="task-contexts" id="taskContexts"></div>
         <div class="task-filter-row" aria-label="Task tag filters"><span class="task-filter-label">Tags</span><div class="task-tag-filters" id="taskTagFilter" role="group" aria-label="Filter current task list by tag"></div></div>
-        <div class="task-archive-head" id="taskArchiveHead" hidden><strong>Completed Tasks Archive</strong><button class="plain-btn" id="closeTaskArchiveBtn" type="button">Back to tasks</button></div>
+        <div class="task-archive-action-row" id="taskArchiveActionRow"><button class="plain-btn" id="clearDoneTasksBtn" type="button">Archive completed tasks</button></div>
+        <div class="task-archive-head" id="taskArchiveHead" hidden><button class="plain-btn task-archive-back" id="closeTaskArchiveBtn" type="button" aria-label="Back to tasks">←</button><strong>Completed Tasks Archive</strong></div>
         <div class="task-list" id="globalTaskList"></div>
       </div>
       <div class="activity-panel" id="activityPanel" hidden>
@@ -4241,6 +4249,7 @@ body.notes-focus-active .note-body {
         const clearDoneTasksBtn = el("clearDoneTasksBtn");
         const taskArchiveBtn = el("taskArchiveBtn");
         const taskArchiveHead = el("taskArchiveHead");
+        const taskArchiveActionRow = el("taskArchiveActionRow");
         const closeTaskArchiveBtn = el("closeTaskArchiveBtn");
         const tasksFocusBtn = el("tasksFocusBtn");
         const activityPanel = el("activityPanel");
@@ -5735,19 +5744,44 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             taskArchiveHead.hidden = false;
             taskContexts.hidden = true;
             taskTagFilter.closest(".task-filter-row").hidden = true;
-            clearDoneTasksBtn.hidden = true;
-            taskArchiveBtn.classList.add("active");
+            taskArchiveActionRow.hidden = true;
+            taskArchiveBtn.hidden = true;
+            newTaskBtn.hidden = true;
             globalTaskList.innerHTML = "";
             archivedTasks.forEach(task => {
-                const row = document.createElement("div"); row.className = "task-row task-archive-row";
-                const content = document.createElement("div"); content.className = "task-content";
-                const text = document.createElement("div"); text.className = "task-archive-text"; text.textContent = task.text || "Task";
-                const meta = document.createElement("div"); meta.className = "task-archive-meta";
-                const archivedDate = new Date(task.archivedAt); meta.textContent = `${task.sourceContext} · Archived ${archivedDate.toLocaleDateString()}`;
-                const link = linkedNoteForTask(task); if (link) meta.textContent += ` · Note: ${link.note.title || "Untitled"}`;
-                content.append(text, meta);
-                const status = document.createElement("select"); status.className = "task-archive-status"; status.setAttribute("aria-label", `Reactivate ${task.text}`);
-                [{id:"completed",label:"Completed"},{id:"not-started",label:"Not started"},{id:"started",label:"Started"},{id:"waiting",label:"Waiting"}].forEach(item => { const option=document.createElement("option"); option.value=item.id; option.textContent=item.label; status.appendChild(option); });
+                const card = document.createElement("article");
+                card.className = "task-archive-card";
+                const content = document.createElement("div");
+                content.className = "task-archive-content";
+                const title = document.createElement("div");
+                title.className = "task-archive-text";
+                title.textContent = task.text || "Task";
+                const meta = document.createElement("div");
+                meta.className = "task-archive-meta";
+                const archivedDate = new Date(task.archivedAt);
+                meta.textContent = `${task.sourceContext} · Archived ${archivedDate.toLocaleDateString()}`;
+                content.append(title, meta);
+                const linkedNote = linkedNoteForTask(task);
+                if (linkedNote) {
+                    const noteButton = document.createElement("button");
+                    noteButton.type = "button";
+                    noteButton.className = "plain-btn task-archive-note";
+                    noteButton.textContent = `Note: ${linkedNote.note.title || "Untitled"}`;
+                    noteButton.addEventListener("click", () => {
+                        const targetDate = fromKey(linkedNote.link.dateKey);
+                        if (targetDate) { notesDate = targetDate; loadNotesForIndependentDate(); }
+                        setTimeout(() => openExpandedNote(linkedNote.note.id), 0);
+                    });
+                    content.appendChild(noteButton);
+                }
+                const actions = document.createElement("div");
+                actions.className = "task-archive-actions";
+                const status = document.createElement("select");
+                status.className = "task-archive-status";
+                status.setAttribute("aria-label", `Change status for ${task.text}`);
+                [{id:"completed",label:"Completed"},{id:"not-started",label:"Not started"},{id:"started",label:"Started"},{id:"waiting",label:"Waiting"}].forEach(item => {
+                    const option = document.createElement("option"); option.value = item.id; option.textContent = item.label; status.appendChild(option);
+                });
                 status.value = "completed";
                 status.addEventListener("change", () => {
                     if (status.value === "completed") return;
@@ -5755,11 +5789,22 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                     task.status = status.value; task.done = false; delete task.archivedAt; delete task.sourceContext;
                     globalTasks.Inbox.unshift(task); saveArchivedTasks(); saveTasks(); renderGlobalTasks();
                 });
-                const del = document.createElement("button"); del.type="button"; del.className="plain-btn task-archive-delete"; del.textContent="Delete permanently";
-                del.addEventListener("click", () => { if (!confirm("Permanently delete this archived task? The associated note will be kept.")) return; archivedTasks = archivedTasks.filter(item => item.id !== task.id); saveArchivedTasks(); renderGlobalTasks(); });
-                row.append(content, status, del); globalTaskList.appendChild(row);
+                const del = document.createElement("button");
+                del.type = "button";
+                del.className = "plain-btn task-archive-delete";
+                del.textContent = "Delete";
+                del.title = "Permanently delete task";
+                del.addEventListener("click", () => {
+                    if (!confirm("Permanently delete this archived task? The associated note will be kept.")) return;
+                    archivedTasks = archivedTasks.filter(item => item.id !== task.id); saveArchivedTasks(); renderGlobalTasks();
+                });
+                actions.append(status, del);
+                card.append(content, actions);
+                globalTaskList.appendChild(card);
             });
-            if (!archivedTasks.length) { const empty=document.createElement("div"); empty.className="task-empty"; empty.textContent="No archived tasks"; globalTaskList.appendChild(empty); }
+            if (!archivedTasks.length) {
+                const empty = document.createElement("div"); empty.className = "task-empty"; empty.textContent = "No archived tasks"; globalTaskList.appendChild(empty);
+            }
         }
         function openTaskArchive() { taskArchiveOpen = true; renderGlobalTasks(); }
         function closeTaskArchive() { taskArchiveOpen = false; renderGlobalTasks(); }
@@ -5768,7 +5813,9 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             taskArchiveHead.hidden = true;
             taskContexts.hidden = false;
             taskTagFilter.closest(".task-filter-row").hidden = false;
-            clearDoneTasksBtn.hidden = false;
+            taskArchiveActionRow.hidden = false;
+            taskArchiveBtn.hidden = false;
+            newTaskBtn.hidden = false;
             taskArchiveBtn.classList.remove("active");
             renderTaskContexts();
             updateTaskTagFilter();
