@@ -4059,6 +4059,80 @@ body.notes-focus-active .note-body {
 #noteModal:has(#globalTasksPanel.open) .mobile-task-edit:hover,#noteModal:has(#globalTasksPanel.open) .mobile-task-edit:focus-visible{color:var(--ink);background:var(--soft);text-decoration:none;}
 .task-editor-mobile-controls{display:grid;grid-template-columns:1fr;gap:9px;margin-top:1px;}.task-editor-mobile-controls>div{display:grid;gap:5px;}.task-editor-highlight-option{min-height:34px;display:flex;align-items:center;gap:8px;color:var(--ink)!important;font-weight:650!important;}.task-editor-highlight-option input{width:17px;height:17px;margin:0;accent-color:#c9b96e;}
 }
+
+/* Mobile Task refinements and Event card metadata layout */
+.task-archive-completed-btn {
+  white-space: nowrap;
+}
+.event-row-open {
+  grid-template-rows: auto auto;
+}
+.event-row-title {
+  display: block;
+  min-width: 0;
+}
+.event-when {
+  min-width: 0;
+  color: var(--muted);
+  font-size: 10.5px;
+}
+.event-date-secondary {
+  color: var(--muted);
+}
+@media (max-width: 759px) {
+  #noteModal:has(#globalTasksPanel.open) .task-context-btn {
+    gap: 0;
+  }
+  #noteModal:has(#globalTasksPanel.open) .task-context-count {
+    display: none !important;
+  }
+  #noteModal:has(#globalTasksPanel.open) .mobile-task-section-heading {
+    justify-content: flex-start;
+  }
+  #noteModal:has(#globalTasksPanel.open) .mobile-task-section-heading span:last-child {
+    display: none !important;
+  }
+  #noteModal:has(#globalTasksPanel.open) .task-text {
+    height: auto !important;
+    max-height: none !important;
+    overflow: hidden !important;
+  }
+  #noteModal:has(#globalTasksPanel.open) .mobile-task-edit {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    min-height: 30px;
+    padding: 0;
+    border-radius: 8px;
+    font-size: 16px;
+    line-height: 1;
+  }
+  #noteModal:has(#globalTasksPanel.open) .tasks-toolbar .workspace-panel-actions {
+    gap: 4px;
+  }
+  #noteModal:has(#globalTasksPanel.open) .task-archive-completed-btn {
+    min-height: 30px;
+    padding: 4px 7px;
+    font-size: 9.5px;
+  }
+  #noteModal:has(#eventsPanel.open) .event-row-open {
+    gap: 3px;
+  }
+  #noteModal:has(#eventsPanel.open) .event-row-title {
+    width: 100%;
+    font-size: 13px;
+    line-height: 1.3;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  #noteModal:has(#eventsPanel.open) .event-when {
+    display: flex;
+    gap: 7px;
+    font-size: 10.5px;
+    line-height: 1.2;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4186,10 +4260,9 @@ body.notes-focus-active .note-body {
       <div class="note-label-chips expanded-label-chips" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
-        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn icon-btn task-archive-btn" id="taskArchiveBtn" type="button" title="Open completed task archive" aria-label="Open completed task archive">▣</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
+        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn task-archive-completed-btn" id="clearDoneTasksBtn" type="button">Archive completed tasks</button><button class="plain-btn icon-btn task-archive-btn" id="taskArchiveBtn" type="button" title="Open completed task archive" aria-label="Open completed task archive">▣</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
         <div class="task-contexts" id="taskContexts"></div>
         <div class="task-filter-row" aria-label="Task tag filters"><span class="task-filter-label">Tags</span><div class="task-tag-filters" id="taskTagFilter" role="group" aria-label="Filter current task list by tag"></div></div>
-        <div class="task-archive-action-row" id="taskArchiveActionRow"><button class="plain-btn" id="clearDoneTasksBtn" type="button">Archive completed tasks</button></div>
         <div class="task-archive-head" id="taskArchiveHead" hidden><button class="plain-btn task-archive-back" id="closeTaskArchiveBtn" type="button" aria-label="Back to tasks">←</button><strong>Completed Tasks Archive</strong></div>
         <div class="task-list" id="globalTaskList"></div>
       </div>
@@ -4479,7 +4552,6 @@ body.notes-focus-active .note-body {
         const clearDoneTasksBtn = el("clearDoneTasksBtn");
         const taskArchiveBtn = el("taskArchiveBtn");
         const taskArchiveHead = el("taskArchiveHead");
-        const taskArchiveActionRow = el("taskArchiveActionRow");
         const closeTaskArchiveBtn = el("closeTaskArchiveBtn");
         const tasksFocusBtn = el("tasksFocusBtn");
         const activityPanel = el("activityPanel");
@@ -5315,7 +5387,7 @@ body.notes-focus-active .note-body {
             const selectedEvents = eventsForDate(selectedKey);
             eventsStripList.innerHTML = "";
             eventsStrip.classList.toggle("has-events", selectedEvents.length > 0);
-            eventsStripTitle.textContent = `Events (${selectedEvents.length})`;
+            eventsStripTitle.textContent = "Events";
             selectedEvents.forEach(event => {
                 const item = document.createElement("span");
                 item.className = "event-strip-item";
@@ -5372,12 +5444,13 @@ body.notes-focus-active .note-body {
             time.className = "event-time-primary";
             time.textContent = event.time ? eventTimeLabel(event) : "All day";
             const dateLabel = document.createElement("span");
+            dateLabel.className = "event-date-secondary";
             dateLabel.textContent = dateText;
             when.append(time, dateLabel);
             const title = document.createElement("span");
             title.className = "event-row-title";
             title.textContent = `${event.title}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
-            open.append(when, title);
+            open.append(title, when);
             open.addEventListener("click", () => openEventEditor(event.id));
             row.append(highlight, open);
             return row;
@@ -5406,7 +5479,7 @@ body.notes-focus-active .note-body {
                 section.className = "event-group";
                 const heading = document.createElement("div");
                 heading.className = "event-group-title";
-                heading.textContent = `${label} (${items.length})`;
+                heading.textContent = label;
                 const list = document.createElement("div");
                 list.className = "event-list";
                 if (!items.length) {
@@ -5421,7 +5494,7 @@ body.notes-focus-active .note-body {
                 section.append(heading, list);
                 eventsList.appendChild(section);
             });
-            eventsTitle.textContent = `Events (${windowEvents.filter(event => eventPhase(event) !== "past" || showPastEvents).length})`;
+            eventsTitle.textContent = "Events";
             eventsPastBtn.textContent = showPastEvents ? "Hide past" : "Show past";
             eventsPastBtn.setAttribute("aria-expanded", String(showPastEvents));
         }
@@ -5971,9 +6044,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 button.type = "button";
                 button.className = "task-context-btn";
                 const label = document.createElement("span"); label.textContent = context;
-                const count = document.createElement("span"); count.className = "task-context-count";
-                count.textContent = String((globalTasks[context] || []).filter(task => !task.done).length);
-                button.append(label, count);
+                button.append(label);
                 button.classList.toggle("active", context === activeTaskContext);
                 button.addEventListener("click", () => setActiveTaskContext(context));
                 taskContexts.appendChild(button);
@@ -6034,7 +6105,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             taskArchiveHead.hidden = false;
             taskContexts.hidden = true;
             taskTagFilter.closest(".task-filter-row").hidden = true;
-            taskArchiveActionRow.hidden = true;
+            clearDoneTasksBtn.hidden = true;
             taskArchiveBtn.hidden = true;
             newTaskBtn.hidden = true;
             globalTaskList.innerHTML = "";
@@ -6105,18 +6176,17 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             if (task.date === todayKey) return "Due Today";
             return "Upcoming";
         }
-        function appendMobileTaskSectionHeading(label, count) {
+        function appendMobileTaskSectionHeading(label) {
             const heading = document.createElement("div"); heading.className = "mobile-task-section-heading";
-            const title = document.createElement("span"); title.textContent = label;
-            const badge = document.createElement("span"); badge.textContent = String(count);
-            heading.append(title, badge); globalTaskList.appendChild(heading);
+            heading.textContent = label;
+            globalTaskList.appendChild(heading);
         }
         function renderGlobalTasks() {
             if (taskArchiveOpen) { renderTaskArchive(); return; }
             taskArchiveHead.hidden = true;
             taskContexts.hidden = false;
             taskTagFilter.closest(".task-filter-row").hidden = false;
-            taskArchiveActionRow.hidden = false;
+            clearDoneTasksBtn.hidden = false;
             taskArchiveBtn.hidden = false;
             newTaskBtn.hidden = false;
             taskArchiveBtn.classList.remove("active");
@@ -6132,7 +6202,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 });
             }
             renderQueue.forEach(({ task, section, sectionCount }) => {
-                if (section) appendMobileTaskSectionHeading(section, sectionCount);
+                if (section) appendMobileTaskSectionHeading(section);
                 const row = document.createElement("div");
                 row.className = "task-row";
                 row.tabIndex = 0;
@@ -6258,7 +6328,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                     renderGlobalTasks();
                 });
                 const rowActions = document.createElement("div"); rowActions.className = "task-row-actions";
-                const edit = document.createElement("button"); edit.type = "button"; edit.className = "plain-btn mobile-task-edit"; edit.textContent = "Edit";
+                const edit = document.createElement("button"); edit.type = "button"; edit.className = "plain-btn mobile-task-edit"; edit.textContent = "✎";
                 edit.title = `Edit task: ${task.text}`; edit.setAttribute("aria-label", edit.title); edit.addEventListener("click", openTaskTextEditor);
                 if (isMobileViewport()) rowActions.append(edit);
                 else if (canMoveTask) rowActions.append(tagsMeta, tags, schedule, noteButton, move, del);
