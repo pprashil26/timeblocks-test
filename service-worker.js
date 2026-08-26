@@ -1,4 +1,4 @@
-const CACHE_NAME = "fast-gtd-shell-v16";
+const CACHE_NAME = "fast-gtd-shell-v17";
 const APP_SHELL = [
   "./",
   "./index.html",
