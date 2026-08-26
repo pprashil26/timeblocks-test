@@ -57,6 +57,23 @@
       --font-title: 18px;
     }
     * { box-sizing: border-box; }
+    :root {
+      --control-height: 32px;
+      --control-radius: 10px;
+      --control-gap: 8px;
+    }
+
+    button, input, select {
+      min-height: var(--control-height);
+    }
+
+    .plain-btn, .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--control-radius);
+    }
+
 
     /* Safety: honour hidden attributes even when component display rules are defined later */
     [hidden] {
@@ -3256,13 +3273,8 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   textarea[data-time].planner-empty-slot { cursor: pointer; }
   textarea[data-time].planner-empty-slot:hover, textarea[data-time].planner-empty-slot:focus { background: var(--soft); outline: 2px solid rgba(123,146,133,.30); outline-offset: -2px; }
 }
+@media (max-width: 759px) { #plannerCreateModal { display: none !important; } }
 
-
-@media (max-width: 759px) {
-  #plannerCreateModal .planner-create-panel { width: min(94vw, 360px); }
-  textarea[data-time].planner-empty-slot { cursor: pointer; }
-  textarea[data-time].planner-empty-slot:focus { outline: 2px solid rgba(123,146,133,.30); outline-offset: -2px; }
-}
 
 /* Desktop-only minimal-colour workspace refinement */
 @media (min-width: 760px) {
@@ -5993,6 +6005,7 @@ body.notes-focus-active .note-body {
             }, 0);
         }
         function openPlannerCreate(timeId) {
+            if (isMobileViewport()) return;
             plannerCreateTime = timeId;
             plannerCreateType.value = "task";
             plannerCreateText.value = "";
@@ -7335,34 +7348,12 @@ ${body}` : title };
                 save();
                 clearDropClasses();
             });
-            if (!linkedEvent && !linkedTask && !linkedActivity) {
-                if (isMobileViewport()) {
-                    box.readOnly = true;
-                    box.title = box.value.trim() ? "Planner entry" : "Add to Planner";
-                    box.setAttribute("aria-label", box.title);
-                }
-                if (!box.value.trim()) {
-                    box.classList.add("planner-empty-slot");
-                    box.addEventListener("focus", () => {
-                        if (!box.value.trim()) {
-                            box.blur();
-                            openPlannerCreate(timeId);
-                        }
-                    });
-                    box.addEventListener("click", event => {
-                        if (!box.value.trim()) {
-                            event.preventDefault();
-                            openPlannerCreate(timeId);
-                        }
-                    });
-                }
+            if (!linkedEvent && !linkedTask && !linkedActivity && !box.value.trim()) {
+                box.classList.add("planner-empty-slot");
+                box.addEventListener("focus", () => { if (!isMobileViewport() && !box.value.trim()) { box.blur(); openPlannerCreate(timeId); } });
+                box.addEventListener("click", () => { if (!isMobileViewport() && !box.value.trim()) openPlannerCreate(timeId); });
             }
-            box.addEventListener("input", () => {
-                if (isMobileViewport() && !linkedEvent && !linkedTask && !linkedActivity) return;
-                autoGrow(box);
-                box.classList.toggle("planner-empty-slot", !box.value.trim());
-                save();
-            });
+            box.addEventListener("input", () => { autoGrow(box); box.classList.toggle("planner-empty-slot", !isMobileViewport() && !box.value.trim()); save(); });
             box.addEventListener("keydown", event => {
                 if (event.defaultPrevented || (box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock") || box.classList.contains("activity-timeblock"))) return;
                 if (event.key === "Enter" && !event.shiftKey) {
