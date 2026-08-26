@@ -278,7 +278,7 @@
       .sidebar, .notes-sidebar, .app { width: 100%; border-radius: 14px; }
       body.mobile-section-active.mobile-view-plan .sidebar, body.mobile-section-active.mobile-view-plan .notes-sidebar, body.mobile-section-active.mobile-view-calendar .notes-sidebar, body.mobile-section-active.mobile-view-notes .sidebar, body.mobile-section-active.mobile-view-notes .app { display: none; }
       body.mobile-section-active.mobile-view-notes .mobile-notes-date { display: block; }
-      body.mobile-section-active.mobile-view-calendar #calendarWrap { height: 360px !important; max-height: 360px !important; overflow-y: auto !important; }
+      body.mobile-section-active.mobile-view-calendar #calendarWrap { overflow-y: auto !important; }
       .calendar-wrap { max-height: 45vh; }
       .timeline { padding: 6px 10px; }
       .time-pair-row { grid-template-columns: 1fr; border-bottom: 0; }
@@ -4154,6 +4154,11 @@ body.notes-focus-active .note-body {
 }
 
 
+
+@media (max-width: 759px) {
+  #calendarRangeBtn { display:none !important; }
+}
+
 /* Mobile Task title expansion and top editor actions */
 @media (max-width: 759px) {
   #noteModal:has(#globalTasksPanel.open) .task-content {
@@ -6424,8 +6429,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             if (!isMobileViewport())
                 return;
             requestAnimationFrame(() => {
-                const todayButton = calendarWrap.querySelector(`.day-btn[data-date="${toKey(getToday())}"]`);
-                const currentMonth = todayButton ? todayButton.closest(".month") : calendarWrap.querySelector(".month");
+                const currentMonthName = monthName(getToday());
+                const currentMonth = Array.from(calendarWrap.querySelectorAll(".month")).find(month => {
+                    const heading = month.querySelector(".month-name");
+                    return heading && heading.textContent === currentMonthName;
+                }) || calendarWrap.querySelector(".month");
                 if (!currentMonth)
                     return;
                 const nextMonth = currentMonth.nextElementSibling && currentMonth.nextElementSibling.classList.contains("month") ? currentMonth.nextElementSibling : null;
