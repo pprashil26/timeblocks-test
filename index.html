@@ -4201,6 +4201,45 @@ body.notes-focus-active .note-body {
     overflow-y: auto;
   }
 }
+
+
+/* Compact optional Next Actions for Tasks and Events */
+.next-action-line {
+  display: block;
+  min-width: 0;
+  margin-top: 1px;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.task-next-action { color: #6b716c; }
+.event-next-action { color: #66756f; }
+.event-strip-open,
+.event-row-open { min-width: 0; }
+.event-strip-open {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 6px;
+  row-gap: 1px;
+  text-align: left;
+}
+.event-strip-title-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.event-strip-open .event-next-action {
+  grid-column: 2;
+  width: 100%;
+  margin-top: 0;
+}
+@media (max-width: 759px) {
+  .next-action-line { font-size: 10px; }
+}
 </style>
 </head>
 <body>
@@ -4369,6 +4408,7 @@ body.notes-focus-active .note-body {
       <div class="event-editor-head"><p class="event-editor-title" id="eventEditorTitle">New Event</p><button class="plain-btn" id="closeEventBtn" type="button">Close</button></div>
       <div class="event-editor-body">
         <label for="eventTitleInput">Event</label><input id="eventTitleInput" type="text" maxlength="120" placeholder="Event title" autocomplete="off" />
+        <label for="eventNextActionInput">Next action <span class="event-optional">optional</span></label><input id="eventNextActionInput" type="text" maxlength="160" placeholder="What is the very next action?" autocomplete="off" />
         <label class="event-highlight-option" for="eventHighlightInput"><input id="eventHighlightInput" type="checkbox" /> Highlight this event</label>
         <label for="eventTagInput">Tag <span class="event-optional">optional</span></label><input id="eventTagInput" type="text" maxlength="40" list="eventTagSuggestions" placeholder="Work, Family, Health..." autocomplete="off" /><datalist id="eventTagSuggestions"></datalist>
         <div class="event-editor-grid"><div class="event-editor-field"><label for="eventDateInput">Date</label><input id="eventDateInput" type="date" /></div><div class="event-editor-field"><label for="eventTimeInput">Time <span class="event-optional">optional</span></label><input id="eventTimeInput" type="time" /></div></div>
@@ -4387,6 +4427,7 @@ body.notes-focus-active .note-body {
       <div class="task-editor-head"><p class="task-editor-title" id="taskEditorTitle">Edit Task</p><button class="plain-btn" id="closeTaskEditorBtn" type="button">Close</button></div>
       <div class="task-editor-body">
         <label for="taskEditorText">Task</label><input id="taskEditorText" type="text" maxlength="240" autocomplete="off" />
+        <label for="taskEditorNextAction">Next action <span class="event-optional">optional</span></label><input id="taskEditorNextAction" type="text" maxlength="160" placeholder="What is the very next action?" autocomplete="off" />
         <label for="taskEditorContext">List</label><select id="taskEditorContext"></select>
         <div class="task-editor-mobile-controls"><div><label for="taskEditorStatus">Status</label><select id="taskEditorStatus"></select></div><label class="task-editor-highlight-option" for="taskEditorHighlight"><input id="taskEditorHighlight" type="checkbox" /> Highlight this task</label></div>
         <label for="taskEditorTags">Tags <span class="event-optional">optional</span></label><input id="taskEditorTags" type="text" maxlength="240" list="taskTagSuggestions" placeholder="Work, Home, Waiting..." autocomplete="off" /><datalist id="taskTagSuggestions"></datalist><div class="task-editor-tags-help">Separate multiple tags with commas. Task tags are independent from Note labels.</div>
@@ -4593,6 +4634,7 @@ body.notes-focus-active .note-body {
         const taskModal = el("taskModal");
         const taskEditorTitle = el("taskEditorTitle");
         const taskEditorText = el("taskEditorText");
+        const taskEditorNextAction = el("taskEditorNextAction");
         const taskEditorContext = el("taskEditorContext");
         const taskEditorStatus = el("taskEditorStatus");
         const taskEditorHighlight = el("taskEditorHighlight");
@@ -4636,6 +4678,7 @@ body.notes-focus-active .note-body {
         const eventModal = el("eventModal");
         const eventEditorTitle = el("eventEditorTitle");
         const eventTitleInput = el("eventTitleInput");
+        const eventNextActionInput = el("eventNextActionInput");
         const eventTagInput = el("eventTagInput");
         const eventHighlightInput = el("eventHighlightInput");
         const eventTagSuggestions = el("eventTagSuggestions");
@@ -4899,6 +4942,7 @@ body.notes-focus-active .note-body {
             if (!Array.isArray(raw)) return [];
             return raw.map(item => ({
                 id: item.id || createId("event"), title: typeof item.title === "string" ? item.title.trim() : "",
+                nextAction: typeof item.nextAction === "string" ? item.nextAction.trim().slice(0,160) : "",
                 tag: typeof item.tag === "string" ? item.tag.trim().slice(0,40) : "",
                 highlighted: Boolean(item.highlighted),
                 date: fromKey(item.date) ? item.date : toKey(getToday()),
@@ -5076,6 +5120,7 @@ body.notes-focus-active .note-body {
             const previous = { ...found.task };
             removeLinkedTaskTimeblock(previous);
             found.task.text = text;
+            found.task.nextAction = taskEditorNextAction.value.trim().slice(0,160);
             found.task.tags = normalizeTaskTags(taskEditorTags.value.split(","));
             found.task.status = taskEditorStatus.value; found.task.done = found.task.status === "completed"; found.task.highlighted = taskEditorHighlight.checked;
             found.task.date = date;
@@ -5343,7 +5388,7 @@ body.notes-focus-active .note-body {
             if (!found) return;
             editingTaskId = found.task.id; editingTaskContext = found.context; taskEditorFocusTarget = focusTarget;
             taskEditorTitle.textContent = "Edit Task";
-            taskEditorText.value = found.task.text; populateTaskEditorLists(found.context); populateTaskEditorStatus(found.task.status); taskEditorHighlight.checked = Boolean(found.task.highlighted);
+            taskEditorText.value = found.task.text; taskEditorNextAction.value = found.task.nextAction || ""; populateTaskEditorLists(found.context); populateTaskEditorStatus(found.task.status); taskEditorHighlight.checked = Boolean(found.task.highlighted);
             taskEditorTags.value = normalizeTaskTags(found.task.tags).join(", "); updateTaskTagSuggestions();
             taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = found.task.date || ""; taskEditorTime.value = found.task.time || "";
             deleteTaskEditorBtn.hidden = false;
@@ -5354,7 +5399,7 @@ body.notes-focus-active .note-body {
         function openNewTaskEditor(context = activeTaskContext, focusTarget = "text") {
             editingTaskId = null; editingTaskContext = TASK_CONTEXTS.includes(context) ? context : "Inbox"; taskEditorFocusTarget = focusTarget;
             taskEditorTitle.textContent = "New Task";
-            taskEditorText.value = ""; populateTaskEditorLists(editingTaskContext); populateTaskEditorStatus("not-started"); taskEditorHighlight.checked = false;
+            taskEditorText.value = ""; taskEditorNextAction.value = ""; populateTaskEditorLists(editingTaskContext); populateTaskEditorStatus("not-started"); taskEditorHighlight.checked = false;
             taskEditorTags.value = ""; updateTaskTagSuggestions();
             taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = ""; taskEditorTime.value = "";
             deleteTaskEditorBtn.hidden = true;
@@ -5369,6 +5414,7 @@ body.notes-focus-active .note-body {
             editingTaskContext = found.context;
             taskEditorTitle.textContent = "Copy Task";
             taskEditorText.value = found.task.text;
+            taskEditorNextAction.value = found.task.nextAction || "";
             populateTaskEditorLists(found.context);
             populateTaskEditorStatus(found.task.status);
             taskEditorHighlight.checked = Boolean(found.task.highlighted);
@@ -5406,7 +5452,7 @@ body.notes-focus-active .note-body {
             if (time && !date) { alert("Please select a date for the task time."); return; }
             const targetContext = TASK_CONTEXTS.includes(taskEditorContext.value) ? taskEditorContext.value : (editingTaskContext || activeTaskContext);
             if (!editingTaskId) {
-                const task = { id: createId("task"), text, status: taskEditorStatus.value, done: taskEditorStatus.value === "completed", highlighted: taskEditorHighlight.checked, tags: normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null, createdAt: new Date().toISOString() };
+                const task = { id: createId("task"), text, nextAction: taskEditorNextAction.value.trim().slice(0,160), status: taskEditorStatus.value, done: taskEditorStatus.value === "completed", highlighted: taskEditorHighlight.checked, tags: normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null, createdAt: new Date().toISOString() };
                 globalTasks[targetContext].unshift(task); activeTaskContext = targetContext; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, targetContext);
                 saveTasks(); populateTaskTimeblock(task); renderGlobalTasks();
                 if (isMobileViewport() && mobileTaskCaptureReturnHome) {
@@ -5428,7 +5474,7 @@ body.notes-focus-active .note-body {
             }
             const found = findTaskLocation(editingTaskId); if (!found) return closeTaskEditor();
             const previous = { ...found.task }; removeLinkedTaskTimeblock(previous);
-            found.task.text = text; found.task.tags = normalizeTaskTags(taskEditorTags.value.split(",")); found.task.status = taskEditorStatus.value; found.task.done = found.task.status === "completed"; found.task.highlighted = taskEditorHighlight.checked; found.task.date = date; found.task.time = time;
+            found.task.text = text; found.task.nextAction = taskEditorNextAction.value.trim().slice(0,160); found.task.tags = normalizeTaskTags(taskEditorTags.value.split(",")); found.task.status = taskEditorStatus.value; found.task.done = found.task.status === "completed"; found.task.highlighted = taskEditorHighlight.checked; found.task.date = date; found.task.time = time;
             if (targetContext !== found.context) { globalTasks[found.context] = globalTasks[found.context].filter(item => item.id !== found.task.id); globalTasks[targetContext].unshift(found.task); activeTaskContext = targetContext; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, targetContext); }
             saveTasks(); populateTaskTimeblock(found.task); closeTaskEditor(); renderGlobalTasks();
             if (toKey(selectedDate) === previous.date || toKey(selectedDate) === found.task.date) loadSelectedDate();
@@ -5473,8 +5519,16 @@ body.notes-focus-active .note-body {
                 time.className = "event-strip-time";
                 time.textContent = event.time ? eventTimeLabel(event) : "All day";
                 const title = document.createElement("span");
+                title.className = "event-strip-title-text";
                 title.textContent = `${event.title}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
                 open.append(time, title);
+                if (event.nextAction) {
+                    const nextAction = document.createElement("span");
+                    nextAction.className = "next-action-line event-next-action";
+                    nextAction.textContent = `↳ ${event.nextAction}`;
+                    nextAction.title = `Next action: ${event.nextAction}`;
+                    open.appendChild(nextAction);
+                }
                 open.title = `Edit ${event.title}`;
                 open.addEventListener("click", () => openEventEditor(event.id));
                 item.append(highlight, open);
@@ -5516,7 +5570,15 @@ body.notes-focus-active .note-body {
             const title = document.createElement("span");
             title.className = "event-row-title";
             title.textContent = `${event.title}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
-            open.append(title, when);
+            open.append(title);
+            if (event.nextAction) {
+                const nextAction = document.createElement("span");
+                nextAction.className = "next-action-line event-next-action";
+                nextAction.textContent = `↳ ${event.nextAction}`;
+                nextAction.title = `Next action: ${event.nextAction}`;
+                open.appendChild(nextAction);
+            }
+            open.appendChild(when);
             open.addEventListener("click", () => openEventEditor(event.id));
             row.append(highlight, open);
             return row;
@@ -5584,7 +5646,7 @@ body.notes-focus-active .note-body {
             if(eventId&&eventId.includes("@")){const [masterId,dateKey]=eventId.split("@");const master=events.find(item=>item.id===masterId);if(master){event=eventForOccurrence(master,dateKey);occurrenceDate=dateKey;}}
             else event=eventId?events.find(item=>item.id===eventId):null;
             editingEventId=event?event.id:null;editingEventOccurrenceDate=occurrenceDate;
-            eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventTagInput.value=event?event.tag||"":"";eventHighlightInput.checked=Boolean(event&&event.highlighted);eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
+            eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventNextActionInput.value=event?event.nextAction||"":"";eventTagInput.value=event?event.tag||"":"";eventHighlightInput.checked=Boolean(event&&event.highlighted);eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
             const duration=event?event.durationMinutes||30:30;eventDurationInput.value=[30,60,90,120,150,180].includes(duration)?String(duration):"custom";eventCustomDurationInput.value=String(duration);
             const master=event&&event.seriesId?events.find(item=>item.id===event.seriesId):event;const rule=master&&master.recurrence?master.recurrence:null;eventRepeatInput.value=rule?rule.type:"none";eventRepeatIntervalInput.value=String(rule?rule.interval:1);eventRepeatUnitInput.value=rule?rule.unit:"week";eventRepeatEndInput.value=rule?rule.endType:"never";eventRepeatEndValue.value=rule?(rule.endType==="date"?rule.endDate:String(rule.count)):"";renderEventWeekdays(rule?rule.weekdays:[]);
             deleteEventBtn.hidden=!event;copyEventBtn.hidden=!event;eventSeriesScope.hidden=!(event&&(event.seriesId||event.recurrence));eventSeriesScopeInput.value="this";updateEventEditorOptions();updateEventNoteControls();eventModal.classList.add("open");eventModal.setAttribute("aria-hidden","false");setTimeout(()=>eventTitleInput.focus(),0);
@@ -5622,13 +5684,13 @@ body.notes-focus-active .note-body {
         function saveEventFromEditor(){
             const title=eventTitleInput.value.trim(),date=eventDateInput.value;if(!title){alert("Please enter an event title.");eventTitleInput.focus();return;}if(!fromKey(date)||!isWithinRange(fromKey(date))){alert("Please select a valid event date.");return;}
             const currentNoteLink=editingEventRecord()?normalizeTaskNoteLink(editingEventRecord().noteLink):null;
-            const draft={title,tag:eventTagInput.value.trim().slice(0,40),highlighted:eventHighlightInput.checked,date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor(),noteLink:currentNoteLink};
+            const draft={title,nextAction:eventNextActionInput.value.trim().slice(0,160),tag:eventTagInput.value.trim().slice(0,40),highlighted:eventHighlightInput.checked,date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor(),noteLink:currentNoteLink};
             const isNewEvent=!editingEventId;
             let savedEvent=null,previousSnapshot=null;
             if(editingEventId&&editingEventId.includes("@")){
                 const [seriesId,originalDate]=editingEventId.split("@");const master=events.find(item=>item.id===seriesId);if(!master)return;const scope=eventSeriesScopeInput.value;
                 if(scope==="this"){removeLinkedEventTimeblock(eventForOccurrence(master,originalDate));events=events.filter(item=>!(item.seriesId===seriesId&&item.originalDate===originalDate));savedEvent={id:createId("event"),...draft,recurrence:null,seriesId,originalDate,cancelled:false,createdAt:new Date().toISOString()};events.push(savedEvent);}
-                else if(scope==="all"){removeSeriesPlannerLinks(seriesId);master.title=draft.title;master.tag=draft.tag;master.time=draft.time;master.durationMinutes=draft.durationMinutes;master.recurrence=draft.recurrence||master.recurrence;savedEvent=eventForOccurrence(master,originalDate);}
+                else if(scope==="all"){removeSeriesPlannerLinks(seriesId);master.title=draft.title;master.nextAction=draft.nextAction;master.tag=draft.tag;master.time=draft.time;master.durationMinutes=draft.durationMinutes;master.recurrence=draft.recurrence||master.recurrence;savedEvent=eventForOccurrence(master,originalDate);}
                 else {removeSeriesPlannerLinks(seriesId,d=>d>=originalDate);if(master.recurrence){master.recurrence.endType="date";const before=fromKey(originalDate);before.setDate(before.getDate()-1);master.recurrence.endDate=toKey(before);}savedEvent={id:createId("event"),...draft,createdAt:new Date().toISOString(),seriesId:"",originalDate:"",cancelled:false};events.push(savedEvent);}
             } else if(editingEventId){
                 const current=events.find(item=>item.id===editingEventId);if(!current)return;previousSnapshot={...current};removeLinkedEventTimeblock(previousSnapshot);Object.assign(current,draft);savedEvent=current;
@@ -6033,12 +6095,13 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
         function normalizeTask(task) {
             const status = TASK_STATUSES.some(item => item.id === task.status) ? task.status : (task.done ? "completed" : "not-started");
             const createdAt = task.createdAt && !Number.isNaN(new Date(task.createdAt).getTime()) ? task.createdAt : "";
-            return { id: task.id || createId("task"), text: task.text || "", status, done: status === "completed", highlighted: Boolean(task.highlighted), tags: normalizeTaskTags(task.tags), date: fromKey(task.date) ? task.date : "", time: /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "", noteLink: normalizeTaskNoteLink(task.noteLink), createdAt };
+            return { id: task.id || createId("task"), text: task.text || "", nextAction: typeof task.nextAction === "string" ? task.nextAction.trim().slice(0,160) : "", status, done: status === "completed", highlighted: Boolean(task.highlighted), tags: normalizeTaskTags(task.tags), date: fromKey(task.date) ? task.date : "", time: /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "", noteLink: normalizeTaskNoteLink(task.noteLink), createdAt };
         }
         function orderTasks(taskList) {
             const list = (taskList || []).map((task, index) => {
                 if (!task.id) task.id = createId("task");
                 if (typeof task.text !== "string") task.text = "";
+                task.nextAction = typeof task.nextAction === "string" ? task.nextAction.trim().slice(0,160) : "";
                 task.status = TASK_STATUSES.some(item => item.id === task.status) ? task.status : (task.done ? "completed" : "not-started");
                 task.done = task.status === "completed";
                 task.highlighted = Boolean(task.highlighted);
@@ -6300,6 +6363,13 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 const content = document.createElement("div");
                 content.className = "task-content";
                 content.appendChild(text);
+                if (task.nextAction) {
+                    const nextAction = document.createElement("div");
+                    nextAction.className = "next-action-line task-next-action";
+                    nextAction.textContent = `↳ ${task.nextAction}`;
+                    nextAction.title = `Next action: ${task.nextAction}`;
+                    content.appendChild(nextAction);
+                }
                 const taskTags = normalizeTaskTags(task.tags);
                 const tagsMeta = document.createElement("div"); tagsMeta.className = "task-tags-meta";
                 taskTags.slice(0, 2).forEach(tag => { const chip = document.createElement("span"); chip.className = "task-tag-chip"; chip.textContent = tag; tagsMeta.appendChild(chip); });
