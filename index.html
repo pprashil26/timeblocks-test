@@ -4205,6 +4205,33 @@ body.notes-focus-active .note-body {
 
 
 
+
+
+/* Mobile capture-first New Event form */
+.event-capture-more-btn { display: none; }
+@media (max-width: 759px) {
+  #eventModal.mobile-new-event-capture .event-capture-more-btn {
+    display: flex;
+    width: 100%;
+    min-height: 34px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 9px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--panel);
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 650;
+  }
+  #eventModal.mobile-new-event-capture .event-capture-advanced { display: none !important; }
+  #eventModal.mobile-new-event-capture.mobile-event-capture-more-open .event-capture-advanced:not([hidden]) { display: grid !important; }
+  #eventModal.mobile-new-event-capture .event-capture-advanced[hidden] { display: none !important; }
+  #eventModal.mobile-new-event-capture .event-highlight-option.event-capture-advanced { display: flex !important; }
+  #eventModal.mobile-new-event-capture:not(.mobile-event-capture-more-open) .event-highlight-option.event-capture-advanced { display: none !important; }
+  #eventModal.mobile-new-event-capture .event-editor-body { gap: 6px; }
+}
+
 /* Mobile capture-first New Task form */
 .task-capture-more-btn { display: none; }
 .capture-toast {
@@ -4455,13 +4482,14 @@ body.notes-focus-active .note-body {
       <div class="event-editor-body">
         <label for="eventTitleInput">Event</label><input id="eventTitleInput" type="text" maxlength="120" placeholder="Event title" autocomplete="off" />
         <label for="eventNextActionInput">Next action <span class="event-optional">optional</span></label><input id="eventNextActionInput" type="text" maxlength="160" placeholder="What is the very next action?" autocomplete="off" />
-        <label class="event-highlight-option" for="eventHighlightInput"><input id="eventHighlightInput" type="checkbox" /> Highlight this event</label>
-        <label for="eventTagInput">Tag <span class="event-optional">optional</span></label><input id="eventTagInput" type="text" maxlength="40" list="eventTagSuggestions" placeholder="Work, Family, Health..." autocomplete="off" /><datalist id="eventTagSuggestions"></datalist>
+        <label class="event-highlight-option event-capture-advanced" for="eventHighlightInput"><input id="eventHighlightInput" type="checkbox" /> Highlight this event</label>
+        <label class="event-capture-advanced" for="eventTagInput">Tag <span class="event-optional">optional</span></label><input class="event-capture-advanced" id="eventTagInput" type="text" maxlength="40" list="eventTagSuggestions" placeholder="Work, Family, Health..." autocomplete="off" /><datalist id="eventTagSuggestions"></datalist>
         <div class="event-editor-grid"><div class="event-editor-field"><label for="eventDateInput">Date</label><input id="eventDateInput" type="date" /></div><div class="event-editor-field"><label for="eventTimeInput">Time <span class="event-optional">optional</span></label><input id="eventTimeInput" type="time" /></div></div>
-        <div class="event-editor-grid"><div class="event-editor-field"><label for="eventDurationInput">Duration</label><select id="eventDurationInput"><option value="30">30 minutes</option><option value="60">1 hour</option><option value="90">1 hour 30 minutes</option><option value="120">2 hours</option><option value="150">2 hours 30 minutes</option><option value="180">3 hours</option><option value="custom">Custom</option></select></div><div class="event-editor-field" id="eventCustomDurationField" hidden><label for="eventCustomDurationInput">Minutes</label><input id="eventCustomDurationInput" type="number" min="30" max="1440" step="30" value="30" /></div></div>
-        <label for="eventRepeatInput">Repeat</label><select id="eventRepeatInput"><option value="none">Does not repeat</option><option value="daily">Daily</option><option value="weekdays">Weekdays</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="custom">Custom</option></select>
-        <div class="event-recurrence-options" id="eventRecurrenceOptions" hidden><div class="event-editor-grid"><div class="event-editor-field"><label for="eventRepeatIntervalInput">Repeat every</label><input id="eventRepeatIntervalInput" type="number" min="1" max="99" value="1" /></div><div class="event-editor-field"><label for="eventRepeatUnitInput">Unit</label><select id="eventRepeatUnitInput"><option value="day">Day</option><option value="week">Week</option><option value="month">Month</option><option value="year">Year</option></select></div></div><div class="event-editor-field" id="eventWeekdaysField" hidden><label>On days</label><div class="event-weekdays" id="eventWeekdays"></div></div><div class="event-editor-grid"><div class="event-editor-field"><label for="eventRepeatEndInput">Ends</label><select id="eventRepeatEndInput"><option value="never">Never</option><option value="date">On date</option><option value="count">After occurrences</option></select></div><div class="event-editor-field" id="eventRepeatEndValueField" hidden><label for="eventRepeatEndValue">End value</label><input id="eventRepeatEndValue" type="date" /></div></div></div>
-        <div class="task-note-section" id="eventNoteSection"><span class="task-note-label">Note</span><span class="task-note-actions"><button class="plain-btn task-note-btn" id="eventCreateNoteBtn" type="button">Create note</button><button class="plain-btn task-note-btn" id="eventLinkNoteBtn" type="button">Link existing</button><button class="plain-btn task-note-btn" id="eventOpenNoteBtn" type="button" hidden>Open note</button><button class="plain-btn task-note-unlink" id="eventUnlinkNoteBtn" type="button" hidden>Unlink</button></span><span class="task-note-help" id="eventNoteHelp"></span></div>
+        <button class="plain-btn event-capture-more-btn" id="eventCaptureMoreBtn" type="button" aria-expanded="false">More <span aria-hidden="true">⌄</span></button>
+        <div class="event-editor-grid event-capture-advanced"><div class="event-editor-field"><label for="eventDurationInput">Duration</label><select id="eventDurationInput"><option value="30">30 minutes</option><option value="60">1 hour</option><option value="90">1 hour 30 minutes</option><option value="120">2 hours</option><option value="150">2 hours 30 minutes</option><option value="180">3 hours</option><option value="custom">Custom</option></select></div><div class="event-editor-field" id="eventCustomDurationField" hidden><label for="eventCustomDurationInput">Minutes</label><input id="eventCustomDurationInput" type="number" min="30" max="1440" step="30" value="30" /></div></div>
+        <label class="event-capture-advanced" for="eventRepeatInput">Repeat</label><select class="event-capture-advanced" id="eventRepeatInput"><option value="none">Does not repeat</option><option value="daily">Daily</option><option value="weekdays">Weekdays</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="custom">Custom</option></select>
+        <div class="event-recurrence-options event-capture-advanced" id="eventRecurrenceOptions" hidden><div class="event-editor-grid"><div class="event-editor-field"><label for="eventRepeatIntervalInput">Repeat every</label><input id="eventRepeatIntervalInput" type="number" min="1" max="99" value="1" /></div><div class="event-editor-field"><label for="eventRepeatUnitInput">Unit</label><select id="eventRepeatUnitInput"><option value="day">Day</option><option value="week">Week</option><option value="month">Month</option><option value="year">Year</option></select></div></div><div class="event-editor-field" id="eventWeekdaysField" hidden><label>On days</label><div class="event-weekdays" id="eventWeekdays"></div></div><div class="event-editor-grid"><div class="event-editor-field"><label for="eventRepeatEndInput">Ends</label><select id="eventRepeatEndInput"><option value="never">Never</option><option value="date">On date</option><option value="count">After occurrences</option></select></div><div class="event-editor-field" id="eventRepeatEndValueField" hidden><label for="eventRepeatEndValue">End value</label><input id="eventRepeatEndValue" type="date" /></div></div></div>
+        <div class="task-note-section event-capture-advanced" id="eventNoteSection"><span class="task-note-label">Note</span><span class="task-note-actions"><button class="plain-btn task-note-btn" id="eventCreateNoteBtn" type="button">Create note</button><button class="plain-btn task-note-btn" id="eventLinkNoteBtn" type="button">Link existing</button><button class="plain-btn task-note-btn" id="eventOpenNoteBtn" type="button" hidden>Open note</button><button class="plain-btn task-note-unlink" id="eventUnlinkNoteBtn" type="button" hidden>Unlink</button></span><span class="task-note-help" id="eventNoteHelp"></span></div>
       </div>
       <div class="event-series-scope" id="eventSeriesScope" hidden><label for="eventSeriesScopeInput">Apply changes to</label><select id="eventSeriesScopeInput"><option value="this">This event</option><option value="future">This and future events</option><option value="all">All events in the series</option></select></div>
       <div class="event-editor-actions"><button class="plain-btn delete-note-btn" id="deleteEventBtn" type="button" hidden>Delete</button><button class="plain-btn event-copy-btn" id="copyEventBtn" type="button" hidden>Copy</button><span></span><button class="plain-btn" id="cancelEventBtn" type="button">Cancel</button><button class="plain-btn event-save-btn" id="saveEventBtn" type="button">Save</button></div>
@@ -4728,6 +4756,7 @@ body.notes-focus-active .note-body {
         const eventEditorTitle = el("eventEditorTitle");
         const eventTitleInput = el("eventTitleInput");
         const eventNextActionInput = el("eventNextActionInput");
+        const eventCaptureMoreBtn = el("eventCaptureMoreBtn");
         const eventTagInput = el("eventTagInput");
         const eventHighlightInput = el("eventHighlightInput");
         const eventTagSuggestions = el("eventTagSuggestions");
@@ -5716,13 +5745,15 @@ body.notes-focus-active .note-body {
             if(eventId&&eventId.includes("@")){const [masterId,dateKey]=eventId.split("@");const master=events.find(item=>item.id===masterId);if(master){event=eventForOccurrence(master,dateKey);occurrenceDate=dateKey;}}
             else event=eventId?events.find(item=>item.id===eventId):null;
             editingEventId=event?event.id:null;editingEventOccurrenceDate=occurrenceDate;
+            const mobileNewEventCapture=isMobileViewport()&&!event;
+            eventModal.classList.toggle("mobile-new-event-capture",mobileNewEventCapture);eventModal.classList.remove("mobile-event-capture-more-open");eventCaptureMoreBtn.setAttribute("aria-expanded","false");
             eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventNextActionInput.value=event?event.nextAction||"":"";eventTagInput.value=event?event.tag||"":"";eventHighlightInput.checked=Boolean(event&&event.highlighted);eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
             const duration=event?event.durationMinutes||30:30;eventDurationInput.value=[30,60,90,120,150,180].includes(duration)?String(duration):"custom";eventCustomDurationInput.value=String(duration);
             const master=event&&event.seriesId?events.find(item=>item.id===event.seriesId):event;const rule=master&&master.recurrence?master.recurrence:null;eventRepeatInput.value=rule?rule.type:"none";eventRepeatIntervalInput.value=String(rule?rule.interval:1);eventRepeatUnitInput.value=rule?rule.unit:"week";eventRepeatEndInput.value=rule?rule.endType:"never";eventRepeatEndValue.value=rule?(rule.endType==="date"?rule.endDate:String(rule.count)):"";renderEventWeekdays(rule?rule.weekdays:[]);
             deleteEventBtn.hidden=!event;copyEventBtn.hidden=!event;eventSeriesScope.hidden=!(event&&(event.seriesId||event.recurrence));eventSeriesScopeInput.value="this";updateEventEditorOptions();updateEventNoteControls();eventModal.classList.add("open");eventModal.setAttribute("aria-hidden","false");setTimeout(()=>eventTitleInput.focus(),0);
         }
-        function closeEventEditor(){eventModal.classList.remove("open");eventModal.setAttribute("aria-hidden","true");editingEventId=null;editingEventOccurrenceDate="";}
-        function copyEditingEvent(){const id=editingEventId;let event=id&&id.includes("@")?eventsForDate(editingEventOccurrenceDate).find(item=>item.id===id):events.find(item=>item.id===id);if(!event)return;editingEventId=null;editingEventOccurrenceDate="";eventEditorTitle.textContent="Copy Event";deleteEventBtn.hidden=true;copyEventBtn.hidden=true;eventSeriesScope.hidden=true;eventRepeatInput.value="none";renderEventWeekdays([]);updateEventEditorOptions();updateEventNoteControls();eventTitleInput.focus();}
+        function closeEventEditor(){eventModal.classList.remove("open","mobile-new-event-capture","mobile-event-capture-more-open");eventCaptureMoreBtn.setAttribute("aria-expanded","false");eventModal.setAttribute("aria-hidden","true");editingEventId=null;editingEventOccurrenceDate="";}
+        function copyEditingEvent(){const id=editingEventId;let event=id&&id.includes("@")?eventsForDate(editingEventOccurrenceDate).find(item=>item.id===id):events.find(item=>item.id===id);if(!event)return;editingEventId=null;editingEventOccurrenceDate="";eventModal.classList.remove("mobile-new-event-capture","mobile-event-capture-more-open");eventCaptureMoreBtn.setAttribute("aria-expanded","false");eventEditorTitle.textContent="Copy Event";deleteEventBtn.hidden=true;copyEventBtn.hidden=true;eventSeriesScope.hidden=true;eventRepeatInput.value="none";renderEventWeekdays([]);updateEventEditorOptions();updateEventNoteControls();eventTitleInput.focus();}
         function removeSeriesPlannerLinks(seriesId, predicate = () => true) {
             const master = events.find(item => item.id === seriesId);
             const exceptionIds = new Set(events.filter(item => item.seriesId === seriesId).map(item => item.id));
@@ -5751,6 +5782,7 @@ body.notes-focus-active .note-body {
                 if (changed) { data.eventTimeblocks = links; writeDateData(dateKey, data); }
             });
         }
+        function toggleEventCaptureMore(){if(!eventModal.classList.contains("mobile-new-event-capture"))return;const open=eventModal.classList.toggle("mobile-event-capture-more-open");eventCaptureMoreBtn.setAttribute("aria-expanded",String(open));}
         function saveEventFromEditor(){
             const title=eventTitleInput.value.trim(),date=eventDateInput.value;if(!title){alert("Please enter an event title.");eventTitleInput.focus();return;}if(!fromKey(date)||!isWithinRange(fromKey(date))){alert("Please select a valid event date.");return;}
             const currentNoteLink=editingEventRecord()?normalizeTaskNoteLink(editingEventRecord().noteLink):null;
@@ -5766,7 +5798,7 @@ body.notes-focus-active .note-body {
                 const current=events.find(item=>item.id===editingEventId);if(!current)return;previousSnapshot={...current};removeLinkedEventTimeblock(previousSnapshot);Object.assign(current,draft);savedEvent=current;
             } else {savedEvent={id:createId("event"),...draft,seriesId:"",originalDate:"",cancelled:false,createdAt:new Date().toISOString()};events.push(savedEvent);}
             saveEvents();if(savedEvent.recurrence){const occ=eventForOccurrence(savedEvent,savedEvent.date);populateEventTimeblock(occ);}else populateEventTimeblock(savedEvent);if(toKey(selectedDate)===savedEvent.date||(previousSnapshot&&toKey(selectedDate)===previousSnapshot.date))loadSelectedDate();renderSelectedDateEvents();renderEvents();buildCalendar();
-            if(isNewEvent){editingEventId=savedEvent.id;editingEventOccurrenceDate="";eventEditorTitle.textContent="Edit Event";deleteEventBtn.hidden=false;copyEventBtn.hidden=false;eventSeriesScope.hidden=!savedEvent.recurrence;updateEventNoteControls();const original=saveEventBtn.textContent;saveEventBtn.textContent="Saved ✓";saveEventBtn.disabled=true;setTimeout(()=>{saveEventBtn.textContent=original;saveEventBtn.disabled=false;},900);return;}
+            if(isNewEvent){editingEventId=savedEvent.id;editingEventOccurrenceDate="";eventModal.classList.remove("mobile-new-event-capture","mobile-event-capture-more-open");eventCaptureMoreBtn.setAttribute("aria-expanded","false");eventEditorTitle.textContent="Edit Event";deleteEventBtn.hidden=false;copyEventBtn.hidden=false;eventSeriesScope.hidden=!savedEvent.recurrence;updateEventNoteControls();const original=saveEventBtn.textContent;saveEventBtn.textContent="Saved ✓";saveEventBtn.disabled=true;setTimeout(()=>{saveEventBtn.textContent=original;saveEventBtn.disabled=false;},900);return;}
             closeEventEditor();
         }
         function deleteEditingEvent(){
@@ -8418,6 +8450,7 @@ ${body}` : title };
         closeEventBtn.addEventListener("click", closeEventEditor);
         cancelEventBtn.addEventListener("click", closeEventEditor);
         saveEventBtn.addEventListener("click", saveEventFromEditor);
+        eventCaptureMoreBtn.addEventListener("click", toggleEventCaptureMore);
         deleteEventBtn.addEventListener("click", deleteEditingEvent);
         copyEventBtn.addEventListener("click", copyEditingEvent);
         eventCreateNoteBtn.addEventListener("click", createNoteForEditingEvent);
