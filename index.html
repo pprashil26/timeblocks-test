@@ -4133,6 +4133,56 @@ body.notes-focus-active .note-body {
   }
 }
 
+
+
+/* Mobile Task title expansion and top editor actions */
+@media (max-width: 759px) {
+  #noteModal:has(#globalTasksPanel.open) .task-content {
+    align-self: start;
+    min-width: 0;
+  }
+  #noteModal:has(#globalTasksPanel.open) .task-text {
+    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+    min-height: 28px !important;
+    max-height: none;
+    white-space: pre-wrap;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    field-sizing: content;
+  }
+  #noteModal:has(#globalTasksPanel.open) .task-row,
+  #noteModal:has(#globalTasksPanel.open) .task-row.no-move {
+    align-items: start;
+  }
+  #taskModal .task-editor-panel,
+  #eventModal .event-editor-panel {
+    display: flex;
+    max-height: calc(100dvh - 24px);
+    flex-direction: column;
+  }
+  #taskModal .task-editor-head,
+  #eventModal .event-editor-head {
+    order: 1;
+    flex: 0 0 auto;
+  }
+  #taskModal .task-editor-actions,
+  #eventModal .event-editor-actions {
+    order: 2;
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    background: var(--page);
+  }
+  #taskModal .task-editor-body,
+  #eventModal .event-editor-body {
+    order: 3;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
 </style>
 </head>
 <body>
@@ -8514,6 +8564,36 @@ if (key === "e") {
         }).catch(error => console.warn("FAST GTD offline support could not start.", error));
       });
     }
-  </script>
+  
+
+        // Keep mobile Task titles fully visible as their text wraps.
+        function resizeMobileTaskTitle(taskText) {
+            if (!taskText || !taskText.classList || !taskText.classList.contains("task-text")) return;
+            if (!window.matchMedia("(max-width: 759px)").matches) {
+                taskText.style.height = "";
+                return;
+            }
+            taskText.style.height = "auto";
+            taskText.style.height = `${taskText.scrollHeight}px`;
+        }
+        function resizeAllMobileTaskTitles() {
+            document.querySelectorAll("#globalTasksPanel .task-text").forEach(resizeMobileTaskTitle);
+        }
+        document.addEventListener("input", function (event) {
+            if (event.target && event.target.matches("#globalTasksPanel .task-text")) resizeMobileTaskTitle(event.target);
+        });
+        const mobileTaskTitleObserver = new MutationObserver(function (mutations) {
+            if (!window.matchMedia("(max-width: 759px)").matches) return;
+            mutations.forEach(function (mutation) {
+                mutation.addedNodes.forEach(function (node) {
+                    if (node.nodeType !== 1) return;
+                    if (node.matches && node.matches(".task-text")) resizeMobileTaskTitle(node);
+                    if (node.querySelectorAll) node.querySelectorAll(".task-text").forEach(resizeMobileTaskTitle);
+                });
+            });
+        });
+        if (globalTaskList) mobileTaskTitleObserver.observe(globalTaskList, { childList: true, subtree: true });
+        window.addEventListener("resize", resizeAllMobileTaskTitles);
+</script>
 </body>
 </html>
