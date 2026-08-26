@@ -57,23 +57,6 @@
       --font-title: 18px;
     }
     * { box-sizing: border-box; }
-    :root {
-      --control-height: 32px;
-      --control-radius: 10px;
-      --control-gap: 8px;
-    }
-
-    button, input, select {
-      min-height: var(--control-height);
-    }
-
-    .plain-btn, .icon-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: var(--control-radius);
-    }
-
 
     /* Safety: honour hidden attributes even when component display rules are defined later */
     [hidden] {
@@ -3273,8 +3256,13 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   textarea[data-time].planner-empty-slot { cursor: pointer; }
   textarea[data-time].planner-empty-slot:hover, textarea[data-time].planner-empty-slot:focus { background: var(--soft); outline: 2px solid rgba(123,146,133,.30); outline-offset: -2px; }
 }
-@media (max-width: 759px) { #plannerCreateModal { display: none !important; } }
 
+
+@media (max-width: 759px) {
+  #plannerCreateModal .planner-create-panel { width: min(94vw, 360px); }
+  textarea[data-time].planner-empty-slot { cursor: pointer; }
+  textarea[data-time].planner-empty-slot:focus { outline: 2px solid rgba(123,146,133,.30); outline-offset: -2px; }
+}
 
 /* Desktop-only minimal-colour workspace refinement */
 @media (min-width: 760px) {
@@ -4407,6 +4395,98 @@ body.notes-focus-active .note-body {
 }
 @media (max-width: 759px) {
   .next-action-line { font-size: 10px; }
+}
+
+
+/* Cross-device UI standards: Phase 1 controls + Phase 2 modal consistency */
+:root {
+  --control-height: 32px;
+  --control-radius: 10px;
+  --control-gap: 8px;
+  --modal-compact-width: 410px;
+  --modal-radius: 18px;
+  --modal-header-height: 44px;
+  --modal-inline-padding: 14px;
+  --modal-block-padding: 12px;
+  --modal-field-gap: 8px;
+  --modal-action-gap: 8px;
+}
+button,
+input,
+select {
+  min-height: var(--control-height);
+}
+.plain-btn,
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--control-radius);
+}
+#taskModal .task-editor-panel,
+#eventModal .event-editor-panel,
+#plannerCreateModal .planner-create-panel {
+  width: min(var(--modal-compact-width), 94vw);
+  border-radius: var(--modal-radius);
+}
+#taskModal .task-editor-head,
+#eventModal .event-editor-head,
+#plannerCreateModal .planner-create-head,
+#expandedNoteShell .expanded-note-head {
+  min-height: var(--modal-header-height);
+  gap: var(--control-gap);
+  padding: 9px 12px;
+  align-items: center;
+}
+#taskModal .task-editor-body,
+#eventModal .event-editor-body,
+#plannerCreateModal .planner-create-body {
+  gap: var(--modal-field-gap);
+  padding: var(--modal-block-padding) var(--modal-inline-padding);
+}
+#taskModal .task-editor-body label,
+#eventModal .event-editor-body label,
+#plannerCreateModal .planner-create-body label {
+  line-height: 1.25;
+}
+#taskModal .task-editor-body > input,
+#taskModal .task-editor-body > select,
+#eventModal .event-editor-body > input,
+#eventModal .event-editor-body > select,
+#plannerCreateModal .planner-create-body > input,
+#plannerCreateModal .planner-create-body > select {
+  min-height: var(--control-height);
+  border-radius: var(--control-radius);
+}
+#taskModal .task-editor-actions,
+#eventModal .event-editor-actions,
+#plannerCreateModal .planner-create-actions {
+  gap: var(--modal-action-gap);
+  align-items: center;
+  padding: 8px var(--modal-inline-padding) 12px;
+}
+#taskModal .task-editor-actions .plain-btn,
+#eventModal .event-editor-actions .plain-btn,
+#plannerCreateModal .planner-create-actions .plain-btn {
+  min-height: var(--control-height);
+}
+@media (max-width: 759px) {
+  #taskModal .task-editor-panel,
+  #eventModal .event-editor-panel,
+  #plannerCreateModal .planner-create-panel {
+    width: min(var(--modal-compact-width), calc(100vw - 20px));
+  }
+  #taskModal .task-editor-body,
+  #eventModal .event-editor-body,
+  #plannerCreateModal .planner-create-body {
+    padding: 10px 12px;
+  }
+  #taskModal .task-editor-actions,
+  #eventModal .event-editor-actions,
+  #plannerCreateModal .planner-create-actions {
+    gap: var(--control-gap);
+    padding: 8px 12px;
+  }
 }
 </style>
 </head>
@@ -6005,7 +6085,6 @@ body.notes-focus-active .note-body {
             }, 0);
         }
         function openPlannerCreate(timeId) {
-            if (isMobileViewport()) return;
             plannerCreateTime = timeId;
             plannerCreateType.value = "task";
             plannerCreateText.value = "";
@@ -7348,12 +7427,34 @@ ${body}` : title };
                 save();
                 clearDropClasses();
             });
-            if (!linkedEvent && !linkedTask && !linkedActivity && !box.value.trim()) {
-                box.classList.add("planner-empty-slot");
-                box.addEventListener("focus", () => { if (!isMobileViewport() && !box.value.trim()) { box.blur(); openPlannerCreate(timeId); } });
-                box.addEventListener("click", () => { if (!isMobileViewport() && !box.value.trim()) openPlannerCreate(timeId); });
+            if (!linkedEvent && !linkedTask && !linkedActivity) {
+                if (isMobileViewport()) {
+                    box.readOnly = true;
+                    box.title = box.value.trim() ? "Planner entry" : "Add to Planner";
+                    box.setAttribute("aria-label", box.title);
+                }
+                if (!box.value.trim()) {
+                    box.classList.add("planner-empty-slot");
+                    box.addEventListener("focus", () => {
+                        if (!box.value.trim()) {
+                            box.blur();
+                            openPlannerCreate(timeId);
+                        }
+                    });
+                    box.addEventListener("click", event => {
+                        if (!box.value.trim()) {
+                            event.preventDefault();
+                            openPlannerCreate(timeId);
+                        }
+                    });
+                }
             }
-            box.addEventListener("input", () => { autoGrow(box); box.classList.toggle("planner-empty-slot", !isMobileViewport() && !box.value.trim()); save(); });
+            box.addEventListener("input", () => {
+                if (isMobileViewport() && !linkedEvent && !linkedTask && !linkedActivity) return;
+                autoGrow(box);
+                box.classList.toggle("planner-empty-slot", !box.value.trim());
+                save();
+            });
             box.addEventListener("keydown", event => {
                 if (event.defaultPrevented || (box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock") || box.classList.contains("activity-timeblock"))) return;
                 if (event.key === "Enter" && !event.shiftKey) {
