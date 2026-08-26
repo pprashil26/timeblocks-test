@@ -3334,8 +3334,6 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   .mobile-home-brand .mobile-home-nav {
     grid-template-columns: 1.25fr 1fr 1fr 1fr 32px;
   }
-  body.mobile-section-active.mobile-view-plan .app > .note-block,
-  body.mobile-section-active.mobile-view-plan .app > .events-strip,
   body.mobile-section-active.mobile-view-plan .app > .quote-block {
     display: none !important;
   }
@@ -4133,6 +4131,27 @@ body.notes-focus-active .note-body {
   }
 }
 
+
+
+/* Mobile Today and Calendar focus cleanup */
+@media (max-width: 759px) {
+  body.mobile-section-active.mobile-view-plan .app > .quote-block,
+  body.mobile-section-active.mobile-view-calendar .app > .quote-block,
+  body.mobile-section-active.mobile-view-plan .app > footer,
+  body.mobile-section-active.mobile-view-calendar .app > footer {
+    display: none !important;
+  }
+  body.mobile-section-active.mobile-view-calendar .calendar-jump {
+    display: none !important;
+  }
+  body.mobile-section-active.mobile-view-calendar #calendarWrap {
+    overflow-y: auto !important;
+    scroll-behavior: smooth;
+  }
+  body.mobile-section-active.mobile-view-calendar .day-btn {
+    cursor: default;
+  }
+}
 
 
 /* Mobile Task title expansion and top editor actions */
@@ -6405,14 +6424,17 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             if (!isMobileViewport())
                 return;
             requestAnimationFrame(() => {
-                const selectedButton = calendarWrap.querySelector(`.day-btn[data-date="${toKey(selectedDate)}"]`);
-                const month = selectedButton ? selectedButton.closest(".month") : calendarWrap.querySelector(".month");
-                if (!month)
+                const todayButton = calendarWrap.querySelector(`.day-btn[data-date="${toKey(getToday())}"]`);
+                const currentMonth = todayButton ? todayButton.closest(".month") : calendarWrap.querySelector(".month");
+                if (!currentMonth)
                     return;
-                const monthHeight = Math.ceil(month.getBoundingClientRect().height);
-                calendarWrap.style.setProperty("height", `${monthHeight}px`, "important");
-                calendarWrap.style.setProperty("max-height", `${monthHeight}px`, "important");
-                calendarWrap.scrollTop = month.offsetTop;
+                const nextMonth = currentMonth.nextElementSibling && currentMonth.nextElementSibling.classList.contains("month") ? currentMonth.nextElementSibling : null;
+                const currentTop = currentMonth.offsetTop;
+                const visibleBottom = nextMonth ? nextMonth.offsetTop + Math.ceil(nextMonth.getBoundingClientRect().height) : currentTop + Math.ceil(currentMonth.getBoundingClientRect().height);
+                const twoMonthHeight = Math.ceil(visibleBottom - currentTop);
+                calendarWrap.style.setProperty("height", `${twoMonthHeight}px`, "important");
+                calendarWrap.style.setProperty("max-height", `${twoMonthHeight}px`, "important");
+                calendarWrap.scrollTop = currentTop;
             });
         }
         function setMobileSection(section) {
@@ -7972,7 +7994,7 @@ ${body}` : title };
             updateSelectedCalendarDay();
         }
         function calendarWindowBounds() {
-            const anchor = selectedDate || getToday(); const before = threeMonthCalendar ? 1 : CALENDAR_MONTHS_BEFORE; const after = threeMonthCalendar ? 1 : CALENDAR_MONTHS_AFTER;
+            const anchor = isMobileViewport() ? getToday() : (selectedDate || getToday()); const before = threeMonthCalendar ? 1 : CALENDAR_MONTHS_BEFORE; const after = threeMonthCalendar ? 1 : CALENDAR_MONTHS_AFTER;
             const start = new Date(anchor.getFullYear(), anchor.getMonth()-before, 1); const end = new Date(anchor.getFullYear(), anchor.getMonth()+after+1, 0);
             return {start:start<START_DATE?new Date(START_DATE):start,end:end>END_DATE?new Date(END_DATE):end};
         }
@@ -7983,7 +8005,7 @@ ${body}` : title };
             while(cursor<=finalMonth){
                 const month=document.createElement("section");month.className="month";const heading=document.createElement("div");heading.className="month-name";heading.textContent=monthName(cursor);const days=document.createElement("div");days.className="days";const monthIndex=cursor.getMonth(),year=cursor.getFullYear(),firstDay=new Date(year,monthIndex,1),day=new Date(year,monthIndex,1);
                 for(let index=0;index<mondayFirstIndex(firstDay);index+=1)addBlankDay(days);
-                while(day.getMonth()===monthIndex){const key=toKey(day);const button=document.createElement("button");button.className="day-btn";button.type="button";button.textContent=day.getDate();button.dataset.date=key;const eventCount=eventsForDate(key).length;button.classList.toggle("has-events",eventCount>0);button.title=`${displayDate(day)}${eventCount?` · ${eventCount} event${eventCount===1?"":"s"}`:""}`;if(day.getDay()===0||day.getDay()===6)button.classList.add("weekend");if(hasSavedDataForDate(key))button.classList.add("has-data");if(key===todayKey)button.classList.add("today");if(key===toKey(selectedDate))button.classList.add("selected");button.addEventListener("click",function(){const clickedDate=fromKey(this.dataset.date);if(clickedDate)selectDate(clickedDate,true);});days.appendChild(button);day.setDate(day.getDate()+1);}
+                while(day.getMonth()===monthIndex){const key=toKey(day);const button=document.createElement("button");button.className="day-btn";button.type="button";button.textContent=day.getDate();button.dataset.date=key;const eventCount=eventsForDate(key).length;button.classList.toggle("has-events",eventCount>0);button.title=`${displayDate(day)}${eventCount?` · ${eventCount} event${eventCount===1?"":"s"}`:""}`;if(day.getDay()===0||day.getDay()===6)button.classList.add("weekend");if(hasSavedDataForDate(key))button.classList.add("has-data");if(key===todayKey)button.classList.add("today");if(key===toKey(selectedDate))button.classList.add("selected");button.addEventListener("click",function(){if(isMobileViewport()&&document.body.classList.contains("mobile-view-calendar"))return;const clickedDate=fromKey(this.dataset.date);if(clickedDate)selectDate(clickedDate,true);});days.appendChild(button);day.setDate(day.getDate()+1);}
                 month.appendChild(heading);addWeekdayHeader(month);month.appendChild(days);calendarWrap.appendChild(month);cursor.setMonth(cursor.getMonth()+1);
             }
         }
