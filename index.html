@@ -6428,7 +6428,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
         function alignMobileCalendarToCurrentMonth() {
             if (!isMobileViewport())
                 return;
-            requestAnimationFrame(() => {
+            requestAnimationFrame(() => requestAnimationFrame(() => {
                 const currentMonthName = monthName(getToday());
                 const currentMonth = Array.from(calendarWrap.querySelectorAll(".month")).find(month => {
                     const heading = month.querySelector(".month-name");
@@ -6437,12 +6437,17 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 if (!currentMonth)
                     return;
                 const nextMonth = currentMonth.nextElementSibling && currentMonth.nextElementSibling.classList.contains("month") ? currentMonth.nextElementSibling : null;
-                const currentHeight = Math.ceil(currentMonth.getBoundingClientRect().height);
-                const nextHeight = nextMonth ? Math.ceil(nextMonth.getBoundingClientRect().height) : 0;
-                calendarWrap.style.setProperty("height", `${currentHeight + nextHeight + 8}px`, "important");
-                calendarWrap.style.setProperty("max-height", `${currentHeight + nextHeight + 8}px`, "important");
-                calendarWrap.scrollTop = currentMonth.offsetTop;
-            });
+                const wrapStyle = getComputedStyle(calendarWrap);
+                const paddingTop = parseFloat(wrapStyle.paddingTop) || 0;
+                const paddingBottom = parseFloat(wrapStyle.paddingBottom) || 0;
+                const currentRect = currentMonth.getBoundingClientRect();
+                const nextRect = nextMonth ? nextMonth.getBoundingClientRect() : currentRect;
+                const targetScrollTop = calendarWrap.scrollTop + currentRect.top - calendarWrap.getBoundingClientRect().top - paddingTop;
+                const twoMonthHeight = Math.ceil(nextRect.bottom - currentRect.top + paddingTop + paddingBottom);
+                calendarWrap.style.setProperty("height", `${twoMonthHeight}px`, "important");
+                calendarWrap.style.setProperty("max-height", `${twoMonthHeight}px`, "important");
+                calendarWrap.scrollTop = Math.max(0, targetScrollTop);
+            }));
         }
         function setMobileSection(section) {
             document.body.classList.remove("mobile-view-plan", "mobile-view-calendar", "mobile-view-notes");
@@ -7984,7 +7989,8 @@ ${body}` : title };
             const button = document.querySelector(`.day-btn[data-date="${selectedKey}"]`);
             if (button) {
                 button.classList.add("selected");
-                button.scrollIntoView({ block: "nearest" });
+                if (!(isMobileViewport() && document.body.classList.contains("mobile-view-calendar")))
+                    button.scrollIntoView({ block: "nearest" });
             }
         }
         function applyCalendarRangeView() {
