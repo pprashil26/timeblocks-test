@@ -4135,6 +4135,7 @@ body.notes-focus-active .note-body {
 
 /* Mobile Today and Calendar focus cleanup */
 @media (max-width: 759px) {
+  body.mobile-section-active.mobile-view-plan .app > .note-block,
   body.mobile-section-active.mobile-view-plan .app > .quote-block,
   body.mobile-section-active.mobile-view-calendar .app > .quote-block,
   body.mobile-section-active.mobile-view-plan .app > footer,
@@ -8018,7 +8019,7 @@ ${body}` : title };
             while(cursor<=finalMonth){
                 const month=document.createElement("section");month.className="month";const heading=document.createElement("div");heading.className="month-name";heading.textContent=monthName(cursor);const days=document.createElement("div");days.className="days";const monthIndex=cursor.getMonth(),year=cursor.getFullYear(),firstDay=new Date(year,monthIndex,1),day=new Date(year,monthIndex,1);
                 for(let index=0;index<mondayFirstIndex(firstDay);index+=1)addBlankDay(days);
-                while(day.getMonth()===monthIndex){const key=toKey(day);const button=document.createElement("button");button.className="day-btn";button.type="button";button.textContent=day.getDate();button.dataset.date=key;const eventCount=eventsForDate(key).length;button.classList.toggle("has-events",eventCount>0);button.title=`${displayDate(day)}${eventCount?` · ${eventCount} event${eventCount===1?"":"s"}`:""}`;if(day.getDay()===0||day.getDay()===6)button.classList.add("weekend");if(hasSavedDataForDate(key))button.classList.add("has-data");if(key===todayKey)button.classList.add("today");if(key===toKey(selectedDate))button.classList.add("selected");button.addEventListener("click",function(){if(isMobileViewport()&&document.body.classList.contains("mobile-view-calendar"))return;const clickedDate=fromKey(this.dataset.date);if(clickedDate)selectDate(clickedDate,true);});days.appendChild(button);day.setDate(day.getDate()+1);}
+                while(day.getMonth()===monthIndex){const key=toKey(day);const button=document.createElement("button");button.className="day-btn";button.type="button";button.textContent=day.getDate();button.dataset.date=key;const eventCount=eventsForDate(key).length;button.classList.toggle("has-events",eventCount>0);button.title=`${displayDate(day)}${eventCount?` · ${eventCount} event${eventCount===1?"":"s"}`:""}`;if(day.getDay()===0||day.getDay()===6)button.classList.add("weekend");if(hasSavedDataForDate(key))button.classList.add("has-data");if(key===todayKey)button.classList.add("today");if(key===toKey(selectedDate))button.classList.add("selected");button.addEventListener("click",function(){const clickedDate=fromKey(this.dataset.date);if(clickedDate)selectDate(clickedDate,true);});days.appendChild(button);day.setDate(day.getDate()+1);}
                 month.appendChild(heading);addWeekdayHeader(month);month.appendChild(days);calendarWrap.appendChild(month);cursor.setMonth(cursor.getMonth()+1);
             }
         }
