@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FAST GTD</title>
   <meta name="description" content="Lightweight. Fast. Free forever. Capture tasks, events and notes on mobile or desktop. No account required." />
-  <link rel="canonical" href="https://pprashil26.github.io/timeblocks-test/" />
+  <link rel="canonical" href="https://pprashil26.github.io/fastgtd/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="FAST GTD" />
   <meta property="og:title" content="FAST GTD" />
   <meta property="og:description" content="FAST GTD" />
-  <meta property="og:url" content="https://pprashil26.github.io/timeblocks-test/" />
-  <meta property="og:image" content="https://pprashil26.github.io/timeblocks-test/fast-gtd-share.png" />
-  <meta property="og:image:secure_url" content="https://pprashil26.github.io/timeblocks-test/fast-gtd-share.png" />
+  <meta property="og:url" content="https://pprashil26.github.io/fastgtd/" />
+  <meta property="og:image" content="https://pprashil26.github.io/fastgtd/fast-gtd-share.png" />
+  <meta property="og:image:secure_url" content="https://pprashil26.github.io/fastgtd/fast-gtd-share.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -20,7 +20,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="FAST GTD" />
   <meta name="twitter:description" content="FAST GTD" />
-  <meta name="twitter:image" content="https://pprashil26.github.io/timeblocks-test/fast-gtd-share.png" />
+  <meta name="twitter:image" content="https://pprashil26.github.io/fastgtd/fast-gtd-share.png" />
   <meta name="twitter:image:alt" content="FAST GTD: Lightweight, fast and free forever for mobile and desktop" />
   <meta name="theme-color" content="#ffffff" />
   <meta name="application-name" content="FAST GTD" />
@@ -3256,8 +3256,13 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   textarea[data-time].planner-empty-slot { cursor: pointer; }
   textarea[data-time].planner-empty-slot:hover, textarea[data-time].planner-empty-slot:focus { background: var(--soft); outline: 2px solid rgba(123,146,133,.30); outline-offset: -2px; }
 }
-@media (max-width: 759px) { #plannerCreateModal { display: none !important; } }
 
+
+@media (max-width: 759px) {
+  #plannerCreateModal .planner-create-panel { width: min(94vw, 360px); }
+  textarea[data-time].planner-empty-slot { cursor: pointer; }
+  textarea[data-time].planner-empty-slot:focus { outline: 2px solid rgba(123,146,133,.30); outline-offset: -2px; }
+}
 
 /* Desktop-only minimal-colour workspace refinement */
 @media (min-width: 760px) {
@@ -5988,7 +5993,6 @@ body.notes-focus-active .note-body {
             }, 0);
         }
         function openPlannerCreate(timeId) {
-            if (isMobileViewport()) return;
             plannerCreateTime = timeId;
             plannerCreateType.value = "task";
             plannerCreateText.value = "";
@@ -7331,12 +7335,34 @@ ${body}` : title };
                 save();
                 clearDropClasses();
             });
-            if (!linkedEvent && !linkedTask && !linkedActivity && !box.value.trim()) {
-                box.classList.add("planner-empty-slot");
-                box.addEventListener("focus", () => { if (!isMobileViewport() && !box.value.trim()) { box.blur(); openPlannerCreate(timeId); } });
-                box.addEventListener("click", () => { if (!isMobileViewport() && !box.value.trim()) openPlannerCreate(timeId); });
+            if (!linkedEvent && !linkedTask && !linkedActivity) {
+                if (isMobileViewport()) {
+                    box.readOnly = true;
+                    box.title = box.value.trim() ? "Planner entry" : "Add to Planner";
+                    box.setAttribute("aria-label", box.title);
+                }
+                if (!box.value.trim()) {
+                    box.classList.add("planner-empty-slot");
+                    box.addEventListener("focus", () => {
+                        if (!box.value.trim()) {
+                            box.blur();
+                            openPlannerCreate(timeId);
+                        }
+                    });
+                    box.addEventListener("click", event => {
+                        if (!box.value.trim()) {
+                            event.preventDefault();
+                            openPlannerCreate(timeId);
+                        }
+                    });
+                }
             }
-            box.addEventListener("input", () => { autoGrow(box); box.classList.toggle("planner-empty-slot", !isMobileViewport() && !box.value.trim()); save(); });
+            box.addEventListener("input", () => {
+                if (isMobileViewport() && !linkedEvent && !linkedTask && !linkedActivity) return;
+                autoGrow(box);
+                box.classList.toggle("planner-empty-slot", !box.value.trim());
+                save();
+            });
             box.addEventListener("keydown", event => {
                 if (event.defaultPrevented || (box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock") || box.classList.contains("activity-timeblock"))) return;
                 if (event.key === "Enter" && !event.shiftKey) {
@@ -7955,7 +7981,7 @@ ${body}` : title };
             const shareData = {
                 title: "FAST GTD",
                 text: "FAST GTD",
-                url: "https://pprashil26.github.io/timeblocks-test/"
+                url: "https://pprashil26.github.io/fastgtd/"
             };
             const markCopied = () => {
                 const originalText = mobileShareBtn.textContent;
