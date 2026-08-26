@@ -5550,7 +5550,7 @@ body.notes-focus-active .note-body {
             deleteTaskEditorBtn.hidden = true;
             copyTaskBtn.hidden = true;
             updateTaskNoteControls();
-            taskModal.classList.add("open"); taskModal.setAttribute("aria-hidden", "false"); focusTaskEditorField(isMobileViewport() ? "text" : focusTarget);
+            taskModal.classList.add("open"); taskModal.setAttribute("aria-hidden", "false"); focusTaskEditorField(isMobileViewport() ? "text" : focusTarget); if (isMobileViewport()) requestAnimationFrame(()=>requestAnimationFrame(()=>focusTaskEditorField("text")));
         }
         function copyEditingTask() {
             const found = editingTaskId ? findTaskLocation(editingTaskId) : null;
@@ -5815,7 +5815,7 @@ body.notes-focus-active .note-body {
             eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventNextActionInput.value=event?event.nextAction||"":"";eventTagInput.value=event?event.tag||"":"";eventHighlightInput.checked=Boolean(event&&event.highlighted);eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
             const duration=event?event.durationMinutes||30:30;eventDurationInput.value=[30,60,90,120,150,180].includes(duration)?String(duration):"custom";eventCustomDurationInput.value=String(duration);
             const master=event&&event.seriesId?events.find(item=>item.id===event.seriesId):event;const rule=master&&master.recurrence?master.recurrence:null;eventRepeatInput.value=rule?rule.type:"none";eventRepeatIntervalInput.value=String(rule?rule.interval:1);eventRepeatUnitInput.value=rule?rule.unit:"week";eventRepeatEndInput.value=rule?rule.endType:"never";eventRepeatEndValue.value=rule?(rule.endType==="date"?rule.endDate:String(rule.count)):"";renderEventWeekdays(rule?rule.weekdays:[]);
-            deleteEventBtn.hidden=!event;copyEventBtn.hidden=!event;eventSeriesScope.hidden=!(event&&(event.seriesId||event.recurrence));eventSeriesScopeInput.value="this";updateEventEditorOptions();updateEventNoteControls();eventModal.classList.add("open");eventModal.setAttribute("aria-hidden","false");setTimeout(()=>{eventTitleInput.focus();if(!eventTitleInput.value)eventTitleInput.setSelectionRange(0,0);},0);
+            deleteEventBtn.hidden=!event;copyEventBtn.hidden=!event;eventSeriesScope.hidden=!(event&&(event.seriesId||event.recurrence));eventSeriesScopeInput.value="this";updateEventEditorOptions();updateEventNoteControls();eventModal.classList.add("open");eventModal.setAttribute("aria-hidden","false");setTimeout(()=>{eventTitleInput.focus();if(!eventTitleInput.value)eventTitleInput.setSelectionRange(0,0);},0); if(isMobileViewport()) requestAnimationFrame(()=>requestAnimationFrame(()=>eventTitleInput.focus()));
         }
         function closeEventEditor(){eventModal.classList.remove("open","mobile-new-event-capture","mobile-event-capture-more-open");eventCaptureMoreBtn.setAttribute("aria-expanded","false");eventModal.setAttribute("aria-hidden","true");editingEventId=null;editingEventOccurrenceDate="";}
         function copyEditingEvent(){const id=editingEventId;let event=id&&id.includes("@")?eventsForDate(editingEventOccurrenceDate).find(item=>item.id===id):events.find(item=>item.id===id);if(!event)return;editingEventId=null;editingEventOccurrenceDate="";eventModal.classList.remove("mobile-new-event-capture","mobile-event-capture-more-open");eventCaptureMoreBtn.setAttribute("aria-expanded","false");eventEditorTitle.textContent="Copy Event";deleteEventBtn.hidden=true;copyEventBtn.hidden=true;eventSeriesScope.hidden=true;eventRepeatInput.value="none";renderEventWeekdays([]);updateEventEditorOptions();updateEventNoteControls();eventTitleInput.focus();}
@@ -7700,7 +7700,7 @@ ${body}` : title };
                 setTimeout(() => expandedBody.focus(), 0);
             }
             else {
-                setTimeout(() => expandedBody.focus(), 0);
+                setTimeout(() => expandedTitle.focus(), 0);
             }
         }
         function openTasksInboxShortcut() {
@@ -8526,7 +8526,7 @@ ${body}` : title };
             notes.unshift(newNote);
             renderNotes();
             save();
-            openExpandedNote(newNote.id, true, isMobileViewport() ? "body" : "title");
+            openExpandedNote(newNote.id, true, isMobileViewport() ? "title" : "title");
             if (isMobileViewport()) {
                 expandedNoteShell.classList.add("mobile-new-note-capture");
                 expandedNoteShell.classList.remove("mobile-note-capture-more-open");
