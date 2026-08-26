@@ -6442,7 +6442,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 const twoMonthHeight = Math.ceil(visibleBottom - currentTop);
                 calendarWrap.style.setProperty("height", `${twoMonthHeight}px`, "important");
                 calendarWrap.style.setProperty("max-height", `${twoMonthHeight}px`, "important");
-                calendarWrap.scrollTop = currentTop;
+                calendarWrap.scrollTop = Math.max(0, currentTop - 12);
             });
         }
         function setMobileSection(section) {
@@ -8002,13 +8002,7 @@ ${body}` : title };
             updateSelectedCalendarDay();
         }
         function calendarWindowBounds() {
-            if (isMobileViewport()) {
-                const today = getToday();
-                const start = new Date(today.getFullYear(), today.getMonth(), 1);
-                const end = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-                return {start:start<START_DATE?new Date(START_DATE):start,end:end>END_DATE?new Date(END_DATE):end};
-            }
-            const anchor = selectedDate || getToday(); const before = threeMonthCalendar ? 1 : CALENDAR_MONTHS_BEFORE; const after = threeMonthCalendar ? 1 : CALENDAR_MONTHS_AFTER;
+            const anchor = isMobileViewport() ? getToday() : (selectedDate || getToday()); const before = threeMonthCalendar ? 1 : CALENDAR_MONTHS_BEFORE; const after = threeMonthCalendar ? 1 : CALENDAR_MONTHS_AFTER;
             const start = new Date(anchor.getFullYear(), anchor.getMonth()-before, 1); const end = new Date(anchor.getFullYear(), anchor.getMonth()+after+1, 0);
             return {start:start<START_DATE?new Date(START_DATE):start,end:end>END_DATE?new Date(END_DATE):end};
         }
