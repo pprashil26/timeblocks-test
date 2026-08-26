@@ -8002,7 +8002,13 @@ ${body}` : title };
             updateSelectedCalendarDay();
         }
         function calendarWindowBounds() {
-            const anchor = isMobileViewport() ? getToday() : (selectedDate || getToday()); const before = threeMonthCalendar ? 1 : CALENDAR_MONTHS_BEFORE; const after = threeMonthCalendar ? 1 : CALENDAR_MONTHS_AFTER;
+            if (isMobileViewport()) {
+                const today = getToday();
+                const start = new Date(today.getFullYear(), today.getMonth(), 1);
+                const end = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+                return {start:start<START_DATE?new Date(START_DATE):start,end:end>END_DATE?new Date(END_DATE):end};
+            }
+            const anchor = selectedDate || getToday(); const before = threeMonthCalendar ? 1 : CALENDAR_MONTHS_BEFORE; const after = threeMonthCalendar ? 1 : CALENDAR_MONTHS_AFTER;
             const start = new Date(anchor.getFullYear(), anchor.getMonth()-before, 1); const end = new Date(anchor.getFullYear(), anchor.getMonth()+after+1, 0);
             return {start:start<START_DATE?new Date(START_DATE):start,end:end>END_DATE?new Date(END_DATE):end};
         }
