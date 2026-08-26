@@ -4207,6 +4207,67 @@ body.notes-focus-active .note-body {
 
 
 
+
+
+/* Mobile capture-first New Note form */
+.note-capture-head-actions,
+.note-capture-more-btn { display: none; }
+@media (max-width: 759px) {
+  #expandedNoteShell.mobile-new-note-capture {
+    width: min(94vw, 430px);
+    height: auto;
+    min-height: 0;
+    max-height: calc(100dvh - 24px);
+    aspect-ratio: auto;
+  }
+  #expandedNoteShell.mobile-new-note-capture .expanded-note-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 8px 10px;
+  }
+  #expandedNoteShell.mobile-new-note-capture #closeExpandedNote { display: none !important; }
+  #expandedNoteShell.mobile-new-note-capture .note-capture-head-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  #expandedNoteShell.mobile-new-note-capture .note-capture-cancel,
+  #expandedNoteShell.mobile-new-note-capture .note-capture-save {
+    min-height: 31px;
+    padding: 5px 10px;
+    border-radius: 9px;
+  }
+  #expandedNoteShell.mobile-new-note-capture .note-capture-save {
+    border: 1px solid #e2cd61;
+    background: #FFEE8C;
+    color: #4f4518;
+    font-weight: 700;
+  }
+  #expandedNoteShell.mobile-new-note-capture .expanded-body {
+    min-height: 180px;
+    max-height: 48vh;
+    padding: 10px 12px;
+  }
+  #expandedNoteShell.mobile-new-note-capture .note-capture-more-btn {
+    display: flex;
+    width: calc(100% - 20px);
+    min-height: 34px;
+    margin: 8px 10px 0;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 9px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--panel);
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 650;
+  }
+  #expandedNoteShell.mobile-new-note-capture .note-capture-advanced { display: none !important; }
+  #expandedNoteShell.mobile-new-note-capture.mobile-note-capture-more-open .note-capture-advanced:not([hidden]) { display: flex !important; }
+  #expandedNoteShell.mobile-new-note-capture.mobile-note-capture-more-open #expandedLabelChips:not([hidden]) { display: flex !important; }
+  #expandedNoteShell.mobile-new-note-capture .note-capture-advanced[hidden] { display: none !important; }
+}
+
 /* Mobile capture-first New Event form */
 .event-capture-more-btn { display: none; }
 @media (max-width: 759px) {
@@ -4434,9 +4495,10 @@ body.notes-focus-active .note-body {
   </section>
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" id="expandedNoteShell" role="dialog" aria-modal="true" aria-label="Expanded note editor">
-      <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
-      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="icon-btn expanded-copy-toolbar-btn" id="expandedCopyToolbarBtn" type="button" title="Copy note" aria-label="Copy note">Copy</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="plain-btn expanded-line-toolbar-btn" id="expandedLineBtn" type="button" title="Insert horizontal line">Insert line</button><span class="expanded-list-wrap"><button class="icon-btn expanded-list-toolbar-btn" id="expandedListBtn" type="button" title="List formatting" aria-expanded="false">List</button><span class="expanded-list-menu" id="expandedListMenu"><button class="plain-btn" id="expandedBulletsBtn" type="button">• Bulleted list</button><button class="plain-btn" id="expandedNumbersBtn" type="button">1. Numbered list</button><button class="plain-btn" id="expandedChecklistBtn" type="button">☐ Checklist</button><button class="plain-btn" id="expandedCheckItemBtn" type="button">✓ Check/uncheck item</button><button class="plain-btn" id="expandedPlainBtn" type="button">Plain text</button></span></span><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedCopyBtn" type="button" hidden>Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete</button></span></span></div>
-      <div class="note-label-chips expanded-label-chips" id="expandedLabelChips" hidden></div>
+      <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><span class="note-capture-head-actions"><button class="plain-btn note-capture-cancel" id="cancelNoteCaptureBtn" type="button">Cancel</button><button class="plain-btn note-capture-save" id="saveNoteCaptureBtn" type="button">Save</button></span><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
+      <button class="plain-btn note-capture-more-btn" id="noteCaptureMoreBtn" type="button" aria-expanded="false">More <span aria-hidden="true">⌄</span></button>
+      <div class="expanded-note-tools note-capture-advanced" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="icon-btn expanded-copy-toolbar-btn" id="expandedCopyToolbarBtn" type="button" title="Copy note" aria-label="Copy note">Copy</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="plain-btn expanded-line-toolbar-btn" id="expandedLineBtn" type="button" title="Insert horizontal line">Insert line</button><span class="expanded-list-wrap"><button class="icon-btn expanded-list-toolbar-btn" id="expandedListBtn" type="button" title="List formatting" aria-expanded="false">List</button><span class="expanded-list-menu" id="expandedListMenu"><button class="plain-btn" id="expandedBulletsBtn" type="button">• Bulleted list</button><button class="plain-btn" id="expandedNumbersBtn" type="button">1. Numbered list</button><button class="plain-btn" id="expandedChecklistBtn" type="button">☐ Checklist</button><button class="plain-btn" id="expandedCheckItemBtn" type="button">✓ Check/uncheck item</button><button class="plain-btn" id="expandedPlainBtn" type="button">Plain text</button></span></span><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedCopyBtn" type="button" hidden>Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete</button></span></span></div>
+      <div class="note-label-chips expanded-label-chips note-capture-advanced" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
         <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn task-archive-completed-btn" id="clearDoneTasksBtn" type="button">Archive completed tasks</button><button class="plain-btn icon-btn task-archive-btn" id="taskArchiveBtn" type="button" title="Open completed task archive" aria-label="Open completed task archive">▣</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
@@ -4680,6 +4742,9 @@ body.notes-focus-active .note-body {
         const expandedBody = el("expandedBody");
         const expandedLinks = el("expandedLinks");
         const expandedNoteTools = el("expandedNoteTools");
+        const noteCaptureMoreBtn = el("noteCaptureMoreBtn");
+        const cancelNoteCaptureBtn = el("cancelNoteCaptureBtn");
+        const saveNoteCaptureBtn = el("saveNoteCaptureBtn");
         const expandedPinBtn = el("expandedPinBtn");
         const expandedEditBtn = el("expandedEditBtn");
         const expandedLineBtn = el("expandedLineBtn");
@@ -7433,6 +7498,8 @@ ${body}` : title };
             updateExpandedToolbar();
         }
         function openExpandedNote(id, startInEditMode = false, editFocusTarget = "body") {
+            expandedNoteShell.classList.remove("mobile-new-note-capture", "mobile-note-capture-more-open");
+            noteCaptureMoreBtn.setAttribute("aria-expanded", "false");
             const note = findNoteById(id);
             if (!note)
                 return;
@@ -7626,6 +7693,11 @@ ${body}` : title };
             renderNotes();
             save();
             openExpandedNote(newNote.id, true);
+            if (isMobileViewport()) {
+                expandedNoteShell.classList.add("mobile-new-note-capture");
+                expandedNoteShell.classList.remove("mobile-note-capture-more-open");
+                noteCaptureMoreBtn.setAttribute("aria-expanded", "false");
+            }
             setTimeout(() => expandedBody.focus(), 0);
         }
         function openTasksInboxShortcut() {
@@ -7688,7 +7760,29 @@ ${body}` : title };
             updateExpandedToolbar();
             save();
         }
+        function toggleNoteCaptureMore() {
+            if (!expandedNoteShell.classList.contains("mobile-new-note-capture")) return;
+            const open = expandedNoteShell.classList.toggle("mobile-note-capture-more-open");
+            noteCaptureMoreBtn.setAttribute("aria-expanded", String(open));
+        }
+        function saveMobileNoteCapture() {
+            if (!expandedNoteShell.classList.contains("mobile-new-note-capture")) return;
+            syncExpandedToCard();
+            closeExpandedEditor();
+            showCaptureToast("✓ Note saved");
+        }
+        function cancelMobileNoteCapture() {
+            if (!expandedNoteShell.classList.contains("mobile-new-note-capture")) return;
+            if (expandedNoteId) {
+                notes = notes.filter(note => note.id !== expandedNoteId);
+                save();
+                renderNotes();
+            }
+            closeExpandedEditor();
+        }
         function closeExpandedEditor() {
+            expandedNoteShell.classList.remove("mobile-new-note-capture", "mobile-note-capture-more-open");
+            noteCaptureMoreBtn.setAttribute("aria-expanded", "false");
             closeExpandedMoreMenu();
             resetExpandedEditorView();
             expandedTitle.readOnly = false;
@@ -8430,6 +8524,11 @@ ${body}` : title };
             renderNotes();
             save();
             openExpandedNote(newNote.id, true, "title");
+            if (isMobileViewport()) {
+                expandedNoteShell.classList.add("mobile-new-note-capture");
+                expandedNoteShell.classList.remove("mobile-note-capture-more-open");
+                noteCaptureMoreBtn.setAttribute("aria-expanded", "false");
+            }
         });
         workspaceNotesTab.addEventListener("click", () => showDesktopWorkspacePanel("notes"));
         notesLabelsBtn.addEventListener("click", toggleNotesLabelsWorkspace);
@@ -8519,6 +8618,9 @@ ${body}` : title };
             closeExpandedMoreMenu();
             deleteNoteById(expandedNoteId);
         } });
+        noteCaptureMoreBtn.addEventListener("click", toggleNoteCaptureMore);
+        saveNoteCaptureBtn.addEventListener("click", saveMobileNoteCapture);
+        cancelNoteCaptureBtn.addEventListener("click", cancelMobileNoteCapture);
         closeExpandedNote.addEventListener("click", closeExpandedEditor);
         noteModal.addEventListener("click", event => { if (event.target === noteModal)
             closeExpandedEditor(); });
