@@ -111,9 +111,6 @@
     .nav-day-btn { width: 24px; height: 24px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; padding: 0; font-size: 17px; }
     .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: var(--muted); font-size: var(--font-xs); }
     .actions, .footer-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-    .note-block { padding: 6px 11px; border-bottom: 1px solid var(--line); }
-    .note-line { display: grid; grid-template-columns: 68px 1fr; align-items: center; gap: 8px; }
-    .note-label { color: var(--muted); font-size: var(--font-xs); text-align: right; }
     .timeline { display: grid; gap: 3px; padding: 5px 10px 6px; }
     .time-pair-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; border-bottom: 1px solid var(--line); padding-bottom: 3px; }
     .slot { position: relative; display: grid; grid-template-columns: 42px 16px 24px 1fr; min-height: 24px; border-radius: 8px; background: #fffdf8; }
@@ -412,7 +409,6 @@
       font-size: 12px;
       opacity: .62;
     }
-    .note-block,
     .quote-block {
       padding-left: var(--space-5);
       padding-right: var(--space-5);
@@ -3209,7 +3205,6 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
   .app { display: flex; flex-direction: column; }
   .app .timeline { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; }
   .app > header,
-  .app > .note-block,
   .app > .events-strip,
   .app > .quote-block,
   .app > footer { flex: 0 0 auto; }
@@ -3304,7 +3299,6 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   #notesFocusScope.show { display: flex; }
 
   /* Focus is removed from the desktop Planner only. */
-  .app > .note-block { display: none; }
 }
 
 /* Desktop-only neutral default Task and Activity entries */
@@ -4135,10 +4129,6 @@ body.notes-focus-active .note-body {
 
 /* Mobile Today and Calendar focus cleanup */
 @media (max-width: 759px) {
-  body.mobile-section-active.mobile-view-plan .app > .note-block,
-  body.mobile-section-active.mobile-view-plan .app > .note-block {
-    display: none !important;
-  }
   body.mobile-section-active.mobile-view-plan .app > .quote-block,
   body.mobile-section-active.mobile-view-calendar .app > .quote-block,
   body.mobile-section-active.mobile-view-plan .app > footer,
@@ -4287,7 +4277,6 @@ body.notes-focus-active .note-body {
         </div>
         <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus view" aria-label="Focus view">⛶</button><button class="plain-btn today-tasks-btn" id="todayTasksBtn" type="button" title="Open Today tasks">Today tasks</button><button class="plain-btn print-today-btn" id="printTodayBtn" type="button" title="Print Today card">Print card</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button></div></div>
       </header>
-      <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="events-strip" id="eventsStrip" aria-label="Events for selected date"><div class="events-strip-head"><span class="events-strip-title" id="eventsStripTitle">Events</span><div class="events-strip-list" id="eventsStripList"></div><span class="events-strip-actions"><button class="plain-btn" id="viewEventsBtn" type="button">All events</button><button class="plain-btn event-add-link" id="addEventBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to midnight"></section>
       <section class="quote-block" aria-label="Favourite quote or reminder"><div class="quote-line"><label class="quote-label" for="quoteInput">Quote</label><input id="quoteInput" type="text" placeholder="Favourite quote, mantra or reminder..." autocomplete="off" /></div></section>
@@ -4541,7 +4530,6 @@ body.notes-focus-active .note-body {
         const exportBackupBtn = el("exportBackupBtn");
         const importBackupBtn = el("importBackupBtn");
         const importBackupInput = el("importBackupInput");
-        const focusInput = el("focusInput");
         const quoteInput = el("quoteInput");
         const plannerCreateModal = el("plannerCreateModal");
         const plannerCreateMeta = el("plannerCreateMeta");
@@ -6640,7 +6628,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             document.querySelectorAll(".timeblock-status[data-time]").forEach(button => { const status = normalizeTimeblockStatus(button.dataset.status); if (status !== "planned") statuses[button.dataset.time] = status; });
             return statuses;
         }
-        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: normalizeNotes(saved.notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses(), eventTimeblocks: normalizeEventTimeblocks(saved.eventTimeblocks), taskTimeblocks: normalizeTaskTimeblocks(saved.taskTimeblocks), activityTimeblocks: normalizeActivityTimeblocks(saved.activityTimeblocks) }; }
+        function currentDateDataFromState() { return { evening: saved.evening || "", notes: normalizeNotes(saved.notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses(), eventTimeblocks: normalizeEventTimeblocks(saved.eventTimeblocks), taskTimeblocks: normalizeTaskTimeblocks(saved.taskTimeblocks), activityTimeblocks: normalizeActivityTimeblocks(saved.activityTimeblocks) }; }
         function save() {
             const plannerKey = toKey(selectedDate);
             const noteKey = notesDateKey();
@@ -7952,7 +7940,6 @@ ${body}` : title };
             ensureRecurringEventBlocks(toKey(selectedDate));
             readSavedData();
             selectedDateText.textContent = displayDate(selectedDate);
-            focusInput.value = saved.focus || "";
             quoteInput.value = favouriteQuote;
             buildTimeline();
             renderSelectedDateEvents();
@@ -8175,7 +8162,6 @@ ${body}` : title };
     showDesktopWorkspacePanel("notes");
   }
 }
-        focusInput.addEventListener("input", save);
         quoteInput.addEventListener("input", () => {
             favouriteQuote = quoteInput.value;
             localStorage.setItem(QUOTE_KEY, favouriteQuote);
@@ -8463,7 +8449,7 @@ function timestampShortcutTarget(element) {
   if (!(element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement)) return null;
   if (element.readOnly || element.disabled) return null;
   if (element === expandedBody) return expandedNoteEditing ? element : null;
-  if (element === focusInput || element === quoteInput || element === activityInput) return element;
+  if (element === quoteInput || element === activityInput) return element;
   if (element instanceof HTMLTextAreaElement && element.dataset.time && !element.classList.contains("event-timeblock") && !element.classList.contains("task-timeblock")) return element;
   return null;
 }
