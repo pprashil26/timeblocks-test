@@ -4538,7 +4538,8 @@ select {
     color: var(--ink);
     font-weight: 700;
   }
-  .voice-capture-actions { display: flex; justify-content: flex-end; padding: 0 12px 12px; }
+  .voice-capture-head-actions { display: inline-flex; align-items: center; gap: 7px; }
+  .voice-capture-head-actions .plain-btn { min-height: 32px; padding: 5px 10px; }
   .voice-capture-save {
     min-height: 32px;
     padding: 5px 14px;
@@ -4604,7 +4605,7 @@ select {
 
   <div class="modal-backdrop voice-capture-backdrop" id="voiceCaptureModal" aria-hidden="true">
     <section class="voice-capture-panel" role="dialog" aria-modal="true" aria-labelledby="voiceCaptureTitle">
-      <div class="voice-capture-head"><strong id="voiceCaptureTitle">Voice Capture</strong><button class="plain-btn" id="closeVoiceCaptureBtn" type="button">Cancel</button></div>
+      <div class="voice-capture-head"><strong id="voiceCaptureTitle">Voice Capture</strong><span class="voice-capture-head-actions"><button class="plain-btn" id="closeVoiceCaptureBtn" type="button">Cancel</button><button class="plain-btn voice-capture-save" id="saveVoiceCaptureBtn" type="button">Save</button></span></div>
       <div class="voice-capture-body">
         <label for="voiceCaptureText">Speak or type</label>
         <textarea id="voiceCaptureText" rows="5" placeholder="Tap here, then use the microphone on your phone keyboard..."></textarea>
@@ -4617,7 +4618,6 @@ select {
           <button class="plain-btn" type="button" data-voice-type="activity" aria-pressed="false">Activity</button>
         </div>
       </div>
-      <div class="voice-capture-actions"><button class="plain-btn voice-capture-save" id="saveVoiceCaptureBtn" type="button">Save</button></div>
     </section>
   </div>
 
