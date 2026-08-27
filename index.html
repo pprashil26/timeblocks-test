@@ -210,6 +210,10 @@
     .link-preview { padding: 6px 9px 8px; border-top: 1px solid var(--line); background: var(--panel); }
     .link-preview-title { color: var(--muted); font-size: 10.5px; font-weight: 600; }
     .link-preview a { color: #516f64; font-size: 11.5px; text-decoration: none; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .linked-notes-list { display: grid; gap: 4px; margin-top: 4px; }
+    .linked-note-item { width: 100%; min-height: 28px; padding: 4px 7px; justify-content: flex-start; border: 1px solid var(--line); border-radius: 8px; background: var(--page); color: #516f64; font-size: 11.5px; text-align: left; text-decoration: none !important; }
+    .linked-note-item:hover, .linked-note-item:focus-visible { background: var(--soft); color: var(--ink); }
+    .linked-note-item.broken { border-style: dashed; color: var(--danger); cursor: default; }
     .modal-backdrop { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(61,58,52,.28); z-index: 50; }
     .modal-backdrop.open { display: flex; }
     .expanded-note, .move-note-panel, .help-panel { background: var(--page); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 18px 50px rgba(50,40,28,.22); overflow: hidden; }
@@ -5245,27 +5249,77 @@ select {
             return Array.from(new Set((text || "").match(pattern) || []));
         }
         function hrefForLink(link) { return /^https?:\/\//i.test(link) ? link : `https://${link}`; }
-        function renderLinks(container, text) {
+        function extractLinkedNoteTitles(text) {
+            const titles = [];
+            const seen = new Set();
+            const pattern = /\[\[([^\[\]\n]{1,120})\]\]/g;
+            let match;
+            while ((match = pattern.exec(text || "")) !== null) {
+                const title = match[1].trim();
+                const key = title.toLowerCase();
+                if (title && !seen.has(key)) {
+                    seen.add(key);
+                    titles.push(title);
+                }
+            }
+            return titles;
+        }
+        function findLinkedNoteByTitle(title, currentNoteId = null) {
+            const key = String(title || "").trim().toLowerCase();
+            if (!key) return null;
+            return allAvailableNotesForLink().find(({ note }) => note.id !== currentNoteId && String(note.title || "").trim().toLowerCase() === key) || null;
+        }
+        function openLinkedNoteReference(result) {
+            if (!result) return;
+            const targetDate = fromKey(result.dateKey);
+            if (!targetDate) return;
+            notesDate = targetDate;
+            localStorage.setItem(NOTES_DATE_KEY, result.dateKey);
+            loadNotesForIndependentDate();
+            openExpandedNote(result.note.id);
+        }
+        function renderLinks(container, text, currentNoteId = null) {
             const links = extractLinks(text || "");
+            const linkedNoteTitles = extractLinkedNoteTitles(text || "");
             container.innerHTML = "";
-            container.hidden = links.length === 0;
-            if (!links.length)
-                return;
-            const title = document.createElement("div");
-            title.className = "link-preview-title";
-            title.textContent = "Links";
-            const list = document.createElement("div");
-            list.className = "link-preview-list";
-            links.forEach(link => {
-                const anchor = document.createElement("a");
-                anchor.href = hrefForLink(link);
-                anchor.target = "_blank";
-                anchor.rel = "noopener noreferrer";
-                anchor.textContent = link;
-                anchor.title = link;
-                list.appendChild(anchor);
-            });
-            container.append(title, list);
+            container.hidden = links.length === 0 && linkedNoteTitles.length === 0;
+            if (links.length) {
+                const title = document.createElement("div");
+                title.className = "link-preview-title";
+                title.textContent = "Links";
+                const list = document.createElement("div");
+                list.className = "link-preview-list";
+                links.forEach(link => {
+                    const anchor = document.createElement("a");
+                    anchor.href = hrefForLink(link);
+                    anchor.target = "_blank";
+                    anchor.rel = "noopener noreferrer";
+                    anchor.textContent = link;
+                    anchor.title = link;
+                    list.appendChild(anchor);
+                });
+                container.append(title, list);
+            }
+            if (linkedNoteTitles.length) {
+                const title = document.createElement("div");
+                title.className = "link-preview-title";
+                title.textContent = "Related Notes";
+                const list = document.createElement("div");
+                list.className = "linked-notes-list";
+                linkedNoteTitles.forEach(noteTitle => {
+                    const result = findLinkedNoteByTitle(noteTitle, currentNoteId);
+                    const item = document.createElement("button");
+                    item.type = "button";
+                    item.className = "plain-btn linked-note-item";
+                    item.textContent = result ? `🔗 ${noteTitle}` : `⚠ ${noteTitle} (not found)`;
+                    item.title = result ? `Open linked note: ${noteTitle}` : `Linked note not found: ${noteTitle}`;
+                    item.classList.toggle("broken", !result);
+                    item.disabled = !result;
+                    if (result) item.addEventListener("click", () => openLinkedNoteReference(result));
+                    list.appendChild(item);
+                });
+                container.append(title, list);
+            }
         }
         function normalizeNoteLabels(rawLabels) {
             if (!Array.isArray(rawLabels))
@@ -7807,7 +7861,7 @@ ${body}` : title };
             expandedBody.value = note.body || "";
             expandedNoteTools.hidden = isDeletedPreview;
             expandedLabelChips.hidden = isDeletedPreview;
-            renderLinks(expandedLinks, expandedBody.value);
+            renderLinks(expandedLinks, expandedBody.value, expandedNoteId);
             if (isDeletedPreview) {
                 expandedTitle.readOnly = true;
                 expandedBody.readOnly = true;
@@ -8055,7 +8109,7 @@ ${body}` : title };
                 return;
             note.title = expandedTitle.value;
             note.body = expandedBody.value;
-            renderLinks(expandedLinks, expandedBody.value);
+            renderLinks(expandedLinks, expandedBody.value, expandedNoteId);
             renderNotes();
             updateExpandedToolbar();
             save();
