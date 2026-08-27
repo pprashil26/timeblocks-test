@@ -4550,6 +4550,53 @@ select {
     font-weight: 750;
   }
 }
+
+
+/* PWA Share Target capture: Task and Note only */
+.share-target-backdrop { display: none; }
+@media (max-width: 759px) {
+  .share-target-backdrop.open { display: flex; }
+  .share-target-panel {
+    width: min(410px, calc(100vw - 20px));
+    max-height: calc(100dvh - 24px);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--modal-radius, 18px);
+    background: var(--page);
+    box-shadow: 0 18px 50px rgba(50,40,28,.22);
+  }
+  .share-target-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    min-height: var(--modal-header-height, 44px);
+    gap: var(--control-gap, 8px);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .share-target-head-actions { display: inline-flex; align-items: center; gap: 7px; }
+  .share-target-head-actions .plain-btn { min-height: 32px; padding: 5px 10px; }
+  .share-target-body { display: grid; gap: 8px; padding: 10px 12px 12px; overflow-y: auto; }
+  .share-target-body label,
+  .share-target-label { color: var(--muted); font-size: var(--font-xs); font-weight: 650; }
+  #shareTargetTitleInput,
+  #shareTargetContentInput {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--control-radius, 10px);
+    background: var(--page);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 16px;
+  }
+  #shareTargetContentInput { min-height: 120px; max-height: 38vh; resize: vertical; line-height: 1.45; }
+  .share-target-types { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .share-target-types .plain-btn { min-height: 32px; border: 1px solid var(--line); background: var(--page); color: var(--muted); }
+  .share-target-types .plain-btn.active { border-color: var(--entry-border); background: var(--selected); color: var(--ink); font-weight: 700; }
+  .share-target-save { border: 1px solid #e2cd61; background: #FFEE8C; color: #4f4518; font-weight: 750; }
+}
 </style>
 </head>
 <body>
@@ -4621,6 +4668,23 @@ select {
     </section>
   </div>
 
+
+  <div class="modal-backdrop share-target-backdrop" id="shareTargetModal" aria-hidden="true">
+    <section class="share-target-panel" role="dialog" aria-modal="true" aria-labelledby="shareTargetTitle">
+      <div class="share-target-head"><strong id="shareTargetTitle">Save Shared Item</strong><span class="share-target-head-actions"><button class="plain-btn" id="cancelShareTargetBtn" type="button">Cancel</button><button class="plain-btn share-target-save" id="saveShareTargetBtn" type="button">Save</button></span></div>
+      <div class="share-target-body">
+        <label for="shareTargetTitleInput">Title</label>
+        <input id="shareTargetTitleInput" type="text" maxlength="240" autocomplete="off" placeholder="Shared item title" />
+        <label for="shareTargetContentInput">Link or shared text</label>
+        <textarea id="shareTargetContentInput" rows="5" placeholder="Shared link or text"></textarea>
+        <span class="share-target-label">Save as</span>
+        <div class="share-target-types" role="group" aria-label="Save shared item as">
+          <button class="plain-btn active" type="button" data-share-type="note" aria-pressed="true">Note</button>
+          <button class="plain-btn" type="button" data-share-type="task" aria-pressed="false">Task</button>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <div class="mobile-section-bar" id="mobileSectionBar">
     <button class="plain-btn" id="mobileHomeBtn" type="button">Home</button>
@@ -4868,6 +4932,11 @@ select {
         const closeVoiceCaptureBtn = el("closeVoiceCaptureBtn");
         const voiceCaptureText = el("voiceCaptureText");
         const saveVoiceCaptureBtn = el("saveVoiceCaptureBtn");
+        const shareTargetModal = el("shareTargetModal");
+        const shareTargetTitleInput = el("shareTargetTitleInput");
+        const shareTargetContentInput = el("shareTargetContentInput");
+        const cancelShareTargetBtn = el("cancelShareTargetBtn");
+        const saveShareTargetBtn = el("saveShareTargetBtn");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
         const shell = el("shell");
@@ -8564,6 +8633,10 @@ ${body}` : title };
       function handleEscapeKey() {
   clearShortcutPrefix();
 
+  if (shareTargetModal.classList.contains("open")) {
+    closeShareTargetCapture();
+    return;
+  }
   if (voiceCaptureModal.classList.contains("open")) {
     closeVoiceCapture();
     return;
@@ -8676,6 +8749,77 @@ ${body}` : title };
   }
 });
         globalSearchClear.addEventListener("click", clearGlobalSearch);
+        let shareTargetType = "note";
+        function setShareTargetType(type) {
+            if (!["note", "task"].includes(type)) return;
+            shareTargetType = type;
+            document.querySelectorAll("[data-share-type]").forEach(button => {
+                const active = button.dataset.shareType === type;
+                button.classList.toggle("active", active);
+                button.setAttribute("aria-pressed", String(active));
+            });
+        }
+        function openShareTargetCapture(title, textValue, urlValue) {
+            const sharedTitle = (title || "").trim();
+            const sharedText = (textValue || "").trim();
+            const sharedUrl = (urlValue || "").trim();
+            shareTargetTitleInput.value = sharedTitle || (sharedUrl ? "Shared link" : "Shared item");
+            shareTargetContentInput.value = [sharedUrl, sharedText].filter(Boolean).join("\n\n");
+            setShareTargetType("note");
+            shareTargetModal.classList.add("open");
+            shareTargetModal.setAttribute("aria-hidden", "false");
+        }
+        function closeShareTargetCapture() {
+            shareTargetModal.classList.remove("open");
+            shareTargetModal.setAttribute("aria-hidden", "true");
+            shareTargetTitleInput.value = "";
+            shareTargetContentInput.value = "";
+        }
+        function saveShareTargetCapture() {
+            const title = shareTargetTitleInput.value.trim();
+            const content = shareTargetContentInput.value.trim();
+            if (!title && !content) {
+                alert("There is no shared content to save.");
+                shareTargetTitleInput.focus();
+                return;
+            }
+            const destination = shareTargetType;
+            closeShareTargetCapture();
+            if (destination === "task") {
+                const taskText = [title || "Shared item", content].filter(Boolean).join(" — ").slice(0, 240);
+                const task = { id: createId("task"), text: taskText, nextAction: "", status: "not-started", done: false, highlighted: false, tags: [], date: "", time: "", noteLink: null, createdAt: new Date().toISOString() };
+                globalTasks.Inbox.unshift(task);
+                saveTasks();
+                renderGlobalTasks();
+                showCaptureToast("✓ Shared item saved to Inbox");
+                return;
+            }
+            const today = getToday();
+            if (!isWithinRange(today)) return;
+            notesDate = today;
+            localStorage.setItem(NOTES_DATE_KEY, notesDateKey());
+            notesFocusAll = false;
+            mobileNotesAll = false;
+            notesBinOpen = false;
+            loadNotesForIndependentDate();
+            const note = { id: createId(), title: title || "Shared item", body: content, labels: [], pinned: false, deleted: false, deletedAt: null };
+            notes.unshift(note);
+            renderNotes();
+            save();
+            showCaptureToast("✓ Shared item saved as Note");
+        }
+        function readShareTargetFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get("share-target") !== "1") return;
+            const title = params.get("title") || "";
+            const sharedText = params.get("text") || "";
+            const sharedUrl = params.get("url") || "";
+            const cleanUrl = new URL(window.location.href);
+            ["share-target", "title", "text", "url"].forEach(key => cleanUrl.searchParams.delete(key));
+            history.replaceState(null, "", cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+            setTimeout(() => openShareTargetCapture(title, sharedText, sharedUrl), 0);
+        }
+
         let voiceCaptureType = "task";
         function setVoiceCaptureType(type) {
             if (!["task", "event", "note", "activity"].includes(type)) return;
@@ -8758,6 +8902,10 @@ ${body}` : title };
         mobileVoiceCaptureBtn.addEventListener("click", openVoiceCapture);
         closeVoiceCaptureBtn.addEventListener("click", closeVoiceCapture);
         saveVoiceCaptureBtn.addEventListener("click", saveVoiceCapture);
+        cancelShareTargetBtn.addEventListener("click", closeShareTargetCapture);
+        saveShareTargetBtn.addEventListener("click", saveShareTargetCapture);
+        shareTargetModal.addEventListener("click", event => { if (event.target === shareTargetModal) closeShareTargetCapture(); });
+        document.querySelectorAll("[data-share-type]").forEach(button => button.addEventListener("click", () => setShareTargetType(button.dataset.shareType)));
         voiceCaptureModal.addEventListener("click", event => { if (event.target === voiceCaptureModal) closeVoiceCapture(); });
         document.querySelectorAll("[data-voice-type]").forEach(button => button.addEventListener("click", () => setVoiceCaptureType(button.dataset.voiceType)));
         mobileMoreCloseBtn.addEventListener("click", closeMobileMore);
@@ -9203,6 +9351,7 @@ if (key === "e") {
         });
         if (globalTaskList) mobileTaskTitleObserver.observe(globalTaskList, { childList: true, subtree: true });
         window.addEventListener("resize", resizeAllMobileTaskTitles);
+        readShareTargetFromUrl();
 </script>
 </body>
 </html>
