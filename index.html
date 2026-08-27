@@ -2350,6 +2350,21 @@ button.note-label-chip {
   color: var(--ink);
   text-decoration: none;
 }
+.expanded-link-note-btn {
+  min-width: 68px;
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid #d9cdea;
+  border-radius: 999px;
+  background: #f3eef8;
+  color: #554766;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-decoration: none !important;
+}
+.expanded-link-note-btn:hover,
+.expanded-link-note-btn:focus-visible { background: #e8def2; color: #493b5b; }
 
 #noteModal.note-view-mode .expanded-title,
 #noteModal.note-view-mode .expanded-body {
@@ -2365,6 +2380,12 @@ button.note-label-chip {
     min-width: 56px;
     min-height: 32px;
     padding: 6px 9px;
+  }
+  .expanded-link-note-btn {
+    min-width: 64px;
+    min-height: 32px;
+    padding: 6px 8px;
+    font-size: 11px;
   }
 
   .expanded-edit-btn {
@@ -4760,7 +4781,7 @@ select {
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" id="expandedNoteShell" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><span class="note-capture-head-actions"><button class="plain-btn note-capture-cancel" id="cancelNoteCaptureBtn" type="button">Cancel</button><button class="plain-btn note-capture-save" id="saveNoteCaptureBtn" type="button">Save</button></span><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
-      <div class="expanded-note-tools note-capture-advanced" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="icon-btn expanded-copy-toolbar-btn" id="expandedCopyToolbarBtn" type="button" title="Copy note" aria-label="Copy note">Copy</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="plain-btn expanded-line-toolbar-btn" id="expandedLineBtn" type="button" title="Insert horizontal line">Insert line</button><span class="expanded-list-wrap"><button class="icon-btn expanded-list-toolbar-btn" id="expandedListBtn" type="button" title="List formatting" aria-expanded="false">List</button><span class="expanded-list-menu" id="expandedListMenu"><button class="plain-btn" id="expandedBulletsBtn" type="button">• Bulleted list</button><button class="plain-btn" id="expandedNumbersBtn" type="button">1. Numbered list</button><button class="plain-btn" id="expandedChecklistBtn" type="button">☐ Checklist</button><button class="plain-btn" id="expandedCheckItemBtn" type="button">✓ Check/uncheck item</button><button class="plain-btn" id="expandedPlainBtn" type="button">Plain text</button></span></span><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedCopyBtn" type="button" hidden>Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete</button></span></span></div>
+      <div class="expanded-note-tools note-capture-advanced" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="plain-btn expanded-link-note-btn" id="expandedLinkNoteBtn" type="button" title="Link another note" aria-label="Link another note">Link Note</button><button class="icon-btn expanded-copy-toolbar-btn" id="expandedCopyToolbarBtn" type="button" title="Copy note" aria-label="Copy note">Copy</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="plain-btn expanded-line-toolbar-btn" id="expandedLineBtn" type="button" title="Insert horizontal line">Insert line</button><span class="expanded-list-wrap"><button class="icon-btn expanded-list-toolbar-btn" id="expandedListBtn" type="button" title="List formatting" aria-expanded="false">List</button><span class="expanded-list-menu" id="expandedListMenu"><button class="plain-btn" id="expandedBulletsBtn" type="button">• Bulleted list</button><button class="plain-btn" id="expandedNumbersBtn" type="button">1. Numbered list</button><button class="plain-btn" id="expandedChecklistBtn" type="button">☐ Checklist</button><button class="plain-btn" id="expandedCheckItemBtn" type="button">✓ Check/uncheck item</button><button class="plain-btn" id="expandedPlainBtn" type="button">Plain text</button></span></span><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedCopyBtn" type="button" hidden>Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete</button></span></span></div>
       <div class="note-label-chips expanded-label-chips note-capture-advanced" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <button class="plain-btn note-capture-more-btn" id="noteCaptureMoreBtn" type="button" aria-expanded="false">More <span aria-hidden="true">⌄</span></button>
@@ -5034,6 +5055,7 @@ select {
         const expandedCopyBtn = el("expandedCopyBtn");
         const expandedCopyToolbarBtn = el("expandedCopyToolbarBtn");
         const expandedLabelsBtn = el("expandedLabelsBtn");
+        const expandedLinkNoteBtn = el("expandedLinkNoteBtn");
         const expandedShareBtn = el("expandedShareBtn");
         const expandedLabelChips = el("expandedLabelChips");
         const expandedDeleteBtn = el("expandedDeleteBtn");
@@ -5637,7 +5659,10 @@ select {
         }
         function renderTaskNotePicker() {
             const query = taskNotePickerSearch.value.trim().toLowerCase();
-            const available = allAvailableNotesForLink().filter(({ note }) => !query || `${note.title || ""} ${note.body || ""} ${(note.labels || []).join(" ")}`.toLowerCase().includes(query));
+            const available = allAvailableNotesForLink().filter(({ note }) => {
+                if (notePickerTarget === "note" && note.id === expandedNoteId) return false;
+                return !query || `${note.title || ""} ${note.body || ""} ${(note.labels || []).join(" ")}`.toLowerCase().includes(query);
+            });
             taskNotePickerList.innerHTML = "";
             if (!available.length) {
                 const empty = document.createElement("div");
@@ -5658,10 +5683,45 @@ select {
                 const date = fromKey(dateKey);
                 meta.textContent = `${date ? displayDate(date) : dateKey}${note.labels.length ? " · " + note.labels.join(" · ") : ""}`;
                 button.append(title, meta);
-                button.addEventListener("click", () => notePickerTarget === "event" ? linkExistingNoteToEditingEvent(note.id, dateKey) : linkExistingNoteToEditingTask(note.id, dateKey));
+                button.addEventListener("click", () => {
+                    if (notePickerTarget === "event") linkExistingNoteToEditingEvent(note.id, dateKey);
+                    else if (notePickerTarget === "note") insertLinkedNoteReference(note.id, dateKey);
+                    else linkExistingNoteToEditingTask(note.id, dateKey);
+                });
                 taskNotePickerList.appendChild(button);
             });
         }
+        function openNoteLinkPicker() {
+            const current = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            if (!current || current.deleted) return;
+            notePickerTarget = "note";
+            taskNotePickerTitle.textContent = "Link another note";
+            taskNotePickerSearch.value = "";
+            renderTaskNotePicker();
+            taskNotePickerModal.classList.add("open");
+            taskNotePickerModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => taskNotePickerSearch.focus(), 0);
+        }
+        function insertLinkedNoteReference(noteId, dateKey) {
+            const current = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            const target = normalizeNotes(readDateData(dateKey).notes).find(note => note.id === noteId && !note.deleted);
+            if (!current || !target || target.id === current.id) return;
+            const reference = `[[${target.title || "Untitled"}]]`;
+            const existingReferences = extractLinkedNoteTitles(expandedBody.value).map(title => title.toLowerCase());
+            closeTaskNotePicker();
+            if (existingReferences.includes(String(target.title || "Untitled").trim().toLowerCase())) {
+                showCaptureToast("Note is already linked");
+                return;
+            }
+            const currentBody = expandedBody.value.trimEnd();
+            expandedBody.value = currentBody ? `${currentBody}
+
+${reference}` : reference;
+            syncExpandedToCard();
+            setExpandedNoteEditMode(false, false);
+            showCaptureToast("✓ Note linked");
+        }
+
         function openTaskNotePicker() {
             const found = saveEditingTaskChangesBeforeNote();
             if (!found || linkedNoteForTask(found.task)) return updateTaskNoteControls();
@@ -9123,6 +9183,7 @@ ${body}` : title };
         expandedCopyBtn.addEventListener("click", copyExpandedNote);
         expandedCopyToolbarBtn.addEventListener("click", copyExpandedNote);
         expandedLabelsBtn.addEventListener("click", openLabelSelector);
+        expandedLinkNoteBtn.addEventListener("click", openNoteLinkPicker);
         expandedShareBtn.addEventListener("click", shareExpandedNote);
         expandedDeleteBtn.addEventListener("click", () => { if (expandedNoteId) {
             closeExpandedMoreMenu();
