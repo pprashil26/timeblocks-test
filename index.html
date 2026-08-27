@@ -9299,6 +9299,11 @@ if (key === "e") {
   openEventEditor();
 }
 });
+        if (document.readyState === "complete") {
+            readShareTargetFromUrl();
+        } else {
+            window.addEventListener("load", readShareTargetFromUrl, { once: true });
+        }
     })();
   
   
@@ -9351,7 +9356,6 @@ if (key === "e") {
         });
         if (globalTaskList) mobileTaskTitleObserver.observe(globalTaskList, { childList: true, subtree: true });
         window.addEventListener("resize", resizeAllMobileTaskTitles);
-        readShareTargetFromUrl();
 </script>
 </body>
 </html>
