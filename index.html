@@ -4317,7 +4317,6 @@ body.notes-focus-active .note-body {
 }
 
 /* Mobile capture-first New Task form */
-.task-capture-more-btn { display: none; }
 .capture-toast {
   position: fixed;
   left: 50%;
@@ -4340,22 +4339,7 @@ body.notes-focus-active .note-body {
 .capture-toast.show { opacity: 1; transform: translate(-50%, 0); }
 @media (max-width: 759px) {
   #taskModal.mobile-new-task-capture .task-capture-organize { display: none !important; }
-  #taskModal.mobile-new-task-capture .task-capture-more-btn {
-    display: flex;
-    width: 100%;
-    min-height: 34px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 5px 9px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: var(--panel);
-    color: var(--ink);
-    font-size: 12px;
-    font-weight: 650;
-  }
   #taskModal.mobile-new-task-capture .task-capture-advanced { display: none !important; }
-  #taskModal.mobile-new-task-capture.mobile-capture-more-open .task-capture-advanced { display: grid !important; }
   #taskModal.mobile-new-task-capture .task-editor-body { gap: 6px; }
 }
 
@@ -4771,7 +4755,6 @@ select {
         <label class="task-capture-organize" for="taskEditorContext">List</label><select class="task-capture-organize" id="taskEditorContext"></select>
         <div class="task-editor-mobile-controls task-capture-organize"><div><label for="taskEditorStatus">Status</label><select id="taskEditorStatus"></select></div><label class="task-editor-highlight-option" for="taskEditorHighlight"><input id="taskEditorHighlight" type="checkbox" /> Highlight this task</label></div>
         <label class="task-capture-organize" for="taskEditorTags">Tags <span class="event-optional">optional</span></label><input class="task-capture-organize" id="taskEditorTags" type="text" maxlength="240" list="taskTagSuggestions" placeholder="Work, Home, Waiting..." autocomplete="off" /><datalist id="taskTagSuggestions"></datalist><div class="task-editor-tags-help task-capture-organize">Separate multiple tags with commas. Task tags are independent from Note labels.</div>
-        <button class="plain-btn task-capture-more-btn" id="taskCaptureMoreBtn" type="button" aria-expanded="false">More <span aria-hidden="true">⌄</span></button>
         <div class="task-editor-date-row task-capture-advanced"><div><label for="taskEditorDate">Date <span class="event-optional">optional</span></label><input id="taskEditorDate" type="date" /></div><div><label for="taskEditorTime">Time <span class="event-optional">optional</span></label><input id="taskEditorTime" type="time" /></div></div>
         <div class="task-note-section task-capture-advanced" id="taskNoteSection"><span class="task-note-label">Note</span><span class="task-note-actions"><button class="plain-btn task-note-btn" id="taskCreateNoteBtn" type="button">Create note</button><button class="plain-btn task-note-btn" id="taskLinkNoteBtn" type="button">Link existing</button><button class="plain-btn task-note-btn" id="taskOpenNoteBtn" type="button" hidden>Open note</button><button class="plain-btn task-note-unlink" id="taskUnlinkNoteBtn" type="button" hidden>Unlink</button></span><span class="task-note-help" id="taskNoteHelp"></span></div>
       </div>
@@ -4991,7 +4974,6 @@ select {
         const taskTagSuggestions = el("taskTagSuggestions");
         const taskEditorDate = el("taskEditorDate");
         const taskEditorTime = el("taskEditorTime");
-        const taskCaptureMoreBtn = el("taskCaptureMoreBtn");
         const captureToast = el("captureToast");
         const taskCreateNoteBtn = el("taskCreateNoteBtn");
         const taskLinkNoteBtn = el("taskLinkNoteBtn");
@@ -5739,7 +5721,7 @@ select {
             const found = context && (globalTasks[context] || []).find(item => item.id === taskId) ? { context, task: globalTasks[context].find(item => item.id === taskId) } : findTaskLocation(taskId);
             if (!found) return;
             editingTaskId = found.task.id; editingTaskContext = found.context; taskEditorFocusTarget = focusTarget;
-            taskModal.classList.remove("mobile-new-task-capture", "mobile-capture-more-open"); taskCaptureMoreBtn.setAttribute("aria-expanded", "false");
+            taskModal.classList.remove("mobile-new-task-capture");
             taskEditorTitle.textContent = "Edit Task";
             taskEditorText.value = found.task.text; taskEditorNextAction.value = found.task.nextAction || ""; populateTaskEditorLists(found.context); populateTaskEditorStatus(found.task.status); taskEditorHighlight.checked = Boolean(found.task.highlighted);
             taskEditorTags.value = normalizeTaskTags(found.task.tags).join(", "); updateTaskTagSuggestions();
@@ -5764,7 +5746,7 @@ select {
         }
         function openNewTaskEditor(context = activeTaskContext, focusTarget = "text") {
             editingTaskId = null; editingTaskContext = isMobileViewport() ? "Inbox" : (TASK_CONTEXTS.includes(context) ? context : "Inbox"); taskEditorFocusTarget = focusTarget;
-            taskModal.classList.toggle("mobile-new-task-capture", isMobileViewport()); taskModal.classList.remove("mobile-capture-more-open"); taskCaptureMoreBtn.setAttribute("aria-expanded", "false");
+            taskModal.classList.toggle("mobile-new-task-capture", isMobileViewport());
             taskEditorTitle.textContent = "New Task";
             taskEditorText.value = ""; taskEditorNextAction.value = ""; populateTaskEditorLists(editingTaskContext); populateTaskEditorStatus("not-started"); taskEditorHighlight.checked = false;
             taskEditorTags.value = ""; updateTaskTagSuggestions();
@@ -5779,7 +5761,7 @@ select {
             if (!found) return;
             editingTaskId = null;
             editingTaskContext = found.context;
-            taskModal.classList.remove("mobile-new-task-capture", "mobile-capture-more-open"); taskCaptureMoreBtn.setAttribute("aria-expanded", "false");
+            taskModal.classList.remove("mobile-new-task-capture");
             taskEditorTitle.textContent = "Copy Task";
             taskEditorText.value = found.task.text;
             taskEditorNextAction.value = found.task.nextAction || "";
@@ -5795,7 +5777,7 @@ select {
             taskEditorText.focus();
             taskEditorText.select();
         }
-        function closeTaskEditor() { taskModal.classList.remove("open", "mobile-new-task-capture", "mobile-capture-more-open"); taskCaptureMoreBtn.setAttribute("aria-expanded", "false"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; taskEditorFocusTarget = "text"; mobileTaskCaptureReturnHome = false; }
+        function closeTaskEditor() { taskModal.classList.remove("open", "mobile-new-task-capture"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; taskEditorFocusTarget = "text"; mobileTaskCaptureReturnHome = false; }
         function cancelTaskEditor() {
             const returnHome = isMobileViewport() && mobileTaskCaptureReturnHome;
             closeTaskEditor();
@@ -5803,11 +5785,6 @@ select {
                 closeExpandedEditor();
                 clearMobileSection();
             }
-        }
-        function toggleTaskCaptureMore() {
-            if (!taskModal.classList.contains("mobile-new-task-capture")) return;
-            const open = taskModal.classList.toggle("mobile-capture-more-open");
-            taskCaptureMoreBtn.setAttribute("aria-expanded", String(open));
         }
         let captureToastTimer = null;
         function showCaptureToast(message) {
@@ -8901,7 +8878,6 @@ ${body}` : title };
         closeTaskEditorBtn.addEventListener("click", cancelTaskEditor);
         cancelTaskEditorBtn.addEventListener("click", cancelTaskEditor);
         saveTaskEditorBtn.addEventListener("click", saveTaskFromEditor);
-        taskCaptureMoreBtn.addEventListener("click", toggleTaskCaptureMore);
         copyTaskBtn.addEventListener("click", copyEditingTask);
         deleteTaskEditorBtn.addEventListener("click", deleteTaskFromEditor);
         taskModal.addEventListener("click", event => { if (event.target === taskModal) cancelTaskEditor(); });
