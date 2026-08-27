@@ -4488,6 +4488,41 @@ select {
     padding: 8px 12px;
   }
 }
+
+
+/* Mobile-only speech-to-text capture */
+.speech-field { display: contents; }
+.speech-note-wrap { display: contents; }
+.speech-btn { display: none; }
+@media (max-width: 759px) {
+  .speech-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 36px;
+    gap: 6px;
+    align-items: center;
+    min-width: 0;
+  }
+  .speech-field > input { width: 100%; min-width: 0; }
+  .speech-note-wrap { position: relative; display: block; min-height: 0; }
+  .speech-note-wrap > .expanded-body { width: 100%; padding-right: 48px; }
+  .speech-btn {
+    display: inline-flex;
+    width: 36px;
+    min-width: 36px;
+    height: 32px;
+    min-height: 32px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--control-radius, 10px);
+    background: var(--panel);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1;
+  }
+  .speech-note-btn { position: absolute; top: 8px; right: 8px; z-index: 1; }
+  .speech-btn.listening { border-color: #b66a62; background: #f8e5e2; color: #8f4039; }
+  .activity-input .speech-field { flex: 1 1 auto; }
+}
 </style>
 </head>
 <body>
@@ -4613,7 +4648,7 @@ select {
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><span class="note-capture-head-actions"><button class="plain-btn note-capture-cancel" id="cancelNoteCaptureBtn" type="button">Cancel</button><button class="plain-btn note-capture-save" id="saveNoteCaptureBtn" type="button">Save</button></span><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
       <div class="expanded-note-tools note-capture-advanced" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="icon-btn expanded-copy-toolbar-btn" id="expandedCopyToolbarBtn" type="button" title="Copy note" aria-label="Copy note">Copy</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="plain-btn expanded-line-toolbar-btn" id="expandedLineBtn" type="button" title="Insert horizontal line">Insert line</button><span class="expanded-list-wrap"><button class="icon-btn expanded-list-toolbar-btn" id="expandedListBtn" type="button" title="List formatting" aria-expanded="false">List</button><span class="expanded-list-menu" id="expandedListMenu"><button class="plain-btn" id="expandedBulletsBtn" type="button">• Bulleted list</button><button class="plain-btn" id="expandedNumbersBtn" type="button">1. Numbered list</button><button class="plain-btn" id="expandedChecklistBtn" type="button">☐ Checklist</button><button class="plain-btn" id="expandedCheckItemBtn" type="button">✓ Check/uncheck item</button><button class="plain-btn" id="expandedPlainBtn" type="button">Plain text</button></span></span><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedCopyBtn" type="button" hidden>Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete</button></span></span></div>
       <div class="note-label-chips expanded-label-chips note-capture-advanced" id="expandedLabelChips" hidden></div>
-      <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
+      <span class="speech-note-wrap"><textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea><button class="plain-btn speech-btn speech-note-btn" type="button" data-speech-target="expandedBody" title="Speak note" aria-label="Speak note">🎤</button></span>
       <button class="plain-btn note-capture-more-btn" id="noteCaptureMoreBtn" type="button" aria-expanded="false">More <span aria-hidden="true">⌄</span></button>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
         <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn task-archive-completed-btn" id="clearDoneTasksBtn" type="button">Archive completed tasks</button><button class="plain-btn icon-btn task-archive-btn" id="taskArchiveBtn" type="button" title="Open completed task archive" aria-label="Open completed task archive">▣</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
@@ -4631,7 +4666,7 @@ select {
 >
   Export
 </button></span></div>
-        <div class="activity-input"><input id="activityInput" type="text" placeholder="What are you doing?" autocomplete="off" /><button class="plain-btn activity-add-btn workspace-add-icon" id="activityAddBtn" type="button" title="Add activity" aria-label="Add activity">+</button></div>
+        <div class="activity-input"><span class="speech-field"><input id="activityInput" type="text" placeholder="What are you doing?" autocomplete="off" /><button class="plain-btn speech-btn" type="button" data-speech-target="activityInput" title="Speak activity" aria-label="Speak activity">🎤</button></span><button class="plain-btn activity-add-btn workspace-add-icon" id="activityAddBtn" type="button" title="Add activity" aria-label="Add activity">+</button></div>
         <div id="activityLog"></div>
       </div>
       <div class="events-panel" id="eventsPanel" hidden>
@@ -4657,7 +4692,7 @@ select {
     <section class="event-editor-panel" role="dialog" aria-modal="true" aria-label="Event editor">
       <div class="event-editor-head"><p class="event-editor-title" id="eventEditorTitle">New Event</p><button class="plain-btn" id="closeEventBtn" type="button">Close</button></div>
       <div class="event-editor-body">
-        <label for="eventTitleInput">Event</label><input id="eventTitleInput" type="text" maxlength="120" placeholder="Event title" autocomplete="off" />
+        <label for="eventTitleInput">Event</label><span class="speech-field"><input id="eventTitleInput" type="text" maxlength="120" placeholder="Event title" autocomplete="off" /><button class="plain-btn speech-btn" type="button" data-speech-target="eventTitleInput" title="Speak event title" aria-label="Speak event title">🎤</button></span>
         <label for="eventNextActionInput">Next action <span class="event-optional">optional</span></label><input id="eventNextActionInput" type="text" maxlength="160" placeholder="What is the very next action?" autocomplete="off" />
         <label class="event-highlight-option event-capture-advanced" for="eventHighlightInput"><input id="eventHighlightInput" type="checkbox" /> Highlight this event</label>
         <label class="event-capture-advanced" for="eventTagInput">Tag <span class="event-optional">optional</span></label><input class="event-capture-advanced" id="eventTagInput" type="text" maxlength="40" list="eventTagSuggestions" placeholder="Work, Family, Health..." autocomplete="off" /><datalist id="eventTagSuggestions"></datalist>
@@ -4677,7 +4712,7 @@ select {
     <section class="task-editor-panel" role="dialog" aria-modal="true" aria-label="Task editor">
       <div class="task-editor-head"><p class="task-editor-title" id="taskEditorTitle">Edit Task</p><button class="plain-btn" id="closeTaskEditorBtn" type="button">Close</button></div>
       <div class="task-editor-body">
-        <label for="taskEditorText">Task</label><input id="taskEditorText" type="text" maxlength="240" autocomplete="off" />
+        <label for="taskEditorText">Task</label><span class="speech-field"><input id="taskEditorText" type="text" maxlength="240" autocomplete="off" /><button class="plain-btn speech-btn" type="button" data-speech-target="taskEditorText" title="Speak task title" aria-label="Speak task title">🎤</button></span>
         <label for="taskEditorNextAction">Next action <span class="event-optional">optional</span></label><input id="taskEditorNextAction" type="text" maxlength="160" placeholder="What is the very next action?" autocomplete="off" />
         <label class="task-capture-organize" for="taskEditorContext">List</label><select class="task-capture-organize" id="taskEditorContext"></select>
         <div class="task-editor-mobile-controls task-capture-organize"><div><label for="taskEditorStatus">Status</label><select id="taskEditorStatus"></select></div><label class="task-editor-highlight-option" for="taskEditorHighlight"><input id="taskEditorHighlight" type="checkbox" /> Highlight this task</label></div>
@@ -8741,6 +8776,62 @@ ${body}` : title };
         activityAddBtn.addEventListener("click", addActivityEntry);
         activityFilterBtn.addEventListener("click", toggleActivityFilter);
       exportActivityBtn.addEventListener("click", exportActivityLog);  
+        const SpeechRecognitionApi = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let activeSpeechRecognition = null;
+        let activeSpeechButton = null;
+        function stopSpeechRecognition() {
+            if (activeSpeechRecognition) {
+                try { activeSpeechRecognition.stop(); } catch (error) {}
+            }
+        }
+        function startSpeechToText(button) {
+            if (!isMobileViewport()) return;
+            const target = el(button.dataset.speechTarget);
+            if (!target) return;
+            if (!SpeechRecognitionApi) {
+                alert("Speech recognition is not supported on this device or browser.");
+                return;
+            }
+            if (activeSpeechRecognition) {
+                stopSpeechRecognition();
+                return;
+            }
+            const recognition = new SpeechRecognitionApi();
+            activeSpeechRecognition = recognition;
+            activeSpeechButton = button;
+            recognition.lang = navigator.language || "en-AU";
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            button.classList.add("listening");
+            button.textContent = "●";
+            button.title = "Stop listening";
+            button.setAttribute("aria-label", "Stop listening");
+            recognition.onresult = event => {
+                const transcript = event.results && event.results[0] && event.results[0][0] ? event.results[0][0].transcript.trim() : "";
+                if (!transcript) return;
+                const existing = target.value.trim();
+                target.value = existing ? `${target.value.trimEnd()} ${transcript}` : transcript;
+                target.dispatchEvent(new Event("input", { bubbles: true }));
+            };
+            recognition.onerror = event => {
+                if (event.error === "not-allowed" || event.error === "service-not-allowed") alert("Microphone access was denied. Allow microphone access and try again.");
+                else if (event.error === "no-speech") alert("No speech was detected. Please try again.");
+            };
+            recognition.onend = () => {
+                if (activeSpeechButton) {
+                    activeSpeechButton.classList.remove("listening");
+                    activeSpeechButton.textContent = "🎤";
+                    activeSpeechButton.title = "Start speech to text";
+                    activeSpeechButton.setAttribute("aria-label", "Start speech to text");
+                }
+                activeSpeechRecognition = null;
+                activeSpeechButton = null;
+            };
+            try { recognition.start(); }
+            catch (error) { recognition.onend(); alert("Speech recognition could not start. Please try again."); }
+        }
+        document.querySelectorAll(".speech-btn").forEach(button => button.addEventListener("click", () => startSpeechToText(button)));
+
         activityInput.addEventListener("keydown", event => { if (event.key === "Enter") {
             event.preventDefault();
             addActivityEntry();
