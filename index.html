@@ -4382,6 +4382,13 @@ body.notes-focus-active .note-body {
 }
 
 
+
+
+/* Keep the Note capture More control out of non-Note-capture workspace views. */
+#expandedNoteShell:not(.mobile-new-note-capture) .note-capture-more-btn {
+  display: none !important;
+}
+
 /* Cross-device UI standards: Phase 1 controls + Phase 2 modal consistency */
 :root {
   --control-height: 32px;
