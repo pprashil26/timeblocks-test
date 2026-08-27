@@ -4488,6 +4488,75 @@ select {
     padding: 8px 12px;
   }
 }
+
+
+/* Mobile Voice Capture using native keyboard dictation */
+.voice-capture-backdrop { display: none; }
+@media (max-width: 759px) {
+  .voice-capture-backdrop.open { display: flex; }
+  .voice-capture-panel {
+    width: min(410px, calc(100vw - 20px));
+    max-height: calc(100dvh - 24px);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--modal-radius, 18px);
+    background: var(--page);
+    box-shadow: 0 18px 50px rgba(50,40,28,.22);
+  }
+  .voice-capture-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    min-height: var(--modal-header-height, 44px);
+    gap: var(--control-gap, 8px);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .voice-capture-body { display: grid; gap: 8px; padding: 10px 12px; }
+  .voice-capture-body label,
+  .voice-capture-label { color: var(--muted); font-size: var(--font-xs); font-weight: 650; }
+  #voiceCaptureText {
+    width: 100%;
+    min-height: 132px;
+    max-height: 42vh;
+    resize: vertical;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--control-radius, 10px);
+    background: var(--page);
+    color: var(--ink);
+    font: inherit;
+    line-height: 1.45;
+  }
+  .voice-capture-help { color: var(--muted); font-size: 10.5px; line-height: 1.35; }
+  .voice-capture-types { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .voice-capture-types .plain-btn {
+    min-width: 0;
+    min-height: 32px;
+    padding: 4px 6px;
+    border: 1px solid var(--line);
+    background: var(--page);
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .voice-capture-types .plain-btn.active {
+    border-color: var(--entry-border);
+    background: var(--selected);
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .voice-capture-actions { display: flex; justify-content: flex-end; padding: 0 12px 12px; }
+  .voice-capture-save {
+    min-height: 32px;
+    padding: 5px 14px;
+    border: 1px solid #e2cd61;
+    border-radius: var(--control-radius, 10px);
+    background: #FFEE8C;
+    color: #4f4518;
+    font-weight: 750;
+  }
+}
 </style>
 </head>
 <body>
@@ -4532,11 +4601,31 @@ select {
         <button class="plain-btn mobile-more-item" id="mobileActivityBtn" type="button">Activity</button>
         <button class="plain-btn mobile-more-item" id="mobileAllEventsBtn" type="button">Events</button>
         <button class="plain-btn mobile-more-item" id="mobileCalendarBtn" type="button">Calendar</button>
+        <button class="plain-btn mobile-more-item" id="mobileVoiceCaptureBtn" type="button">🎤 Voice Capture</button>
         <button class="plain-btn mobile-more-item mobile-export-btn" type="button">Export</button>
         <button class="plain-btn mobile-more-item mobile-import-btn" type="button">Import</button>
         <button class="plain-btn mobile-more-item" id="mobileHelpBtn" type="button">Help</button>
         <button class="plain-btn mobile-more-item mobile-share-btn" id="mobileShareBtn" type="button">Share</button>
       </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop voice-capture-backdrop" id="voiceCaptureModal" aria-hidden="true">
+    <section class="voice-capture-panel" role="dialog" aria-modal="true" aria-labelledby="voiceCaptureTitle">
+      <div class="voice-capture-head"><strong id="voiceCaptureTitle">Voice Capture</strong><button class="plain-btn" id="closeVoiceCaptureBtn" type="button">Cancel</button></div>
+      <div class="voice-capture-body">
+        <label for="voiceCaptureText">Speak or type</label>
+        <textarea id="voiceCaptureText" rows="5" placeholder="Tap here, then use the microphone on your phone keyboard..."></textarea>
+        <span class="voice-capture-help">Use your phone keyboard’s microphone, then review the text before saving.</span>
+        <span class="voice-capture-label">Save as</span>
+        <div class="voice-capture-types" role="group" aria-label="Save voice capture as">
+          <button class="plain-btn active" type="button" data-voice-type="task" aria-pressed="true">Task</button>
+          <button class="plain-btn" type="button" data-voice-type="event" aria-pressed="false">Event</button>
+          <button class="plain-btn" type="button" data-voice-type="note" aria-pressed="false">Note</button>
+          <button class="plain-btn" type="button" data-voice-type="activity" aria-pressed="false">Activity</button>
+        </div>
+      </div>
+      <div class="voice-capture-actions"><button class="plain-btn voice-capture-save" id="saveVoiceCaptureBtn" type="button">Save</button></div>
     </section>
   </div>
 
@@ -4783,6 +4872,11 @@ select {
         const mobileMoreBtn = el("mobileMoreBtn");
         const mobileMoreBackdrop = el("mobileMoreBackdrop");
         const mobileMoreCloseBtn = el("mobileMoreCloseBtn");
+        const mobileVoiceCaptureBtn = el("mobileVoiceCaptureBtn");
+        const voiceCaptureModal = el("voiceCaptureModal");
+        const closeVoiceCaptureBtn = el("closeVoiceCaptureBtn");
+        const voiceCaptureText = el("voiceCaptureText");
+        const saveVoiceCaptureBtn = el("saveVoiceCaptureBtn");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
         const shell = el("shell");
@@ -8485,6 +8579,10 @@ ${body}` : title };
       function handleEscapeKey() {
   clearShortcutPrefix();
 
+  if (voiceCaptureModal.classList.contains("open")) {
+    closeVoiceCapture();
+    return;
+  }
   if (mobileMoreBackdrop.classList.contains("open")) {
     closeMobileMore();
     return;
@@ -8593,6 +8691,74 @@ ${body}` : title };
   }
 });
         globalSearchClear.addEventListener("click", clearGlobalSearch);
+        let voiceCaptureType = "task";
+        function setVoiceCaptureType(type) {
+            if (!["task", "event", "note", "activity"].includes(type)) return;
+            voiceCaptureType = type;
+            document.querySelectorAll("[data-voice-type]").forEach(button => {
+                const active = button.dataset.voiceType === type;
+                button.classList.toggle("active", active);
+                button.setAttribute("aria-pressed", String(active));
+            });
+        }
+        function openVoiceCapture() {
+            closeMobileMore();
+            voiceCaptureText.value = "";
+            setVoiceCaptureType("task");
+            voiceCaptureModal.classList.add("open");
+            voiceCaptureModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => voiceCaptureText.focus(), 0);
+        }
+        function closeVoiceCapture() {
+            voiceCaptureModal.classList.remove("open");
+            voiceCaptureModal.setAttribute("aria-hidden", "true");
+            voiceCaptureText.value = "";
+        }
+        function saveVoiceCapture() {
+            const capturedText = voiceCaptureText.value.trim();
+            if (!capturedText) {
+                alert("Please speak or enter some text.");
+                voiceCaptureText.focus();
+                return;
+            }
+            const destination = voiceCaptureType;
+            closeVoiceCapture();
+            if (destination === "task") {
+                const task = { id: createId("task"), text: capturedText, nextAction: "", status: "not-started", done: false, highlighted: false, tags: [], date: "", time: "", noteLink: null, createdAt: new Date().toISOString() };
+                globalTasks.Inbox.unshift(task);
+                saveTasks();
+                renderGlobalTasks();
+                showCaptureToast("✓ Task saved to Inbox");
+                return;
+            }
+            if (destination === "event") {
+                openEventEditor();
+                eventTitleInput.value = capturedText.slice(0, 120);
+                eventTitleInput.dispatchEvent(new Event("input", { bubbles: true }));
+                return;
+            }
+            if (destination === "note") {
+                const today = getToday();
+                if (!isWithinRange(today)) return;
+                notesDate = today;
+                localStorage.setItem(NOTES_DATE_KEY, notesDateKey());
+                notesFocusAll = false;
+                mobileNotesAll = false;
+                notesBinOpen = false;
+                loadNotesForIndependentDate();
+                const note = { id: createId(), title: "Voice note", body: capturedText, labels: [], pinned: false, deleted: false, deletedAt: null };
+                notes.unshift(note);
+                renderNotes();
+                save();
+                showCaptureToast("✓ Note saved");
+                return;
+            }
+            activityEntries.unshift({ id: createId("activity"), text: capturedText, status: "started", highlighted: false, createdAt: new Date().toISOString() });
+            saveActivity();
+            renderActivity();
+            showCaptureToast("✓ Activity saved");
+        }
+
         function openMobileMore() {
             mobileMoreBackdrop.classList.add("open");
             mobileMoreBackdrop.setAttribute("aria-hidden", "false");
@@ -8604,6 +8770,11 @@ ${body}` : title };
             mobileMoreBtn.setAttribute("aria-expanded", "false");
         }
         mobileMoreBtn.addEventListener("click", openMobileMore);
+        mobileVoiceCaptureBtn.addEventListener("click", openVoiceCapture);
+        closeVoiceCaptureBtn.addEventListener("click", closeVoiceCapture);
+        saveVoiceCaptureBtn.addEventListener("click", saveVoiceCapture);
+        voiceCaptureModal.addEventListener("click", event => { if (event.target === voiceCaptureModal) closeVoiceCapture(); });
+        document.querySelectorAll("[data-voice-type]").forEach(button => button.addEventListener("click", () => setVoiceCaptureType(button.dataset.voiceType)));
         mobileMoreCloseBtn.addEventListener("click", closeMobileMore);
         mobileMoreBackdrop.addEventListener("click", event => { if (event.target === mobileMoreBackdrop) closeMobileMore(); });
         mobileTodayBtn.addEventListener("click", () => {
