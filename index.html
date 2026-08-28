@@ -211,9 +211,12 @@
     .link-preview-title { color: var(--muted); font-size: 10.5px; font-weight: 600; }
     .link-preview a { color: #516f64; font-size: 11.5px; text-decoration: none; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .linked-notes-list { display: grid; gap: 4px; margin-top: 4px; }
-    .linked-note-item { width: 100%; min-height: 28px; padding: 4px 7px; justify-content: flex-start; border: 1px solid var(--line); border-radius: 8px; background: var(--page); color: #516f64; font-size: 11.5px; text-align: left; text-decoration: none !important; }
+    .linked-note-row { display: grid; grid-template-columns: minmax(0, 1fr) 30px; gap: 4px; align-items: stretch; }
+    .linked-note-item { width: 100%; min-width: 0; min-height: 28px; padding: 4px 7px; justify-content: flex-start; border: 1px solid var(--line); border-radius: 8px; background: var(--page); color: #516f64; font-size: 11.5px; text-align: left; text-decoration: none !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .linked-note-item:hover, .linked-note-item:focus-visible { background: var(--soft); color: var(--ink); }
     .linked-note-item.broken { border-style: dashed; color: var(--danger); cursor: default; }
+    .linked-note-remove { width: 30px; min-width: 30px; min-height: 28px; padding: 0; border: 1px solid #d9b7b2; border-radius: 8px; background: var(--page); color: var(--danger); font-size: 16px; font-weight: 700; line-height: 1; }
+    .linked-note-remove:hover, .linked-note-remove:focus-visible { background: #fff3f1; color: #8a4d45; text-decoration: none; }
     .modal-backdrop { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(61,58,52,.28); z-index: 50; }
     .modal-backdrop.open { display: flex; }
     .expanded-note, .move-note-panel, .help-panel { background: var(--page); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 18px 50px rgba(50,40,28,.22); overflow: hidden; }
@@ -5300,6 +5303,26 @@ select {
             loadNotesForIndependentDate();
             openExpandedNote(result.note.id);
         }
+        function unlinkNoteReference(noteTitle) {
+            const current = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            if (!current || current.deleted) return;
+            const title = String(noteTitle || "").trim();
+            if (!title) return;
+            if (!confirm(`Remove link to "${title}"?\n\nThe linked note will not be deleted.`)) return;
+            const reference = `[[${title}]]`;
+            const body = expandedBody.value;
+            const start = body.indexOf(reference);
+            if (start === -1) return;
+            let removeStart = start;
+            let removeEnd = start + reference.length;
+            if (body.slice(removeEnd, removeEnd + 2) === "\r\n") removeEnd += 2;
+            else if (body.charAt(removeEnd) === "\n") removeEnd += 1;
+            else if (body.slice(Math.max(0, removeStart - 2), removeStart) === "\r\n") removeStart -= 2;
+            else if (body.charAt(removeStart - 1) === "\n") removeStart -= 1;
+            expandedBody.value = body.slice(0, removeStart) + body.slice(removeEnd);
+            syncExpandedToCard();
+            showCaptureToast("✓ Note link removed");
+        }
         function renderLinks(container, text, currentNoteId = null) {
             const links = extractLinks(text || "");
             const linkedNoteTitles = extractLinkedNoteTitles(text || "");
@@ -5330,6 +5353,8 @@ select {
                 list.className = "linked-notes-list";
                 linkedNoteTitles.forEach(noteTitle => {
                     const result = findLinkedNoteByTitle(noteTitle, currentNoteId);
+                    const row = document.createElement("div");
+                    row.className = "linked-note-row";
                     const item = document.createElement("button");
                     item.type = "button";
                     item.className = "plain-btn linked-note-item";
@@ -5338,7 +5363,15 @@ select {
                     item.classList.toggle("broken", !result);
                     item.disabled = !result;
                     if (result) item.addEventListener("click", () => openLinkedNoteReference(result));
-                    list.appendChild(item);
+                    const remove = document.createElement("button");
+                    remove.type = "button";
+                    remove.className = "plain-btn linked-note-remove";
+                    remove.textContent = "×";
+                    remove.title = `Remove link to ${noteTitle}`;
+                    remove.setAttribute("aria-label", remove.title);
+                    remove.addEventListener("click", () => unlinkNoteReference(noteTitle));
+                    row.append(item, remove);
+                    list.appendChild(row);
                 });
                 container.append(title, list);
             }
@@ -5678,11 +5711,7 @@ select {
                 const title = document.createElement("span");
                 title.className = "task-note-picker-item-title";
                 title.textContent = `${note.pinned ? "★ " : ""}${note.title || "Untitled"}`;
-                const meta = document.createElement("span");
-                meta.className = "task-note-picker-item-meta";
-                const date = fromKey(dateKey);
-                meta.textContent = `${date ? displayDate(date) : dateKey}${note.labels.length ? " · " + note.labels.join(" · ") : ""}`;
-                button.append(title, meta);
+                button.appendChild(title);
                 button.addEventListener("click", () => {
                     if (notePickerTarget === "event") linkExistingNoteToEditingEvent(note.id, dateKey);
                     else if (notePickerTarget === "note") insertLinkedNoteReference(note.id, dateKey);
