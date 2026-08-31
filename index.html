@@ -4824,25 +4824,6 @@ select {
     display: none !important;
   }
 }
-
-/* Lightweight Contacts: Contact-labelled Notes */
-.notes-contacts-btn {
-  min-height: 28px;
-  padding: 4px 9px;
-  border: 1px solid #a9c9e5;
-  border-radius: 9px;
-  background: #eef6fc;
-  color: #35566f;
-  font-weight: 750;
-  line-height: 1;
-  text-decoration: none !important;
-}
-.notes-contacts-btn:hover,
-.notes-contacts-btn:focus-visible,
-.notes-contacts-btn.active { background: #dceaf7; border-color: #8fb8db; color: #29485f; }
-@media (max-width: 759px) {
-  .mobile-notes-contacts.active { color: #35566f !important; font-weight: 750 !important; text-decoration: underline !important; text-underline-offset: 3px; }
-}
 </style>
 </head>
 <body>
@@ -4983,9 +4964,9 @@ select {
       <div class="notes-wrap" id="notesWorkspacePanel">
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
-        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn notes-labels-btn" id="notesLabelsBtn" type="button" title="Filter notes by label">Labels</button><button class="plain-btn notes-contacts-btn" id="notesContactsBtn" type="button" title="Show contact notes">Contacts</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
+        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn notes-labels-btn" id="notesLabelsBtn" type="button" title="Filter notes by label">Labels</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
         <div class="notes-focus-scope notes-filter-scope" id="notesFocusScope" aria-label="Notes filters"><select class="notes-label-filter show" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
-        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-primary-row"><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note">＋</button></div><div class="mobile-notes-secondary-row"><button class="plain-btn mobile-notes-contacts" id="mobileNotesContactsBtn" type="button">Contacts</button><span aria-hidden="true">·</span><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button><span aria-hidden="true">·</span><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button></div></div>
+        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-primary-row"><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note">＋</button></div><div class="mobile-notes-secondary-row"><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button><span aria-hidden="true">·</span><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button></div></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
       <div class="workspace-panel-host" id="workspacePanelHost"></div>
@@ -5107,7 +5088,7 @@ select {
   </div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true">
-    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>Getting Started</h3><ol><li>Use Tasks for actions, Events for date-based commitments, Notes for reference, and Activity for a lightweight work log.</li><li>Use Today to plan work in 30-minute timeblocks.</li><li>Use the workspace tabs to switch between Notes, Tasks, Activity, and Events.</li></ol><h3>Tasks</h3><ul><li>Create Tasks in Inbox, Today, This month, or Someday.</li><li>Use status, highlight, tags, next action, and optional date/time scheduling.</li><li>Link a Task to a new or existing Note.</li><li>Archive completed Tasks and restore them later if needed.</li></ul><h3>Events</h3><ul><li>Create one-time or recurring Events with an optional time, duration, tag, highlight, and next action.</li><li>Timed Events can appear in the Planner.</li><li>Create a Note or link an existing Note to an Event.</li></ul><h3>Notes</h3><ul><li>Select a compact Note row to open it. Use the star to pin or unpin it.</li><li>Use Labels to organise and filter Notes. Contacts are Notes labelled Contact.</li><li>Use Link Note to connect Notes. Links appear under Related Notes.</li><li>Use Edit for writing and formatting, including bullets, numbering, checklists, and horizontal lines.</li></ul><h3>Voice Capture</h3><ul><li>On mobile, open More, then Voice Capture.</li><li>Use the keyboard microphone or type, then save as a Task, Event, Note, or Activity.</li></ul><h3>Planner</h3><ul><li>Select an empty timeblock to add a Task, Event, or Activity.</li><li>Use the status control to mark a block as Planned, In progress, or Done.</li></ul><h3>Backup &amp; Privacy</h3><ul><li>Export regularly to create a complete local backup. Use Import to restore it.</li><li>Data is stored locally on the current device. No account is required.</li></ul><div class="help-note">Install FAST GTD as a PWA for an app-like experience. Local data is specific to the browser or installed app, so keep regular exports.</div></div><div class="help-mobile-content"><h3>Quick Start</h3>
+    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>Getting Started</h3><ol><li>Use Tasks for actions, Events for date-based commitments, Notes for reference, and Activity for a lightweight work log.</li><li>Use Today to plan work in 30-minute timeblocks.</li><li>Use the workspace tabs to switch between Notes, Tasks, Activity, and Events.</li></ol><h3>Tasks</h3><ul><li>Create Tasks in Inbox, Today, This month, or Someday.</li><li>Use status, highlight, tags, next action, and optional date/time scheduling.</li><li>Link a Task to a new or existing Note.</li><li>Archive completed Tasks and restore them later if needed.</li></ul><h3>Events</h3><ul><li>Create one-time or recurring Events with an optional time, duration, tag, highlight, and next action.</li><li>Timed Events can appear in the Planner.</li><li>Create a Note or link an existing Note to an Event.</li></ul><h3>Notes</h3><ul><li>Select a compact Note row to open it. Use the star to pin or unpin it.</li><li>Use Labels to organise and filter Notes.</li><li>Use Link Note to connect Notes. Links appear under Related Notes.</li><li>Use Edit for writing and formatting, including bullets, numbering, checklists, and horizontal lines.</li></ul><h3>Voice Capture</h3><ul><li>On mobile, open More, then Voice Capture.</li><li>Use the keyboard microphone or type, then save as a Task, Event, Note, or Activity.</li></ul><h3>Planner</h3><ul><li>Select an empty timeblock to add a Task, Event, or Activity.</li><li>Use the status control to mark a block as Planned, In progress, or Done.</li></ul><h3>Backup &amp; Privacy</h3><ul><li>Export regularly to create a complete local backup. Use Import to restore it.</li><li>Data is stored locally on the current device. No account is required.</li></ul><div class="help-note">Install FAST GTD as a PWA for an app-like experience. Local data is specific to the browser or installed app, so keep regular exports.</div></div><div class="help-mobile-content"><h3>Quick Start</h3>
 <ul>
   <li>+ Task saves a new Task to Inbox.</li>
   <li>+ Note opens simple capture with Labels and Link Note visible.</li>
@@ -5133,7 +5114,7 @@ select {
 <ul>
   <li>Tap a compact Note row to open it.</li>
   <li>Tap ★ to pin or unpin.</li>
-  <li>Contacts are Notes labelled Contact. Open Contacts, then tap + to add one.</li><li>Use Link Note to connect Notes.</li>
+  <li>Use Link Note to connect Notes.</li>
   <li>Linked Notes appear under Related Notes.</li>
 </ul>
 
@@ -5281,14 +5262,12 @@ select {
         const addNoteBtn = el("addNoteBtn");
         const notesFocusBtn = el("notesFocusBtn");
         const notesLabelsBtn = el("notesLabelsBtn");
-        const notesContactsBtn = el("notesContactsBtn");
         const notesFocusScope = el("notesFocusScope");
         const notesLabelFilter = el("notesLabelFilter");
         const mobileNotesToolbar = el("mobileNotesToolbar");
         const mobileNotesScopeSlot = el("mobileNotesScopeSlot");
         const mobileNotesAddBtn = el("mobileNotesAddBtn");
         const mobileNotesMoveAllBtn = el("mobileNotesMoveAllBtn");
-        const mobileNotesContactsBtn = el("mobileNotesContactsBtn");
         const mobileNotesBinBtn = el("mobileNotesBinBtn");
         const moveAllNotesBtn = el("moveAllNotesBtn");
         const notesBinBtn = el("notesBinBtn");
@@ -7871,7 +7850,6 @@ ${body}` : title };
             notesBinBtn.textContent = "♻";
             notesBinBtn.title = notesBinOpen ? "Recycle Bin is open" : "Recycle Bin";
             applyNotesPinnedFilter();
-            updateContactsButtons();
         }
         function openSearch() { closeNotesMoreMenu(); notesBinOpen = false; notesSearchOpen = true; updateSearchUi(); setTimeout(() => notesSearchInput.focus(), 0); }
         function clearSearch() { notesSearchOpen = false; notesSearchQuery = ""; notesSearchInput.value = ""; updateSearchUi(); renderNotes(); }
@@ -8302,46 +8280,6 @@ ${body}` : title };
             activityFocusBtn.title = workspaceFocusPanel === "activity" ? "Return to normal planner view" : "Focus on Activity";
             eventsFocusBtn.title = workspaceFocusPanel === "events" ? "Return to normal planner view" : "Focus on Events";
         }
-        const CONTACT_LABEL = "Contact";
-        function isContactsView() {
-            return notesLabelFilterValue.toLowerCase() === CONTACT_LABEL.toLowerCase();
-        }
-        function updateContactsButtons() {
-            const active = isContactsView() && !notesBinOpen;
-            notesContactsBtn.classList.toggle("active", active);
-            mobileNotesContactsBtn.classList.toggle("active", active);
-            notesContactsBtn.setAttribute("aria-pressed", String(active));
-            mobileNotesContactsBtn.setAttribute("aria-pressed", String(active));
-        }
-        function openContactsView() {
-            notesBinOpen = false;
-            notesSearchOpen = false;
-            notesSearchQuery = "";
-            notesSearchInput.value = "";
-            notesLabelFilterValue = CONTACT_LABEL;
-            if (isMobileViewport()) {
-                mobileNotesAll = true;
-                setMobileSection("notes");
-            } else {
-                showDesktopWorkspacePanel("notes");
-                notesFocusAll = true;
-            }
-            updateLabelFilterOptions();
-            notesLabelFilter.value = CONTACT_LABEL;
-            renderNotes();
-        }
-        function newContactNote() {
-            return {
-                id: createId(),
-                title: "New Contact",
-                body: "Organisation:\nPhone:\nEmail:\n\nNotes:\n",
-                labels: [CONTACT_LABEL],
-                pinned: false,
-                deleted: false,
-                deletedAt: null
-            };
-        }
-
         function toggleNotesLabelsWorkspace() {
             showDesktopWorkspacePanel(desktopWorkspacePanel === "labels" ? "notes" : "labels");
         }
@@ -9438,7 +9376,6 @@ ${body}` : title };
         });
         notesLabelFilter.addEventListener("change", () => {
             notesLabelFilterValue = notesLabelFilter.value;
-            updateContactsButtons();
             renderNotes();
         });
         moveAllNotesBtn.addEventListener("click", () => { closeNotesMoreMenu(); openMoveAllNotes(); });
@@ -9447,9 +9384,7 @@ ${body}` : title };
         addNoteBtn.addEventListener("click", () => {
             closeNotesMoreMenu();
             notesBinOpen = false;
-            const newNote = isContactsView()
-                ? newContactNote()
-                : { id: createId(), title: "New Note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
+            const newNote = { id: createId(), title: "New Note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
             notes.unshift(newNote);
             renderNotes();
             save();
@@ -9463,8 +9398,6 @@ ${body}` : title };
         });
         workspaceNotesTab.addEventListener("click", () => showDesktopWorkspacePanel("notes"));
         notesLabelsBtn.addEventListener("click", toggleNotesLabelsWorkspace);
-        notesContactsBtn.addEventListener("click", openContactsView);
-        mobileNotesContactsBtn.addEventListener("click", openContactsView);
         workspaceTasksTab.addEventListener("click", () => showDesktopWorkspacePanel("tasks"));
         workspaceActivityTab.addEventListener("click", () => showDesktopWorkspacePanel("activity"));
         workspaceEventsTab.addEventListener("click", () => showDesktopWorkspacePanel("events"));
