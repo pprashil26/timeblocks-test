@@ -5001,7 +5001,7 @@ select {
         <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn project-link-btn" id="projectsBtn" type="button">Projects</button><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn task-archive-completed-btn" id="clearDoneTasksBtn" type="button">Archive completed tasks</button><button class="plain-btn icon-btn task-archive-btn" id="taskArchiveBtn" type="button" title="Open completed task archive" aria-label="Open completed task archive">▣</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
         <div class="task-navigation-row">
           <div class="task-contexts" id="taskContexts"></div>
-          <div class="task-date-filter-row" aria-label="Task schedule filters"><span class="task-navigation-separator" aria-hidden="true"></span><div class="task-date-filters" id="taskDateFilter" role="group" aria-label="Filter current task list by schedule"><button class="plain-btn task-date-filter-chip active" type="button" data-task-date-filter="all" aria-pressed="true">All</button><span class="task-date-filter-separator" aria-hidden="true">•</span><button class="plain-btn task-date-filter-chip" type="button" data-task-date-filter="scheduled" aria-pressed="false">Scheduled</button><span class="task-date-filter-separator" aria-hidden="true">•</span><button class="plain-btn task-date-filter-chip" type="button" data-task-date-filter="no-date" aria-pressed="false">No Date</button></div></div>
+          <div class="task-date-filter-row" aria-label="Task schedule filters"><span class="task-navigation-separator" aria-hidden="true"></span><div class="task-date-filters" id="taskDateFilter" role="group" aria-label="Filter current task list by schedule"><button class="plain-btn task-date-filter-chip active" type="button" data-task-date-filter="all" aria-pressed="true">All</button><span class="task-date-filter-separator" aria-hidden="true">•</span><button class="plain-btn task-date-filter-chip" type="button" data-task-date-filter="scheduled" aria-pressed="false">Scheduled</button><span class="task-date-filter-separator" aria-hidden="true">•</span><button class="plain-btn task-date-filter-chip" type="button" data-task-date-filter="no-date" aria-pressed="false">No Date</button><span class="task-date-filter-separator" aria-hidden="true">•</span><button class="plain-btn task-date-filter-chip" type="button" data-task-date-filter="no-next-action" aria-pressed="false">No Next Action</button></div></div>
         </div>
         <div class="task-filter-row" aria-label="Task tag filters"><span class="task-filter-label">Tags</span><div class="task-tag-filters" id="taskTagFilter" role="group" aria-label="Filter current task list by tag"></div></div>
         <div class="task-archive-head" id="taskArchiveHead" hidden><button class="plain-btn task-archive-back" id="closeTaskArchiveBtn" type="button" aria-label="Back to tasks">←</button><strong>Completed Tasks Archive</strong></div>
@@ -7058,10 +7058,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             localStorage.setItem(TASKS_KEY, JSON.stringify(globalTasks));
         }
         function activeTasks() { return orderTasks(globalTasks[activeTaskContext] || []); }
-        function taskMatchesDateFilter(task){if(activeTaskDateFilter==="scheduled")return Boolean(task.date);if(activeTaskDateFilter==="no-date")return !task.date;return true;}
+        function taskMatchesDateFilter(task){if(activeTaskDateFilter==="scheduled")return Boolean(task.date);if(activeTaskDateFilter==="no-date")return !task.date;if(activeTaskDateFilter==="no-next-action")return !String(task.nextAction || "").trim();return true;}
         function visibleTasks(){return activeTasks().filter(task=>taskMatchesDateFilter(task)&&(!activeTaskTagFilter||normalizeTaskTags(task.tags).some(tag=>tag.toLowerCase()===activeTaskTagFilter.toLowerCase())));}
         function updateTaskDateFilter(){taskDateFilter.querySelectorAll("[data-task-date-filter]").forEach(button=>{const active=button.dataset.taskDateFilter===activeTaskDateFilter;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active));});}
-        function setTaskDateFilter(filter){if(!["all","scheduled","no-date"].includes(filter))return;activeTaskDateFilter=filter;renderGlobalTasks();}
+        function setTaskDateFilter(filter){if(!["all","scheduled","no-date","no-next-action"].includes(filter))return;activeTaskDateFilter=filter;renderGlobalTasks();}
         function setActiveTaskContext(context) {
             if (!TASK_CONTEXTS.includes(context))
                 return;
@@ -7397,7 +7397,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 else row.append(status, highlight, content, rowActions);
                 globalTaskList.appendChild(row);
             });
-            if (!tasksToRender.length) { const empty = document.createElement("div"); empty.className = "task-empty"; empty.textContent = activeTaskTagFilter ? `No tasks tagged “${activeTaskTagFilter}” in ${activeTaskContext}` : `No tasks in ${activeTaskContext}`; globalTaskList.appendChild(empty); }
+            if (!tasksToRender.length) { const empty = document.createElement("div"); empty.className = "task-empty"; const viewLabel = activeTaskDateFilter === "scheduled" ? "scheduled tasks" : activeTaskDateFilter === "no-date" ? "tasks without a date" : activeTaskDateFilter === "no-next-action" ? "tasks without a next action" : "tasks"; empty.textContent = activeTaskTagFilter ? `No ${viewLabel} tagged “${activeTaskTagFilter}” in ${activeTaskContext}` : `No ${viewLabel} in ${activeTaskContext}`; globalTaskList.appendChild(empty); }
         }
         function clearDoneTasks() {
             const completed = activeTasks().filter(task => task.done);
