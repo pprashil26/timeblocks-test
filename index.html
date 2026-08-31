@@ -4824,40 +4824,6 @@ select {
     display: none !important;
   }
 }
-
-/* Lightweight Templates: Notes carrying the Template label */
-.notes-templates-btn {
-  min-height: 28px;
-  padding: 4px 9px;
-  border: 1px solid #a9c9e5;
-  border-radius: 9px;
-  background: #eef6fc;
-  color: #35566f;
-  font-weight: 750;
-  line-height: 1;
-  text-decoration: none !important;
-}
-.notes-templates-btn:hover,
-.notes-templates-btn:focus-visible,
-.notes-templates-btn.active { background: #dceaf7; border-color: #8fb8db; color: #29485f; }
-.expanded-use-template-btn {
-  min-height: 30px;
-  padding: 5px 9px;
-  border: 1px solid #a9c9e5;
-  border-radius: 999px;
-  background: #dceaf7;
-  color: #35566f;
-  font-size: 11px;
-  font-weight: 750;
-  white-space: nowrap;
-}
-.expanded-use-template-btn:hover,
-.expanded-use-template-btn:focus-visible { background: #cfe2f3; border-color: #8fb8db; color: #29485f; }
-@media (max-width: 759px) {
-  .mobile-notes-templates.active { color: #35566f !important; font-weight: 750 !important; text-decoration: underline !important; text-underline-offset: 3px; }
-  #expandedNoteShell #expandedUseTemplateBtn { min-height: 32px; padding: 5px 8px; font-size: 10.5px; }
-  #expandedNoteShell.mobile-new-note-capture #expandedUseTemplateBtn { display: none !important; }
-}
 </style>
 </head>
 <body>
@@ -4998,9 +4964,9 @@ select {
       <div class="notes-wrap" id="notesWorkspacePanel">
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
-        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn notes-labels-btn" id="notesLabelsBtn" type="button" title="Filter notes by label">Labels</button><button class="plain-btn notes-templates-btn" id="notesTemplatesBtn" type="button" title="Show reusable Note templates">Templates</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
+        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn notes-labels-btn" id="notesLabelsBtn" type="button" title="Filter notes by label">Labels</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
         <div class="notes-focus-scope notes-filter-scope" id="notesFocusScope" aria-label="Notes filters"><select class="notes-label-filter show" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
-        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-primary-row"><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note">＋</button></div><div class="mobile-notes-secondary-row"><button class="plain-btn mobile-notes-templates" id="mobileNotesTemplatesBtn" type="button">Templates</button><span aria-hidden="true">·</span><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button><span aria-hidden="true">·</span><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button></div></div>
+        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-primary-row"><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note">＋</button></div><div class="mobile-notes-secondary-row"><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button><span aria-hidden="true">·</span><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button></div></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
       <div class="workspace-panel-host" id="workspacePanelHost"></div>
@@ -5017,7 +4983,7 @@ select {
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" id="expandedNoteShell" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><span class="note-capture-head-actions"><button class="plain-btn note-capture-cancel" id="cancelNoteCaptureBtn" type="button">Cancel</button><button class="plain-btn note-capture-save" id="saveNoteCaptureBtn" type="button">Save</button></span><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
-      <div class="expanded-note-tools note-capture-advanced" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="plain-btn expanded-link-note-btn" id="expandedLinkNoteBtn" type="button" title="Link another note" aria-label="Link another note">Link Note</button><button class="plain-btn expanded-use-template-btn" id="expandedUseTemplateBtn" type="button" title="Create a new Note from this template" hidden>Use Template</button><button class="icon-btn expanded-copy-toolbar-btn" id="expandedCopyToolbarBtn" type="button" title="Copy note" aria-label="Copy note">Copy</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="plain-btn expanded-line-toolbar-btn" id="expandedLineBtn" type="button" title="Insert horizontal line">Insert line</button><span class="expanded-list-wrap"><button class="icon-btn expanded-list-toolbar-btn" id="expandedListBtn" type="button" title="List formatting" aria-expanded="false">List</button><span class="expanded-list-menu" id="expandedListMenu"><button class="plain-btn" id="expandedBulletsBtn" type="button">• Bulleted list</button><button class="plain-btn" id="expandedNumbersBtn" type="button">1. Numbered list</button><button class="plain-btn" id="expandedChecklistBtn" type="button">☐ Checklist</button><button class="plain-btn" id="expandedCheckItemBtn" type="button">✓ Check/uncheck item</button><button class="plain-btn" id="expandedPlainBtn" type="button">Plain text</button></span></span><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn mobile-note-more-action" id="mobileExpandedPinBtn" type="button">Pin note</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedEditBtn" type="button">Edit note</button><button class="plain-btn" id="expandedCopyBtn" type="button">Copy note</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedLineBtn" type="button">Insert line</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedBulletsBtn" type="button">Bulleted list</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedNumbersBtn" type="button">Numbered list</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedChecklistBtn" type="button">Checklist</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete</button></span></span></div>
+      <div class="expanded-note-tools note-capture-advanced" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="plain-btn expanded-link-note-btn" id="expandedLinkNoteBtn" type="button" title="Link another note" aria-label="Link another note">Link Note</button><button class="icon-btn expanded-copy-toolbar-btn" id="expandedCopyToolbarBtn" type="button" title="Copy note" aria-label="Copy note">Copy</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="plain-btn expanded-line-toolbar-btn" id="expandedLineBtn" type="button" title="Insert horizontal line">Insert line</button><span class="expanded-list-wrap"><button class="icon-btn expanded-list-toolbar-btn" id="expandedListBtn" type="button" title="List formatting" aria-expanded="false">List</button><span class="expanded-list-menu" id="expandedListMenu"><button class="plain-btn" id="expandedBulletsBtn" type="button">• Bulleted list</button><button class="plain-btn" id="expandedNumbersBtn" type="button">1. Numbered list</button><button class="plain-btn" id="expandedChecklistBtn" type="button">☐ Checklist</button><button class="plain-btn" id="expandedCheckItemBtn" type="button">✓ Check/uncheck item</button><button class="plain-btn" id="expandedPlainBtn" type="button">Plain text</button></span></span><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn mobile-note-more-action" id="mobileExpandedPinBtn" type="button">Pin note</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedEditBtn" type="button">Edit note</button><button class="plain-btn" id="expandedCopyBtn" type="button">Copy note</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedLineBtn" type="button">Insert line</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedBulletsBtn" type="button">Bulleted list</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedNumbersBtn" type="button">Numbered list</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedChecklistBtn" type="button">Checklist</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete</button></span></span></div>
       <div class="note-label-chips expanded-label-chips note-capture-advanced" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <button class="plain-btn note-capture-more-btn" id="noteCaptureMoreBtn" type="button" aria-expanded="false">More <span aria-hidden="true">⌄</span></button>
@@ -5122,7 +5088,7 @@ select {
   </div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true">
-    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>Getting Started</h3><ol><li>Use Tasks for actions, Events for date-based commitments, Notes for reference, and Activity for a lightweight work log.</li><li>Use Today to plan work in 30-minute timeblocks.</li><li>Use the workspace tabs to switch between Notes, Tasks, Activity, and Events.</li></ol><h3>Tasks</h3><ul><li>Create Tasks in Inbox, Today, This month, or Someday.</li><li>Use status, highlight, tags, next action, and optional date/time scheduling.</li><li>Link a Task to a new or existing Note.</li><li>Archive completed Tasks and restore them later if needed.</li></ul><h3>Events</h3><ul><li>Create one-time or recurring Events with an optional time, duration, tag, highlight, and next action.</li><li>Timed Events can appear in the Planner.</li><li>Create a Note or link an existing Note to an Event.</li></ul><h3>Notes</h3><ul><li>Select a compact Note row to open it. Use the star to pin or unpin it.</li><li>Use Labels to organise and filter Notes. A Note labelled Template becomes reusable.</li><li>Open Templates, select one, then choose Use Template to create a new Note.</li><li>Use Link Note to connect Notes. Links appear under Related Notes.</li><li>Use Edit for writing and formatting, including bullets, numbering, checklists, and horizontal lines.</li></ul><h3>Voice Capture</h3><ul><li>On mobile, open More, then Voice Capture.</li><li>Use the keyboard microphone or type, then save as a Task, Event, Note, or Activity.</li></ul><h3>Planner</h3><ul><li>Select an empty timeblock to add a Task, Event, or Activity.</li><li>Use the status control to mark a block as Planned, In progress, or Done.</li></ul><h3>Backup &amp; Privacy</h3><ul><li>Export regularly to create a complete local backup. Use Import to restore it.</li><li>Data is stored locally on the current device. No account is required.</li></ul><div class="help-note">Install FAST GTD as a PWA for an app-like experience. Local data is specific to the browser or installed app, so keep regular exports.</div></div><div class="help-mobile-content"><h3>Quick Start</h3>
+    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>Getting Started</h3><ol><li>Use Tasks for actions, Events for date-based commitments, Notes for reference, and Activity for a lightweight work log.</li><li>Use Today to plan work in 30-minute timeblocks.</li><li>Use the workspace tabs to switch between Notes, Tasks, Activity, and Events.</li></ol><h3>Tasks</h3><ul><li>Create Tasks in Inbox, Today, This month, or Someday.</li><li>Use status, highlight, tags, next action, and optional date/time scheduling.</li><li>Link a Task to a new or existing Note.</li><li>Archive completed Tasks and restore them later if needed.</li></ul><h3>Events</h3><ul><li>Create one-time or recurring Events with an optional time, duration, tag, highlight, and next action.</li><li>Timed Events can appear in the Planner.</li><li>Create a Note or link an existing Note to an Event.</li></ul><h3>Notes</h3><ul><li>Select a compact Note row to open it. Use the star to pin or unpin it.</li><li>Use Labels to organise and filter Notes.</li><li>Use Link Note to connect Notes. Links appear under Related Notes.</li><li>Use Edit for writing and formatting, including bullets, numbering, checklists, and horizontal lines.</li></ul><h3>Voice Capture</h3><ul><li>On mobile, open More, then Voice Capture.</li><li>Use the keyboard microphone or type, then save as a Task, Event, Note, or Activity.</li></ul><h3>Planner</h3><ul><li>Select an empty timeblock to add a Task, Event, or Activity.</li><li>Use the status control to mark a block as Planned, In progress, or Done.</li></ul><h3>Backup &amp; Privacy</h3><ul><li>Export regularly to create a complete local backup. Use Import to restore it.</li><li>Data is stored locally on the current device. No account is required.</li></ul><div class="help-note">Install FAST GTD as a PWA for an app-like experience. Local data is specific to the browser or installed app, so keep regular exports.</div></div><div class="help-mobile-content"><h3>Quick Start</h3>
 <ul>
   <li>+ Task saves a new Task to Inbox.</li>
   <li>+ Note opens simple capture with Labels and Link Note visible.</li>
@@ -5148,7 +5114,7 @@ select {
 <ul>
   <li>Tap a compact Note row to open it.</li>
   <li>Tap ★ to pin or unpin.</li>
-  <li>A Note labelled Template is reusable. Open Templates, select one, then tap Use Template.</li><li>Use Link Note to connect Notes.</li>
+  <li>Use Link Note to connect Notes.</li>
   <li>Linked Notes appear under Related Notes.</li>
 </ul>
 
@@ -5296,14 +5262,12 @@ select {
         const addNoteBtn = el("addNoteBtn");
         const notesFocusBtn = el("notesFocusBtn");
         const notesLabelsBtn = el("notesLabelsBtn");
-        const notesTemplatesBtn = el("notesTemplatesBtn");
         const notesFocusScope = el("notesFocusScope");
         const notesLabelFilter = el("notesLabelFilter");
         const mobileNotesToolbar = el("mobileNotesToolbar");
         const mobileNotesScopeSlot = el("mobileNotesScopeSlot");
         const mobileNotesAddBtn = el("mobileNotesAddBtn");
         const mobileNotesMoveAllBtn = el("mobileNotesMoveAllBtn");
-        const mobileNotesTemplatesBtn = el("mobileNotesTemplatesBtn");
         const mobileNotesBinBtn = el("mobileNotesBinBtn");
         const moveAllNotesBtn = el("moveAllNotesBtn");
         const notesBinBtn = el("notesBinBtn");
@@ -5336,7 +5300,6 @@ select {
         const expandedCopyToolbarBtn = el("expandedCopyToolbarBtn");
         const expandedLabelsBtn = el("expandedLabelsBtn");
         const expandedLinkNoteBtn = el("expandedLinkNoteBtn");
-        const expandedUseTemplateBtn = el("expandedUseTemplateBtn");
         const expandedShareBtn = el("expandedShareBtn");
         const expandedLabelChips = el("expandedLabelChips");
         const expandedDeleteBtn = el("expandedDeleteBtn");
@@ -7631,8 +7594,6 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
         }
         function updateLabelFilterOptions() {
             const labels = getAllLabels();
-            if (!labels.some(label => label.toLowerCase() === TEMPLATE_LABEL.toLowerCase())) labels.push(TEMPLATE_LABEL);
-            labels.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
             const current = notesLabelFilterValue;
             notesLabelFilter.innerHTML = '<option value="">All labels</option>';
             labels.forEach(label => {
@@ -8226,7 +8187,6 @@ ${body}` : title };
             expandedPinBtn.classList.toggle("pinned", Boolean(note.pinned));
             applyExpandedNoteLayout();
             renderExpandedLabels();
-            expandedUseTemplateBtn.hidden = !noteIsTemplate(note);
             updateMobileExpandedMoreActions();
         }
         function togglePin(id) {
@@ -8306,7 +8266,6 @@ ${body}` : title };
                 button.classList.toggle("active", active);button.setAttribute("aria-selected",String(active));
             });
             notesLabelsBtn.classList.toggle("active",desktopWorkspacePanel === "labels");
-            updateTemplateControls();
         }
         function applyWorkspaceFocusState() {
             const active = !isMobileViewport() && Boolean(workspaceFocusPanel);
@@ -8321,71 +8280,6 @@ ${body}` : title };
             activityFocusBtn.title = workspaceFocusPanel === "activity" ? "Return to normal planner view" : "Focus on Activity";
             eventsFocusBtn.title = workspaceFocusPanel === "events" ? "Return to normal planner view" : "Focus on Events";
         }
-        const TEMPLATE_LABEL = "Template";
-        function noteIsTemplate(note) {
-            return Boolean(note && normalizeNoteLabels(note.labels).some(label => label.toLowerCase() === TEMPLATE_LABEL.toLowerCase()));
-        }
-        function isTemplatesView() {
-            return notesLabelFilterValue.toLowerCase() === TEMPLATE_LABEL.toLowerCase();
-        }
-        function updateTemplateControls() {
-            const active = isTemplatesView() && !notesBinOpen;
-            notesTemplatesBtn.classList.toggle("active", active);
-            mobileNotesTemplatesBtn.classList.toggle("active", active);
-            notesTemplatesBtn.setAttribute("aria-pressed", String(active));
-            mobileNotesTemplatesBtn.setAttribute("aria-pressed", String(active));
-        }
-        function openTemplatesView() {
-            notesBinOpen = false;
-            notesSearchOpen = false;
-            notesSearchQuery = "";
-            notesSearchInput.value = "";
-            notesLabelFilterValue = TEMPLATE_LABEL;
-            if (isMobileViewport()) {
-                mobileNotesAll = true;
-                setMobileSection("notes");
-            } else {
-                showDesktopWorkspacePanel("notes");
-                notesFocusAll = true;
-            }
-            updateLabelFilterOptions();
-            notesLabelFilter.value = TEMPLATE_LABEL;
-            updateTemplateControls();
-            renderNotes();
-        }
-        function createTemplateNote() {
-            return { id: createId(), title: "New Template", body: "", labels: [TEMPLATE_LABEL], pinned: false, deleted: false, deletedAt: null };
-        }
-        function createNoteFromTemplate() {
-            const template = expandedNoteId ? findNoteById(expandedNoteId) : null;
-            if (!noteIsTemplate(template) || template.deleted) return;
-            const today = getToday();
-            if (!isWithinRange(today)) return;
-            const targetKey = toKey(today);
-            const targetData = readDateData(targetKey);
-            const targetNotes = normalizeNotes(targetData.notes);
-            const copiedLabels = normalizeNoteLabels(template.labels).filter(label => label.toLowerCase() !== TEMPLATE_LABEL.toLowerCase());
-            const created = {
-                id: createId(),
-                title: template.title || "New Note",
-                body: template.body || "",
-                labels: copiedLabels,
-                pinned: false,
-                deleted: false,
-                deletedAt: null
-            };
-            targetData.notes = orderNotes([created].concat(targetNotes));
-            targetData.entries = targetData.entries && typeof targetData.entries === "object" ? targetData.entries : {};
-            writeDateData(targetKey, targetData);
-            notesDate = today;
-            localStorage.setItem(NOTES_DATE_KEY, targetKey);
-            loadNotesForIndependentDate();
-            closeExpandedEditor();
-            if (isMobileViewport()) setMobileSection("notes");
-            setTimeout(() => openExpandedNote(created.id, true, "title"), 0);
-            showCaptureToast("✓ Note created from template");
-        }
-
         function toggleNotesLabelsWorkspace() {
             showDesktopWorkspacePanel(desktopWorkspacePanel === "labels" ? "notes" : "labels");
         }
@@ -9482,7 +9376,6 @@ ${body}` : title };
         });
         notesLabelFilter.addEventListener("change", () => {
             notesLabelFilterValue = notesLabelFilter.value;
-            updateTemplateControls();
             renderNotes();
         });
         moveAllNotesBtn.addEventListener("click", () => { closeNotesMoreMenu(); openMoveAllNotes(); });
@@ -9491,9 +9384,7 @@ ${body}` : title };
         addNoteBtn.addEventListener("click", () => {
             closeNotesMoreMenu();
             notesBinOpen = false;
-            const newNote = isTemplatesView()
-                ? createTemplateNote()
-                : { id: createId(), title: "New Note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
+            const newNote = { id: createId(), title: "New Note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
             notes.unshift(newNote);
             renderNotes();
             save();
@@ -9507,8 +9398,6 @@ ${body}` : title };
         });
         workspaceNotesTab.addEventListener("click", () => showDesktopWorkspacePanel("notes"));
         notesLabelsBtn.addEventListener("click", toggleNotesLabelsWorkspace);
-        notesTemplatesBtn.addEventListener("click", openTemplatesView);
-        mobileNotesTemplatesBtn.addEventListener("click", openTemplatesView);
         workspaceTasksTab.addEventListener("click", () => showDesktopWorkspacePanel("tasks"));
         workspaceActivityTab.addEventListener("click", () => showDesktopWorkspacePanel("activity"));
         workspaceEventsTab.addEventListener("click", () => showDesktopWorkspacePanel("events"));
@@ -9596,7 +9485,6 @@ ${body}` : title };
         expandedCopyToolbarBtn.addEventListener("click", copyExpandedNote);
         expandedLabelsBtn.addEventListener("click", openLabelSelector);
         expandedLinkNoteBtn.addEventListener("click", openNoteLinkPicker);
-        expandedUseTemplateBtn.addEventListener("click", createNoteFromTemplate);
         expandedShareBtn.addEventListener("click", shareExpandedNote);
         expandedDeleteBtn.addEventListener("click", () => { if (expandedNoteId) {
             closeExpandedMoreMenu();
