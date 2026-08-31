@@ -4865,6 +4865,71 @@ select {
   #noteModal:has(#globalTasksPanel.open) .task-date-filter-row { padding-inline: 1px; margin-bottom: 5px; }
   #noteModal:has(#globalTasksPanel.open) .task-date-filter-chip { min-height: 28px; padding: 4px 9px; font-size: 11px; }
 }
+
+/* Compact Task navigation: contexts and schedule view share one desktop row */
+.task-navigation-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-bottom: 7px;
+}
+.task-navigation-row .task-contexts {
+  flex: 0 0 auto;
+  margin: 0;
+}
+.task-navigation-row .task-date-filter-row {
+  flex: 0 1 auto;
+  margin: 0;
+  gap: 8px;
+}
+.task-navigation-separator {
+  width: 1px;
+  height: 22px;
+  flex: 0 0 1px;
+  background: var(--line);
+}
+.task-date-filters { gap: 4px; }
+.task-date-filter-chip {
+  min-height: 24px;
+  padding: 2px 3px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+}
+.task-date-filter-chip:hover,
+.task-date-filter-chip:focus-visible { border: 0; background: var(--soft); color: var(--ink); }
+.task-date-filter-chip.active {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 750;
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
+}
+.task-date-filter-separator { color: var(--line); font-size: 10px; }
+@media (max-width: 759px) {
+  #noteModal:has(#globalTasksPanel.open) .task-navigation-row {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+  #noteModal:has(#globalTasksPanel.open) .task-navigation-row .task-contexts { margin: 0; }
+  #noteModal:has(#globalTasksPanel.open) .task-date-filter-row {
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+  }
+  #noteModal:has(#globalTasksPanel.open) .task-navigation-separator { display: none; }
+  #noteModal:has(#globalTasksPanel.open) .task-date-filters { justify-content: center; overflow: visible; }
+  #noteModal:has(#globalTasksPanel.open) .task-date-filter-chip {
+    min-height: 25px;
+    padding: 2px 4px;
+    font-size: 10.5px;
+  }
+}
 </style>
 </head>
 <body>
@@ -5030,8 +5095,10 @@ select {
       <button class="plain-btn note-capture-more-btn" id="noteCaptureMoreBtn" type="button" aria-expanded="false">More <span aria-hidden="true">⌄</span></button>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
         <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn task-archive-completed-btn" id="clearDoneTasksBtn" type="button">Archive completed tasks</button><button class="plain-btn icon-btn task-archive-btn" id="taskArchiveBtn" type="button" title="Open completed task archive" aria-label="Open completed task archive">▣</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
-        <div class="task-contexts" id="taskContexts"></div>
-        <div class="task-date-filter-row" aria-label="Task schedule filters"><span class="task-filter-label">View</span><div class="task-date-filters" id="taskDateFilter" role="group" aria-label="Filter current task list by schedule"><button class="plain-btn task-date-filter-chip active" type="button" data-task-date-filter="all" aria-pressed="true">All</button><button class="plain-btn task-date-filter-chip" type="button" data-task-date-filter="scheduled" aria-pressed="false">Scheduled</button><button class="plain-btn task-date-filter-chip" type="button" data-task-date-filter="no-date" aria-pressed="false">No Date</button></div></div>
+        <div class="task-navigation-row">
+          <div class="task-contexts" id="taskContexts"></div>
+          <div class="task-date-filter-row" aria-label="Task schedule filters"><span class="task-navigation-separator" aria-hidden="true"></span><div class="task-date-filters" id="taskDateFilter" role="group" aria-label="Filter current task list by schedule"><button class="plain-btn task-date-filter-chip active" type="button" data-task-date-filter="all" aria-pressed="true">All</button><span class="task-date-filter-separator" aria-hidden="true">•</span><button class="plain-btn task-date-filter-chip" type="button" data-task-date-filter="scheduled" aria-pressed="false">Scheduled</button><span class="task-date-filter-separator" aria-hidden="true">•</span><button class="plain-btn task-date-filter-chip" type="button" data-task-date-filter="no-date" aria-pressed="false">No Date</button></div></div>
+        </div>
         <div class="task-filter-row" aria-label="Task tag filters"><span class="task-filter-label">Tags</span><div class="task-tag-filters" id="taskTagFilter" role="group" aria-label="Filter current task list by tag"></div></div>
         <div class="task-archive-head" id="taskArchiveHead" hidden><button class="plain-btn task-archive-back" id="closeTaskArchiveBtn" type="button" aria-label="Back to tasks">←</button><strong>Completed Tasks Archive</strong></div>
         <div class="task-list" id="globalTaskList"></div>
