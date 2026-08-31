@@ -6948,6 +6948,16 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             return list.sort((a, b) => {
                 if (a.highlighted !== b.highlighted)
                     return a.highlighted ? -1 : 1;
+                const aScheduled = Boolean(a.date && a.time);
+                const bScheduled = Boolean(b.date && b.time);
+                if (aScheduled !== bScheduled)
+                    return aScheduled ? -1 : 1;
+                if (aScheduled && bScheduled) {
+                    const aWhen = `${a.date}T${a.time}`;
+                    const bWhen = `${b.date}T${b.time}`;
+                    if (aWhen !== bWhen)
+                        return aWhen.localeCompare(bWhen);
+                }
                 return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
             });
         }
