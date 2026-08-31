@@ -4826,110 +4826,14 @@ select {
   }
 }
 
-/* Lightweight Task schedule filters */
-.task-date-filter-row {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  min-width: 0;
-  margin: -1px 0 6px;
-}
-.task-date-filters {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-.task-date-filters::-webkit-scrollbar { display: none; }
-.task-date-filter-chip {
-  flex: 0 0 auto;
-  min-height: 24px;
-  padding: 3px 8px;
-  border: 1px solid #cfd8d3;
-  border-radius: 999px;
-  background: #fff;
-  color: #66736d;
-  font-size: 10.5px;
-  font-weight: 600;
-  line-height: 1.1;
-  white-space: nowrap;
-  text-decoration: none !important;
-}
-.task-date-filter-chip:hover,
-.task-date-filter-chip:focus-visible { border-color: #aebdb5; background: #f5f8f6; color: #42534a; }
-.task-date-filter-chip.active { border-color: #9fb9ad; background: #e8f1ed; color: #355448; font-weight: 700; }
-@media (max-width: 759px) {
-  #noteModal:has(#globalTasksPanel.open) .task-date-filter-row { padding-inline: 1px; margin-bottom: 5px; }
-  #noteModal:has(#globalTasksPanel.open) .task-date-filter-chip { min-height: 28px; padding: 4px 9px; font-size: 11px; }
-}
+/* Compact Task navigation and schedule filters */
+.task-navigation-row{display:flex;align-items:center;gap:8px;min-width:0;margin-bottom:7px}.task-navigation-row .task-contexts{flex:0 0 auto;margin:0}.task-date-filter-row{display:flex;align-items:center;gap:8px;min-width:0;margin:0}.task-navigation-separator{width:1px;height:22px;flex:0 0 1px;background:var(--line)}.task-date-filters{display:flex;align-items:center;gap:4px;min-width:0;overflow-x:auto;scrollbar-width:none}.task-date-filters::-webkit-scrollbar{display:none}.task-date-filter-chip{flex:0 0 auto;min-height:24px;padding:2px 3px;border:0;border-radius:5px;background:transparent;color:var(--muted);font-size:10.5px;font-weight:600;white-space:nowrap;text-decoration:none!important}.task-date-filter-chip:hover,.task-date-filter-chip:focus-visible{background:var(--soft);color:var(--ink)}.task-date-filter-chip.active{background:transparent;color:var(--ink);font-weight:750;text-decoration:underline!important;text-underline-offset:3px}.task-date-filter-separator{color:var(--line);font-size:10px}
+@media(max-width:759px){#noteModal:has(#globalTasksPanel.open) .task-navigation-row{display:grid;gap:4px;margin-bottom:6px}#noteModal:has(#globalTasksPanel.open) .task-navigation-row .task-contexts{margin:0}#noteModal:has(#globalTasksPanel.open) .task-date-filter-row{justify-content:center;margin:0;padding:0}#noteModal:has(#globalTasksPanel.open) .task-navigation-separator{display:none}#noteModal:has(#globalTasksPanel.open) .task-date-filters{justify-content:center;overflow:visible}#noteModal:has(#globalTasksPanel.open) .task-date-filter-chip{min-height:25px;padding:2px 4px;font-size:10.5px}}
 
-/* Compact Task navigation: contexts and schedule view share one desktop row */
-.task-navigation-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  margin-bottom: 7px;
-}
-.task-navigation-row .task-contexts {
-  flex: 0 0 auto;
-  margin: 0;
-}
-.task-navigation-row .task-date-filter-row {
-  flex: 0 1 auto;
-  margin: 0;
-  gap: 8px;
-}
-.task-navigation-separator {
-  width: 1px;
-  height: 22px;
-  flex: 0 0 1px;
-  background: var(--line);
-}
-.task-date-filters { gap: 4px; }
-.task-date-filter-chip {
-  min-height: 24px;
-  padding: 2px 3px;
-  border: 0;
-  border-radius: 5px;
-  background: transparent;
-  color: var(--muted);
-  box-shadow: none;
-}
-.task-date-filter-chip:hover,
-.task-date-filter-chip:focus-visible { border: 0; background: var(--soft); color: var(--ink); }
-.task-date-filter-chip.active {
-  border: 0;
-  background: transparent;
-  color: var(--ink);
-  font-weight: 750;
-  text-decoration: underline !important;
-  text-underline-offset: 3px;
-}
-.task-date-filter-separator { color: var(--line); font-size: 10px; }
-@media (max-width: 759px) {
-  #noteModal:has(#globalTasksPanel.open) .task-navigation-row {
-    display: grid;
-    gap: 4px;
-    margin-bottom: 6px;
-  }
-  #noteModal:has(#globalTasksPanel.open) .task-navigation-row .task-contexts { margin: 0; }
-  #noteModal:has(#globalTasksPanel.open) .task-date-filter-row {
-    justify-content: center;
-    margin: 0;
-    padding: 0;
-  }
-  #noteModal:has(#globalTasksPanel.open) .task-navigation-separator { display: none; }
-  #noteModal:has(#globalTasksPanel.open) .task-date-filters { justify-content: center; overflow: visible; }
-  #noteModal:has(#globalTasksPanel.open) .task-date-filter-chip {
-    min-height: 25px;
-    padding: 2px 4px;
-    font-size: 10.5px;
-  }
-}
+/* Lightweight Projects */
+.project-link-btn{min-height:28px;padding:4px 8px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--muted);font-size:11px;font-weight:700}.project-link-btn:hover,.project-link-btn:focus-visible{background:var(--soft);color:var(--ink)}
+.project-panel{width:min(560px,94vw);max-height:88vh;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--page);box-shadow:0 18px 50px rgba(50,40,28,.22)}.project-head{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;min-height:44px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--panel)}.project-title{margin:0;font-size:var(--font-lg);font-weight:700}.project-body{min-height:0;padding:10px 12px 12px;overflow-y:auto}.project-create-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;margin-bottom:10px}.project-create-row input{min-width:0}.project-list{display:grid;gap:6px}.project-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 9px;border:1px solid var(--line);border-radius:11px;background:#fff}.project-open{display:grid;gap:2px;min-width:0;text-align:left;color:var(--ink)}.project-name{font-weight:700}.project-meta{color:var(--muted);font-size:10px}.project-card-actions{display:flex;gap:5px}.project-detail-head{display:flex;align-items:center;gap:7px;margin-bottom:9px}.project-detail-title{font-weight:750}.project-group{margin-top:11px}.project-group-title{margin:0 0 5px;color:var(--muted);font-size:10.5px;font-weight:750;text-transform:uppercase}.project-item{width:100%;min-height:34px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);text-align:left}.project-empty{padding:14px 6px;color:var(--muted);text-align:center}.project-field{display:grid;gap:5px}.project-field label{color:var(--muted);font-size:11px;font-weight:650}.project-field select{width:100%;height:32px;padding:4px 8px;border:1px solid var(--line);border-radius:10px;background:var(--page);color:var(--ink)}.note-project-row{display:flex;align-items:center;gap:6px;padding:5px 12px;border-bottom:1px solid var(--line);background:var(--panel)}.note-project-row label{color:var(--muted);font-size:10.5px;font-weight:650}.note-project-row select{min-height:28px;max-width:190px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font-size:11px}.activity-project-select{min-height:24px;max-width:115px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--muted);font-size:9.5px}
+@media(max-width:759px){.project-panel{width:calc(100vw - 12px);max-height:90dvh}.project-card{grid-template-columns:1fr}.project-card-actions{justify-content:flex-end}.note-project-row{padding:5px 10px}.note-project-row select{flex:1;max-width:none}}
 </style>
 </head>
 <body>
@@ -4971,7 +4875,7 @@ select {
     <section class="mobile-more-sheet" role="dialog" aria-modal="true" aria-label="More FAST GTD features">
       <div class="mobile-more-head"><span class="mobile-more-title">More</span><button class="plain-btn" id="mobileMoreCloseBtn" type="button">Close</button></div>
       <div class="mobile-more-list">
-        <button class="plain-btn mobile-more-item" id="mobileActivityBtn" type="button">Activity</button>
+        <button class="plain-btn mobile-more-item" id="mobileActivityBtn" type="button">Activity</button><button class="plain-btn mobile-more-item" id="mobileProjectsBtn" type="button">Projects</button>
         <button class="plain-btn mobile-more-item" id="mobileAllEventsBtn" type="button">Events</button>
         <button class="plain-btn mobile-more-item" id="mobileCalendarBtn" type="button">Calendar</button>
         <button class="plain-btn mobile-more-item" id="mobileVoiceCaptureBtn" type="button">🎤 Voice Capture</button>
@@ -5090,11 +4994,11 @@ select {
     <section class="expanded-note" id="expandedNoteShell" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><span class="note-capture-head-actions"><button class="plain-btn note-capture-cancel" id="cancelNoteCaptureBtn" type="button">Cancel</button><button class="plain-btn note-capture-save" id="saveNoteCaptureBtn" type="button">Save</button></span><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
       <div class="expanded-note-tools note-capture-advanced" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="plain-btn expanded-link-note-btn" id="expandedLinkNoteBtn" type="button" title="Link another note" aria-label="Link another note">Link Note</button><button class="icon-btn expanded-copy-toolbar-btn" id="expandedCopyToolbarBtn" type="button" title="Copy note" aria-label="Copy note">Copy</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="plain-btn expanded-line-toolbar-btn" id="expandedLineBtn" type="button" title="Insert horizontal line">Insert line</button><span class="expanded-list-wrap"><button class="icon-btn expanded-list-toolbar-btn" id="expandedListBtn" type="button" title="List formatting" aria-expanded="false">List</button><span class="expanded-list-menu" id="expandedListMenu"><button class="plain-btn" id="expandedBulletsBtn" type="button">• Bulleted list</button><button class="plain-btn" id="expandedNumbersBtn" type="button">1. Numbered list</button><button class="plain-btn" id="expandedChecklistBtn" type="button">☐ Checklist</button><button class="plain-btn" id="expandedCheckItemBtn" type="button">✓ Check/uncheck item</button><button class="plain-btn" id="expandedPlainBtn" type="button">Plain text</button></span></span><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn mobile-note-more-action" id="mobileExpandedPinBtn" type="button">Pin note</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedEditBtn" type="button">Edit note</button><button class="plain-btn" id="expandedCopyBtn" type="button">Copy note</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedLineBtn" type="button">Insert line</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedBulletsBtn" type="button">Bulleted list</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedNumbersBtn" type="button">Numbered list</button><button class="plain-btn mobile-note-more-action" id="mobileExpandedChecklistBtn" type="button">Checklist</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete</button></span></span></div>
-      <div class="note-label-chips expanded-label-chips note-capture-advanced" id="expandedLabelChips" hidden></div>
+      <div class="note-project-row" id="noteProjectRow"><label for="noteProjectSelect">Project</label><select id="noteProjectSelect" aria-label="Assign Note to project"><option value="">None</option></select></div><div class="note-label-chips expanded-label-chips note-capture-advanced" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <button class="plain-btn note-capture-more-btn" id="noteCaptureMoreBtn" type="button" aria-expanded="false">More <span aria-hidden="true">⌄</span></button>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
-        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn task-archive-completed-btn" id="clearDoneTasksBtn" type="button">Archive completed tasks</button><button class="plain-btn icon-btn task-archive-btn" id="taskArchiveBtn" type="button" title="Open completed task archive" aria-label="Open completed task archive">▣</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
+        <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn project-link-btn" id="projectsBtn" type="button">Projects</button><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Tasks">⛶</button><button class="plain-btn task-archive-completed-btn" id="clearDoneTasksBtn" type="button">Archive completed tasks</button><button class="plain-btn icon-btn task-archive-btn" id="taskArchiveBtn" type="button" title="Open completed task archive" aria-label="Open completed task archive">▣</button><button class="plain-btn task-add-link workspace-add-icon" id="newTaskBtn" type="button" title="Add task" aria-label="Add task">+</button></span></div>
         <div class="task-navigation-row">
           <div class="task-contexts" id="taskContexts"></div>
           <div class="task-date-filter-row" aria-label="Task schedule filters"><span class="task-navigation-separator" aria-hidden="true"></span><div class="task-date-filters" id="taskDateFilter" role="group" aria-label="Filter current task list by schedule"><button class="plain-btn task-date-filter-chip active" type="button" data-task-date-filter="all" aria-pressed="true">All</button><span class="task-date-filter-separator" aria-hidden="true">•</span><button class="plain-btn task-date-filter-chip" type="button" data-task-date-filter="scheduled" aria-pressed="false">Scheduled</button><span class="task-date-filter-separator" aria-hidden="true">•</span><button class="plain-btn task-date-filter-chip" type="button" data-task-date-filter="no-date" aria-pressed="false">No Date</button></div></div>
@@ -5142,7 +5046,7 @@ select {
         <label for="eventNextActionInput">Next action <span class="event-optional">optional</span></label><input id="eventNextActionInput" type="text" maxlength="160" placeholder="What is the very next action?" autocomplete="off" />
         <label class="event-highlight-option event-capture-advanced" for="eventHighlightInput"><input id="eventHighlightInput" type="checkbox" /> Highlight this event</label>
         <label class="event-capture-advanced" for="eventTagInput">Tag <span class="event-optional">optional</span></label><input class="event-capture-advanced" id="eventTagInput" type="text" maxlength="40" list="eventTagSuggestions" placeholder="Work, Family, Health..." autocomplete="off" /><datalist id="eventTagSuggestions"></datalist>
-        <div class="event-editor-grid"><div class="event-editor-field"><label for="eventDateInput">Date</label><input id="eventDateInput" type="date" /></div><div class="event-editor-field"><label for="eventTimeInput">Time <span class="event-optional">optional</span></label><input id="eventTimeInput" type="time" /></div></div>
+        <div class="project-field event-capture-advanced"><label for="eventProjectInput">Project</label><select id="eventProjectInput"><option value="">None</option></select></div><div class="event-editor-grid"><div class="event-editor-field"><label for="eventDateInput">Date</label><input id="eventDateInput" type="date" /></div><div class="event-editor-field"><label for="eventTimeInput">Time <span class="event-optional">optional</span></label><input id="eventTimeInput" type="time" /></div></div>
         <button class="plain-btn event-capture-more-btn" id="eventCaptureMoreBtn" type="button" aria-expanded="false">More <span aria-hidden="true">⌄</span></button>
         <div class="event-editor-grid event-capture-advanced"><div class="event-editor-field"><label for="eventDurationInput">Duration</label><select id="eventDurationInput"><option value="30">30 minutes</option><option value="60">1 hour</option><option value="90">1 hour 30 minutes</option><option value="120">2 hours</option><option value="150">2 hours 30 minutes</option><option value="180">3 hours</option><option value="custom">Custom</option></select></div><div class="event-editor-field" id="eventCustomDurationField" hidden><label for="eventCustomDurationInput">Minutes</label><input id="eventCustomDurationInput" type="number" min="30" max="1440" step="30" value="30" /></div></div>
         <label class="event-capture-advanced" for="eventRepeatInput">Repeat</label><select class="event-capture-advanced" id="eventRepeatInput"><option value="none">Does not repeat</option><option value="daily">Daily</option><option value="weekdays">Weekdays</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="custom">Custom</option></select>
@@ -5163,7 +5067,7 @@ select {
         <label class="task-capture-organize" for="taskEditorContext">List</label><select class="task-capture-organize" id="taskEditorContext"></select>
         <div class="task-editor-mobile-controls task-capture-organize"><div><label for="taskEditorStatus">Status</label><select id="taskEditorStatus"></select></div><label class="task-editor-highlight-option" for="taskEditorHighlight"><input id="taskEditorHighlight" type="checkbox" /> Highlight this task</label></div>
         <label class="task-capture-organize" for="taskEditorTags">Tags <span class="event-optional">optional</span></label><input class="task-capture-organize" id="taskEditorTags" type="text" maxlength="240" list="taskTagSuggestions" placeholder="Work, Home, Waiting..." autocomplete="off" /><datalist id="taskTagSuggestions"></datalist><div class="task-editor-tags-help task-capture-organize">Separate multiple tags with commas. Task tags are independent from Note labels.</div>
-        <div class="task-editor-date-row task-capture-advanced"><div><label for="taskEditorDate">Date <span class="event-optional">optional</span></label><input id="taskEditorDate" type="date" /></div><div><label for="taskEditorTime">Time <span class="event-optional">optional</span></label><input id="taskEditorTime" type="time" /></div></div>
+        <div class="project-field task-capture-organize"><label for="taskEditorProject">Project</label><select id="taskEditorProject"><option value="">None</option></select></div><div class="task-editor-date-row task-capture-advanced"><div><label for="taskEditorDate">Date <span class="event-optional">optional</span></label><input id="taskEditorDate" type="date" /></div><div><label for="taskEditorTime">Time <span class="event-optional">optional</span></label><input id="taskEditorTime" type="time" /></div></div>
         <div class="task-note-section task-capture-advanced" id="taskNoteSection"><span class="task-note-label">Note</span><span class="task-note-actions"><button class="plain-btn task-note-btn" id="taskCreateNoteBtn" type="button">Create note</button><button class="plain-btn task-note-btn" id="taskLinkNoteBtn" type="button">Link existing</button><button class="plain-btn task-note-btn" id="taskOpenNoteBtn" type="button" hidden>Open note</button><button class="plain-btn task-note-unlink" id="taskUnlinkNoteBtn" type="button" hidden>Unlink</button></span><span class="task-note-help" id="taskNoteHelp"></span></div>
       </div>
       <div class="task-editor-actions"><button class="plain-btn delete-note-btn" id="deleteTaskEditorBtn" type="button">Delete</button><button class="plain-btn event-copy-btn" id="copyTaskBtn" type="button" hidden>Copy</button><span></span><button class="plain-btn" id="cancelTaskEditorBtn" type="button">Cancel</button><button class="plain-btn task-save-btn" id="saveTaskEditorBtn" type="button">Save</button></div>
@@ -5192,6 +5096,8 @@ select {
       </div>
     </section>
   </div>
+
+  <div class="modal-backdrop" id="projectModal" aria-hidden="true"><section class="project-panel" role="dialog" aria-modal="true" aria-label="Projects"><div class="project-head"><p class="project-title">Projects</p><button class="plain-btn" id="closeProjectBtn" type="button">Close</button></div><div class="project-body"><div class="project-create-row" id="projectCreateRow"><input id="projectNameInput" type="text" maxlength="80" placeholder="New project name" autocomplete="off"><button class="plain-btn task-add-btn" id="addProjectBtn" type="button">Add</button></div><div id="projectList" class="project-list"></div><div id="projectDetail" hidden></div></div></section></div>
   <div class="modal-backdrop" id="moveModal" aria-hidden="true">
     <section class="move-note-panel" role="dialog" aria-modal="true"><div class="move-note-head"><p class="move-note-title" id="moveModalTitle">Move Note</p><button class="plain-btn" id="cancelMoveTop" type="button">Close</button></div><div class="move-note-body"><label for="moveDateInput" id="moveDateLabel">Move to date</label><input id="moveDateInput" type="date" /></div><div class="move-note-actions"><button class="plain-btn" id="cancelMoveBtn" type="button">Cancel</button><button class="plain-btn" id="confirmMoveBtn" type="button">Move</button></div></section>
   </div>
@@ -5257,6 +5163,7 @@ select {
         const TASK_ARCHIVE_KEY = "timeblocks:taskArchive";
         const EVENTS_KEY = "timeblocks:events";
         const ACTIVITY_KEY = "timeblocks:activityLog";
+        const PROJECTS_KEY = "timeblocks:projects";
         const ACTIVITY_HIDE_COMPLETED_KEY = "timeblocks:activityHideCompleted";
         const TIMEBLOCK_STATUSES = [
             { id: "planned", icon: "○", label: "Planned" },
@@ -5297,6 +5204,7 @@ select {
         const mobileNotesBtn = el("mobileNotesBtn");
         const mobileAddTaskBtn = el("mobileAddTaskBtn");
         const mobileActivityBtn = el("mobileActivityBtn");
+        const mobileProjectsBtn = el("mobileProjectsBtn");
         const mobileHelpBtn = el("mobileHelpBtn");
         const mobileShareBtn = el("mobileShareBtn");
         const mobileQuickNoteBtn = el("mobileQuickNoteBtn");
@@ -5411,6 +5319,8 @@ select {
         const expandedLinkNoteBtn = el("expandedLinkNoteBtn");
         const expandedShareBtn = el("expandedShareBtn");
         const expandedLabelChips = el("expandedLabelChips");
+        const noteProjectSelect = el("noteProjectSelect");
+        const noteProjectRow = el("noteProjectRow");
         const expandedDeleteBtn = el("expandedDeleteBtn");
         const mobileExpandedPinBtn = el("mobileExpandedPinBtn");
         const mobileExpandedEditBtn = el("mobileExpandedEditBtn");
@@ -5437,6 +5347,7 @@ select {
         const taskTagSuggestions = el("taskTagSuggestions");
         const taskEditorDate = el("taskEditorDate");
         const taskEditorTime = el("taskEditorTime");
+        const taskEditorProject = el("taskEditorProject");
         const captureToast = el("captureToast");
         const taskCreateNoteBtn = el("taskCreateNoteBtn");
         const taskLinkNoteBtn = el("taskLinkNoteBtn");
@@ -5480,6 +5391,7 @@ select {
         const eventHighlightInput = el("eventHighlightInput");
         const eventTagSuggestions = el("eventTagSuggestions");
         const eventTagFilter = el("eventTagFilter");
+        const eventProjectInput = el("eventProjectInput");
         const eventDateInput = el("eventDateInput");
         const eventTimeInput = el("eventTimeInput");
         const eventDurationInput = el("eventDurationInput");
@@ -5521,6 +5433,14 @@ select {
         const confirmMoveBtn = el("confirmMoveBtn");
         const helpModal = el("helpModal");
         const closeHelpBtn = el("closeHelpBtn");
+        const projectsBtn = el("projectsBtn");
+        const projectModal = el("projectModal");
+        const closeProjectBtn = el("closeProjectBtn");
+        const projectNameInput = el("projectNameInput");
+        const addProjectBtn = el("addProjectBtn");
+        const projectList = el("projectList");
+        const projectDetail = el("projectDetail");
+        const projectCreateRow = el("projectCreateRow");
         let selectedDate = getInitialDate();
         let storageKey = "";
         let saved = {};
@@ -5563,6 +5483,8 @@ select {
         let showPastEvents = false;
         let activeEventTagFilter = "";
         let activityEntries = normalizeActivityEntries(loadJson(ACTIVITY_KEY, []));
+        let projects = normalizeProjects(loadJson(PROJECTS_KEY, []));
+        let activeProjectId = null;
         let activityHideCompleted = localStorage.getItem(ACTIVITY_HIDE_COMPLETED_KEY) === "true";
         let activeTaskContext = "Today";
         if (activeTaskContext === "Home" || activeTaskContext === "Work" || activeTaskContext === "Projects") activeTaskContext = "This month";
@@ -5755,11 +5677,12 @@ select {
                     labels: normalizeNoteLabels(note.labels),
                     pinned: Boolean(note.pinned),
                     deleted: Boolean(note.deleted),
-                    deletedAt: note.deletedAt || null
+                    deletedAt: note.deletedAt || null,
+                    projectId: typeof note.projectId === "string" ? note.projectId : ""
                 }));
             }
             if (typeof rawNotes === "string" && rawNotes.trim()) {
-                return [{ id: createId(), title: "Note", body: rawNotes, labels: [], pinned: false, deleted: false, deletedAt: null }];
+                return [{ id: createId(), title: "Note", body: rawNotes, labels: [], pinned: false, deleted: false, deletedAt: null, projectId: "" }];
             }
             return [];
         }
@@ -5831,6 +5754,7 @@ select {
                 originalDate: fromKey(item.originalDate) ? item.originalDate : "",
                 cancelled: Boolean(item.cancelled),
                 noteLink: normalizeTaskNoteLink(item.noteLink),
+                projectId: typeof item.projectId === "string" ? item.projectId : "",
                 createdAt: item.createdAt && !Number.isNaN(new Date(item.createdAt).getTime()) ? item.createdAt : new Date().toISOString()
             })).filter(item => item.title || item.cancelled).sort(compareEvents);
         }
@@ -6003,6 +5927,7 @@ select {
             found.task.status = taskEditorStatus.value; found.task.done = found.task.status === "completed"; found.task.highlighted = taskEditorHighlight.checked;
             found.task.date = date;
             found.task.time = time;
+            found.task.projectId = taskEditorProject.value;
             if (targetContext !== found.context) {
                 globalTasks[found.context] = globalTasks[found.context].filter(item => item.id !== found.task.id);
                 globalTasks[targetContext].unshift(found.task);
@@ -6023,7 +5948,7 @@ select {
             const dateKey = linkedNoteDateForTask(found.task);
             const data = readDateData(dateKey);
             const targetNotes = normalizeNotes(data.notes);
-            const note = { id: createId(), title: found.task.text || "Task note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
+            const note = { id: createId(), title: found.task.text || "Task note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null, projectId: "" };
             data.notes = orderNotes([note].concat(targetNotes));
             data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
             data.focus = data.focus || "";
@@ -6166,7 +6091,7 @@ ${reference}` : reference;
             if (!event || linkedNoteForEvent(event)) return updateEventNoteControls();
             const dateKey = fromKey(event.date) ? event.date : toKey(selectedDate);
             const data = readDateData(dateKey);
-            const note = { id: createId(), title: event.title || "Event note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
+            const note = { id: createId(), title: event.title || "Event note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null, projectId: "" };
             data.notes = orderNotes([note].concat(normalizeNotes(data.notes)));
             data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
             data.focus = data.focus || "";
@@ -6303,7 +6228,7 @@ ${reference}` : reference;
             taskEditorTitle.textContent = "Edit Task";
             taskEditorText.value = found.task.text; taskEditorNextAction.value = found.task.nextAction || ""; populateTaskEditorLists(found.context); populateTaskEditorStatus(found.task.status); taskEditorHighlight.checked = Boolean(found.task.highlighted);
             taskEditorTags.value = normalizeTaskTags(found.task.tags).join(", "); updateTaskTagSuggestions();
-            taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = found.task.date || ""; taskEditorTime.value = found.task.time || "";
+            taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = found.task.date || ""; taskEditorTime.value = found.task.time || ""; populateProjectSelect(taskEditorProject, found.task.projectId || "");
             deleteTaskEditorBtn.hidden = false;
             copyTaskBtn.hidden = false;
             updateTaskNoteControls();
@@ -6328,7 +6253,7 @@ ${reference}` : reference;
             taskEditorTitle.textContent = "New Task";
             taskEditorText.value = ""; taskEditorNextAction.value = ""; populateTaskEditorLists(editingTaskContext); populateTaskEditorStatus("not-started"); taskEditorHighlight.checked = false;
             taskEditorTags.value = ""; updateTaskTagSuggestions();
-            taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = ""; taskEditorTime.value = "";
+            taskEditorDate.min = toKey(START_DATE); taskEditorDate.max = toKey(END_DATE); taskEditorDate.value = ""; taskEditorTime.value = ""; populateProjectSelect(taskEditorProject, "");
             deleteTaskEditorBtn.hidden = true;
             copyTaskBtn.hidden = true;
             updateTaskNoteControls();
@@ -6349,6 +6274,7 @@ ${reference}` : reference;
             taskEditorTags.value = normalizeTaskTags(found.task.tags).join(", ");
             taskEditorDate.value = found.task.date || "";
             taskEditorTime.value = found.task.time || "";
+            populateProjectSelect(taskEditorProject, found.task.projectId || "");
             deleteTaskEditorBtn.hidden = true;
             copyTaskBtn.hidden = true;
             updateTaskNoteControls();
@@ -6389,7 +6315,7 @@ ${reference}` : reference;
             const targetContext = mobileCapture ? "Inbox" : (TASK_CONTEXTS.includes(taskEditorContext.value) ? taskEditorContext.value : (editingTaskContext || activeTaskContext));
             if (!editingTaskId) {
                 const taskStatus = mobileCapture ? "not-started" : taskEditorStatus.value;
-                const task = { id: createId("task"), text, nextAction: taskEditorNextAction.value.trim().slice(0,160), status: taskStatus, done: taskStatus === "completed", highlighted: mobileCapture ? false : taskEditorHighlight.checked, tags: mobileCapture ? [] : normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null, createdAt: new Date().toISOString() };
+                const task = { id: createId("task"), text, nextAction: taskEditorNextAction.value.trim().slice(0,160), status: taskStatus, done: taskStatus === "completed", highlighted: mobileCapture ? false : taskEditorHighlight.checked, tags: mobileCapture ? [] : normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null, projectId: taskEditorProject.value, createdAt: new Date().toISOString() };
                 globalTasks[targetContext].unshift(task); activeTaskContext = targetContext; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, targetContext);
                 saveTasks(); populateTaskTimeblock(task); renderGlobalTasks();
                 if (mobileCapture) {
@@ -6415,7 +6341,7 @@ ${reference}` : reference;
             }
             const found = findTaskLocation(editingTaskId); if (!found) return closeTaskEditor();
             const previous = { ...found.task }; removeLinkedTaskTimeblock(previous);
-            found.task.text = text; found.task.nextAction = taskEditorNextAction.value.trim().slice(0,160); found.task.tags = normalizeTaskTags(taskEditorTags.value.split(",")); found.task.status = taskEditorStatus.value; found.task.done = found.task.status === "completed"; found.task.highlighted = taskEditorHighlight.checked; found.task.date = date; found.task.time = time;
+            found.task.text = text; found.task.nextAction = taskEditorNextAction.value.trim().slice(0,160); found.task.tags = normalizeTaskTags(taskEditorTags.value.split(",")); found.task.status = taskEditorStatus.value; found.task.done = found.task.status === "completed"; found.task.highlighted = taskEditorHighlight.checked; found.task.date = date; found.task.time = time; found.task.projectId = taskEditorProject.value;
             if (targetContext !== found.context) { globalTasks[found.context] = globalTasks[found.context].filter(item => item.id !== found.task.id); globalTasks[targetContext].unshift(found.task); activeTaskContext = targetContext; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, targetContext); }
             saveTasks(); populateTaskTimeblock(found.task); closeTaskEditor(); renderGlobalTasks();
             if (toKey(selectedDate) === previous.date || toKey(selectedDate) === found.task.date) loadSelectedDate();
@@ -6589,7 +6515,7 @@ ${reference}` : reference;
             editingEventId=event?event.id:null;editingEventOccurrenceDate=occurrenceDate;
             const mobileNewEventCapture=isMobileViewport()&&!event;
             eventModal.classList.toggle("mobile-new-event-capture",mobileNewEventCapture);eventModal.classList.remove("mobile-event-capture-more-open");eventCaptureMoreBtn.setAttribute("aria-expanded","false");
-            eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventNextActionInput.value=event?event.nextAction||"":"";eventTagInput.value=event?event.tag||"":"";eventHighlightInput.checked=Boolean(event&&event.highlighted);eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
+            eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventNextActionInput.value=event?event.nextAction||"":"";eventTagInput.value=event?event.tag||"":"";populateProjectSelect(eventProjectInput,event?event.projectId||"":"");eventHighlightInput.checked=Boolean(event&&event.highlighted);eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
             const duration=event?event.durationMinutes||30:30;eventDurationInput.value=[30,60,90,120,150,180].includes(duration)?String(duration):"custom";eventCustomDurationInput.value=String(duration);
             const master=event&&event.seriesId?events.find(item=>item.id===event.seriesId):event;const rule=master&&master.recurrence?master.recurrence:null;eventRepeatInput.value=rule?rule.type:"none";eventRepeatIntervalInput.value=String(rule?rule.interval:1);eventRepeatUnitInput.value=rule?rule.unit:"week";eventRepeatEndInput.value=rule?rule.endType:"never";eventRepeatEndValue.value=rule?(rule.endType==="date"?rule.endDate:String(rule.count)):"";renderEventWeekdays(rule?rule.weekdays:[]);
             deleteEventBtn.hidden=!event;copyEventBtn.hidden=!event;eventSeriesScope.hidden=!(event&&(event.seriesId||event.recurrence));eventSeriesScopeInput.value="this";updateEventEditorOptions();updateEventNoteControls();eventModal.classList.add("open");eventModal.setAttribute("aria-hidden","false");setTimeout(()=>{eventTitleInput.focus();if(!eventTitleInput.value)eventTitleInput.setSelectionRange(0,0);},0); if(isMobileViewport()) focusAfterOpen(eventTitleInput);
@@ -6628,7 +6554,7 @@ ${reference}` : reference;
         function saveEventFromEditor(){
             const title=eventTitleInput.value.trim(),date=eventDateInput.value;if(!title){alert("Please enter an event title.");eventTitleInput.focus();return;}if(!fromKey(date)||!isWithinRange(fromKey(date))){alert("Please select a valid event date.");return;}
             const currentNoteLink=editingEventRecord()?normalizeTaskNoteLink(editingEventRecord().noteLink):null;
-            const draft={title,nextAction:eventNextActionInput.value.trim().slice(0,160),tag:eventTagInput.value.trim().slice(0,40),highlighted:eventHighlightInput.checked,date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor(),noteLink:currentNoteLink};
+            const draft={title,nextAction:eventNextActionInput.value.trim().slice(0,160),tag:eventTagInput.value.trim().slice(0,40),highlighted:eventHighlightInput.checked,projectId:eventProjectInput.value,date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor(),noteLink:currentNoteLink};
             const isNewEvent=!editingEventId;
             let savedEvent=null,previousSnapshot=null;
             if(editingEventId&&editingEventId.includes("@")){
@@ -6770,6 +6696,7 @@ ${reference}` : reference;
                 text: typeof entry.text === "string" ? entry.text : "",
                 status: ACTIVITY_STATUSES.some(status => status.id === entry.status) ? entry.status : "started",
                 highlighted: Boolean(entry.highlighted),
+                projectId: typeof entry.projectId === "string" ? entry.projectId : "",
                 createdAt: entry.createdAt && !Number.isNaN(new Date(entry.createdAt).getTime()) ? entry.createdAt : new Date().toISOString()
             })).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         }
@@ -6912,7 +6839,12 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                     });
                     const actions = document.createElement("div");
                     actions.className = "activity-row-actions";
-                    actions.append(status, highlight);
+                    const projectSelect = document.createElement("select");
+                    projectSelect.className = "activity-project-select";
+                    populateProjectSelect(projectSelect, entry.projectId || "");
+                    projectSelect.title = "Assign Activity to project";
+                    projectSelect.addEventListener("change", () => { entry.projectId = projectSelect.value; saveActivity(); });
+                    actions.append(status, highlight, projectSelect);
                     row.append(time, text, del, actions);
                     list.appendChild(row);
                 });
@@ -6924,7 +6856,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             const text = activityInput.value.trim();
             if (!text)
                 return;
-            activityEntries.unshift({ id: createId("activity"), text, status: "started", highlighted: false, createdAt: new Date().toISOString() });
+            activityEntries.unshift({ id: createId("activity"), text, status: "started", highlighted: false, projectId: "", createdAt: new Date().toISOString() });
             activityInput.value = "";
             saveActivity();
             renderActivity();
@@ -6997,6 +6929,22 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
 
   URL.revokeObjectURL(url);
 }
+        function normalizeProjects(raw){if(!Array.isArray(raw))return[];return raw.map(item=>({id:typeof item.id==="string"&&item.id?item.id:createId("project"),name:String(item.name||"Untitled Project").trim().slice(0,80),status:["active","on-hold","completed"].includes(item.status)?item.status:"active",createdAt:item.createdAt||new Date().toISOString()})).filter(item=>item.name);}
+        function saveProjects(){projects=normalizeProjects(projects);localStorage.setItem(PROJECTS_KEY,JSON.stringify(projects));populateProjectSelects();}
+        function projectById(id){return projects.find(project=>project.id===id)||null;}
+        function populateProjectSelect(select,value=""){if(!select)return;select.innerHTML='<option value="">None</option>';projects.filter(project=>project.status!=="completed"||project.id===value).forEach(project=>{const option=document.createElement("option");option.value=project.id;option.textContent=project.name;select.appendChild(option);});select.value=projectById(value)?value:"";}
+        function populateProjectSelects(){populateProjectSelect(taskEditorProject,taskEditorProject.value);populateProjectSelect(eventProjectInput,eventProjectInput.value);populateProjectSelect(noteProjectSelect,noteProjectSelect.value);}
+        function projectCounts(projectId){let tasks=0;TASK_CONTEXTS.forEach(context=>(globalTasks[context]||[]).forEach(task=>{if(task.projectId===projectId)tasks+=1;}));const notes=allDateKeys().reduce((count,dateKey)=>count+normalizeNotes(readDateData(dateKey).notes).filter(note=>!note.deleted&&note.projectId===projectId).length,0);const projectEvents=events.filter(event=>!event.cancelled&&event.projectId===projectId).length;const activities=activityEntries.filter(entry=>entry.projectId===projectId).length;return{tasks,notes,events:projectEvents,activities};}
+        function addProject(){const name=projectNameInput.value.trim();if(!name){projectNameInput.focus();return;}projects.unshift({id:createId("project"),name,status:"active",createdAt:new Date().toISOString()});projectNameInput.value="";saveProjects();renderProjects();}
+        function removeProject(id){const counts=projectCounts(id);if(counts.tasks+counts.notes+counts.events+counts.activities&&!confirm("Delete this project? Linked items will be kept and changed to no project."))return;TASK_CONTEXTS.forEach(context=>(globalTasks[context]||[]).forEach(task=>{if(task.projectId===id)task.projectId="";}));events.forEach(event=>{if(event.projectId===id)event.projectId="";});activityEntries.forEach(entry=>{if(entry.projectId===id)entry.projectId="";});allDateKeys().forEach(dateKey=>{const data=readDateData(dateKey);let changed=false;const list=normalizeNotes(data.notes);list.forEach(note=>{if(note.projectId===id){note.projectId="";changed=true;}});if(changed){data.notes=list;writeDateData(dateKey,data);}});projects=projects.filter(project=>project.id!==id);saveProjects();saveTasks();saveEvents();saveActivity();renderProjects();}
+        function projectItem(label,open){const button=document.createElement("button");button.type="button";button.className="plain-btn project-item";button.textContent=label;if(open)button.addEventListener("click",open);return button;}
+        function openProjectItem(type,item,context,dateKey){closeProjects();if(type==="task")return openTaskEditor(item.id,context);if(type==="event")return openEventEditor(item.id);if(type==="note"){notesDate=fromKey(dateKey);loadNotesForIndependentDate();return openExpandedNote(item.id);}openActivity();setTimeout(()=>document.querySelector(`[data-activity-id="${item.id}"]`)?.focus(),0);}
+        function renderProjectDetail(id){const project=projectById(id);if(!project)return renderProjects();activeProjectId=id;projectCreateRow.hidden=true;projectList.hidden=true;projectDetail.hidden=false;projectDetail.innerHTML="";const head=document.createElement("div");head.className="project-detail-head";const back=document.createElement("button");back.type="button";back.className="plain-btn";back.textContent="← Projects";back.addEventListener("click",renderProjects);const title=document.createElement("span");title.className="project-detail-title";title.textContent=project.name;const status=document.createElement("select");["active","on-hold","completed"].forEach(value=>{const option=document.createElement("option");option.value=value;option.textContent=value==="on-hold"?"On Hold":value[0].toUpperCase()+value.slice(1);status.appendChild(option);});status.value=project.status;status.addEventListener("change",()=>{project.status=status.value;saveProjects();});head.append(back,title,status);projectDetail.appendChild(head);
+        const groups=[{label:"Tasks",items:TASK_CONTEXTS.flatMap(context=>(globalTasks[context]||[]).filter(item=>item.projectId===id).map(item=>({item,context}))),text:x=>x.item.text,open:x=>openProjectItem("task",x.item,x.context)},{label:"Events",items:events.filter(item=>!item.cancelled&&item.projectId===id),text:x=>x.title,open:x=>openProjectItem("event",x)},{label:"Notes",items:allDateKeys().flatMap(dateKey=>normalizeNotes(readDateData(dateKey).notes).filter(item=>!item.deleted&&item.projectId===id).map(item=>({item,dateKey}))),text:x=>x.item.title||"Untitled",open:x=>openProjectItem("note",x.item,null,x.dateKey)},{label:"Activities",items:activityEntries.filter(item=>item.projectId===id),text:x=>x.text,open:x=>openProjectItem("activity",x)}];groups.forEach(group=>{const section=document.createElement("section");section.className="project-group";const heading=document.createElement("h3");heading.className="project-group-title";heading.textContent=`${group.label} (${group.items.length})`;section.appendChild(heading);if(!group.items.length){const empty=document.createElement("div");empty.className="project-empty";empty.textContent=`No ${group.label.toLowerCase()}`;section.appendChild(empty);}else group.items.forEach(item=>section.appendChild(projectItem(group.text(item),()=>group.open(item))));projectDetail.appendChild(section);});}
+        function renderProjects(){activeProjectId=null;projectCreateRow.hidden=false;projectList.hidden=false;projectDetail.hidden=true;projectList.innerHTML="";if(!projects.length){const empty=document.createElement("div");empty.className="project-empty";empty.textContent="No projects yet";projectList.appendChild(empty);return;}projects.forEach(project=>{const counts=projectCounts(project.id);const card=document.createElement("article");card.className="project-card";const open=document.createElement("button");open.type="button";open.className="plain-btn project-open";const name=document.createElement("span");name.className="project-name";name.textContent=project.name;const meta=document.createElement("span");meta.className="project-meta";meta.textContent=`${counts.tasks} Tasks · ${counts.events} Events · ${counts.notes} Notes · ${counts.activities} Activities`;open.append(name,meta);open.addEventListener("click",()=>renderProjectDetail(project.id));const actions=document.createElement("span");actions.className="project-card-actions";const del=document.createElement("button");del.type="button";del.className="plain-btn delete-note-btn";del.textContent="Delete";del.addEventListener("click",()=>removeProject(project.id));actions.appendChild(del);card.append(open,actions);projectList.appendChild(card);});}
+        function openProjects(){closeMobileMore();renderProjects();projectModal.classList.add("open");projectModal.setAttribute("aria-hidden","false");setTimeout(()=>projectNameInput.focus(),0);}
+        function closeProjects(){projectModal.classList.remove("open");projectModal.setAttribute("aria-hidden","true");activeProjectId=null;}
+
         function normalizeTaskTags(rawTags) {
             if (!Array.isArray(rawTags)) return [];
             const seen = new Set();
@@ -7038,7 +6986,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
         function normalizeTask(task) {
             const status = TASK_STATUSES.some(item => item.id === task.status) ? task.status : (task.done ? "completed" : "not-started");
             const createdAt = task.createdAt && !Number.isNaN(new Date(task.createdAt).getTime()) ? task.createdAt : "";
-            return { id: task.id || createId("task"), text: task.text || "", nextAction: typeof task.nextAction === "string" ? task.nextAction.trim().slice(0,160) : "", status, done: status === "completed", highlighted: Boolean(task.highlighted), tags: normalizeTaskTags(task.tags), date: fromKey(task.date) ? task.date : "", time: /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "", noteLink: normalizeTaskNoteLink(task.noteLink), createdAt };
+            return { id: task.id || createId("task"), text: task.text || "", nextAction: typeof task.nextAction === "string" ? task.nextAction.trim().slice(0,160) : "", status, done: status === "completed", highlighted: Boolean(task.highlighted), tags: normalizeTaskTags(task.tags), date: fromKey(task.date) ? task.date : "", time: /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "", noteLink: normalizeTaskNoteLink(task.noteLink), projectId: typeof task.projectId === "string" ? task.projectId : "", createdAt };
         }
         function orderTasks(taskList) {
             const list = (taskList || []).map((task, index) => {
@@ -7052,6 +7000,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 task.date = fromKey(task.date) ? task.date : "";
                 task.time = /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "";
                 task.noteLink = normalizeTaskNoteLink(task.noteLink);
+                task.projectId = typeof task.projectId === "string" ? task.projectId : "";
                 if (!task.createdAt || Number.isNaN(new Date(task.createdAt).getTime()))
                     task.createdAt = new Date(TASK_LEGACY_MIGRATION_TIME - index).toISOString();
                 return task;
@@ -7109,26 +7058,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             localStorage.setItem(TASKS_KEY, JSON.stringify(globalTasks));
         }
         function activeTasks() { return orderTasks(globalTasks[activeTaskContext] || []); }
-        function taskMatchesDateFilter(task) {
-            if (activeTaskDateFilter === "scheduled") return Boolean(task.date);
-            if (activeTaskDateFilter === "no-date") return !task.date;
-            return true;
-        }
-        function visibleTasks() {
-            return activeTasks().filter(task => taskMatchesDateFilter(task) && (!activeTaskTagFilter || normalizeTaskTags(task.tags).some(tag => tag.toLowerCase() === activeTaskTagFilter.toLowerCase())));
-        }
-        function updateTaskDateFilter() {
-            taskDateFilter.querySelectorAll("[data-task-date-filter]").forEach(button => {
-                const active = button.dataset.taskDateFilter === activeTaskDateFilter;
-                button.classList.toggle("active", active);
-                button.setAttribute("aria-pressed", String(active));
-            });
-        }
-        function setTaskDateFilter(filter) {
-            if (!["all", "scheduled", "no-date"].includes(filter)) return;
-            activeTaskDateFilter = filter;
-            renderGlobalTasks();
-        }
+        function taskMatchesDateFilter(task){if(activeTaskDateFilter==="scheduled")return Boolean(task.date);if(activeTaskDateFilter==="no-date")return !task.date;return true;}
+        function visibleTasks(){return activeTasks().filter(task=>taskMatchesDateFilter(task)&&(!activeTaskTagFilter||normalizeTaskTags(task.tags).some(tag=>tag.toLowerCase()===activeTaskTagFilter.toLowerCase())));}
+        function updateTaskDateFilter(){taskDateFilter.querySelectorAll("[data-task-date-filter]").forEach(button=>{const active=button.dataset.taskDateFilter===activeTaskDateFilter;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active));});}
+        function setTaskDateFilter(filter){if(!["all","scheduled","no-date"].includes(filter))return;activeTaskDateFilter=filter;renderGlobalTasks();}
         function setActiveTaskContext(context) {
             if (!TASK_CONTEXTS.includes(context))
                 return;
@@ -7464,13 +7397,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 else row.append(status, highlight, content, rowActions);
                 globalTaskList.appendChild(row);
             });
-            if (!tasksToRender.length) {
-                const empty = document.createElement("div");
-                empty.className = "task-empty";
-                const scheduleLabel = activeTaskDateFilter === "scheduled" ? "scheduled tasks" : activeTaskDateFilter === "no-date" ? "tasks without a date" : "tasks";
-                empty.textContent = activeTaskTagFilter ? `No ${scheduleLabel} tagged “${activeTaskTagFilter}” in ${activeTaskContext}` : `No ${scheduleLabel} in ${activeTaskContext}`;
-                globalTaskList.appendChild(empty);
-            }
+            if (!tasksToRender.length) { const empty = document.createElement("div"); empty.className = "task-empty"; empty.textContent = activeTaskTagFilter ? `No tasks tagged “${activeTaskTagFilter}” in ${activeTaskContext}` : `No tasks in ${activeTaskContext}`; globalTaskList.appendChild(empty); }
         }
         function clearDoneTasks() {
             const completed = activeTasks().filter(task => task.done);
@@ -7604,6 +7531,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 quote: favouriteQuote,
                 tasks: globalTasks,
                 archivedTasks,
+                projects,
                 events,
                 activity: activityEntries,
                 data
@@ -7655,6 +7583,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 archivedTasks = normalizeArchivedTasks(backup.archivedTasks);
                 saveArchivedTasks();
             }
+            if (Array.isArray(backup.projects)) { projects = normalizeProjects(backup.projects); saveProjects(); }
             if (Array.isArray(backup.events)) {
                 events = normalizeEvents(backup.events);
                 saveEvents();
@@ -8281,6 +8210,7 @@ ${body}` : title };
             expandedListBtn.hidden = true;
             expandedLinks.hidden = true;
             expandedNoteTools.hidden = false;
+            noteProjectRow.hidden = true;
             closeExpandedMoreMenu();
             closeExpandedListMenu();
             applyExpandedNoteLayout();
@@ -8363,6 +8293,8 @@ ${body}` : title };
             expandedTitle.value = note.title || "Untitled";
             expandedBody.value = note.body || "";
             expandedNoteTools.hidden = isDeletedPreview;
+            noteProjectRow.hidden = isDeletedPreview;
+            populateProjectSelect(noteProjectSelect, note.projectId || "");
             expandedLabelChips.hidden = isDeletedPreview;
             renderLinks(expandedLinks, expandedBody.value, expandedNoteId);
             if (isDeletedPreview) {
@@ -8546,7 +8478,7 @@ ${body}` : title };
             mobileNotesAll = false;
             notesBinOpen = false;
             loadNotesForIndependentDate();
-            const newNote = { id: createId(), title: "Quick note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
+            const newNote = { id: createId(), title: "Quick note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null, projectId: "" };
             notes.unshift(newNote);
             renderNotes();
             save();
@@ -9194,6 +9126,7 @@ ${body}` : title };
       function handleEscapeKey() {
   clearShortcutPrefix();
 
+  if (projectModal.classList.contains("open")) { closeProjects(); return; }
   if (shareTargetModal.classList.contains("open")) {
     closeShareTargetCapture();
     return;
@@ -9363,7 +9296,7 @@ ${body}` : title };
             mobileNotesAll = false;
             notesBinOpen = false;
             loadNotesForIndependentDate();
-            const note = { id: createId(), title: title || "Shared item", body: content, labels: [], pinned: false, deleted: false, deletedAt: null };
+            const note = { id: createId(), title: title || "Shared item", body: content, labels: [], pinned: false, deleted: false, deletedAt: null, projectId: "" };
             notes.unshift(note);
             renderNotes();
             save();
@@ -9436,14 +9369,14 @@ ${body}` : title };
                 mobileNotesAll = false;
                 notesBinOpen = false;
                 loadNotesForIndependentDate();
-                const note = { id: createId(), title: "Voice note", body: capturedText, labels: [], pinned: false, deleted: false, deletedAt: null };
+                const note = { id: createId(), title: "Voice note", body: capturedText, labels: [], pinned: false, deleted: false, deletedAt: null, projectId: "" };
                 notes.unshift(note);
                 renderNotes();
                 save();
                 showCaptureToast("✓ Note saved");
                 return;
             }
-            activityEntries.unshift({ id: createId("activity"), text: capturedText, status: "started", highlighted: false, createdAt: new Date().toISOString() });
+            activityEntries.unshift({ id: createId("activity"), text: capturedText, status: "started", highlighted: false, projectId: "", createdAt: new Date().toISOString() });
             saveActivity();
             renderActivity();
             showCaptureToast("✓ Activity saved");
@@ -9496,6 +9429,12 @@ ${body}` : title };
             openTasksInboxShortcut();
         });
         mobileActivityBtn.addEventListener("click", () => { closeMobileMore(); openActivity(); });
+        mobileProjectsBtn.addEventListener("click", openProjects);
+        projectsBtn.addEventListener("click", openProjects);
+        closeProjectBtn.addEventListener("click", closeProjects);
+        addProjectBtn.addEventListener("click", addProject);
+        projectNameInput.addEventListener("keydown", event => { if (event.key === "Enter") addProject(); });
+        projectModal.addEventListener("click", event => { if (event.target === projectModal) closeProjects(); });
         mobileHelpBtn.addEventListener("click", () => { closeMobileMore(); openHelp(); });
         mobileShareBtn.addEventListener("click", () => { closeMobileMore(); shareFastGtd(); });
         mobileQuickNoteBtn.addEventListener("click", openQuickNote);
@@ -9526,6 +9465,7 @@ ${body}` : title };
             if (!event.target.closest || !event.target.closest(".task-row"))
                 closeTaskMoveMenus();
         });
+        noteProjectSelect.addEventListener("change", () => { const note = expandedNoteId ? findNoteById(expandedNoteId) : null; if (note && !note.deleted) { note.projectId = noteProjectSelect.value; save(); } });
         notesLabelFilter.addEventListener("change", () => {
             notesLabelFilterValue = notesLabelFilter.value;
             renderNotes();
@@ -9536,7 +9476,7 @@ ${body}` : title };
         addNoteBtn.addEventListener("click", () => {
             closeNotesMoreMenu();
             notesBinOpen = false;
-            const newNote = { id: createId(), title: "New Note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
+            const newNote = { id: createId(), title: "New Note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null, projectId: "" };
             notes.unshift(newNote);
             renderNotes();
             save();
@@ -9587,10 +9527,7 @@ ${body}` : title };
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
         taskArchiveBtn.addEventListener("click", openTaskArchive);
         closeTaskArchiveBtn.addEventListener("click", closeTaskArchive);
-        taskDateFilter.addEventListener("click", event => {
-            const button = event.target.closest("[data-task-date-filter]");
-            if (button) setTaskDateFilter(button.dataset.taskDateFilter);
-        });
+        taskDateFilter.addEventListener("click",event=>{const button=event.target.closest("[data-task-date-filter]");if(button)setTaskDateFilter(button.dataset.taskDateFilter);});
         newTaskBtn.addEventListener("click", () => openNewTaskEditor(activeTaskContext));
         taskCreateNoteBtn.addEventListener("click", createNoteForEditingTask);
         taskLinkNoteBtn.addEventListener("click", openTaskNotePicker);
@@ -9727,6 +9664,7 @@ ${body}` : title };
         updateFocusViewButton();
         applyExpandedNoteLayout();
         renderGlobalResults();
+        populateProjectSelects();
         renderGlobalTasks();
         applyActivityFilter();
         renderActivity();
