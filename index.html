@@ -4835,116 +4835,25 @@ select {
 .project-panel{width:min(560px,94vw);max-height:88vh;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--page);box-shadow:0 18px 50px rgba(50,40,28,.22)}.project-head{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;min-height:44px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--panel)}.project-title{margin:0;font-size:var(--font-lg);font-weight:700}.project-body{min-height:0;padding:10px 12px 12px;overflow-y:auto}.project-create-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;margin-bottom:10px}.project-create-row input{min-width:0}.project-list{display:grid;gap:6px}.project-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 9px;border:1px solid var(--line);border-radius:11px;background:#fff}.project-open{display:grid;gap:2px;min-width:0;text-align:left;color:var(--ink)}.project-name{font-weight:700}.project-meta{color:var(--muted);font-size:10px}.project-card-actions{display:flex;gap:5px}.project-detail-head{display:flex;align-items:center;gap:7px;margin-bottom:9px}.project-detail-title{font-weight:750}.project-group{margin-top:11px}.project-group-title{margin:0 0 5px;color:var(--muted);font-size:10.5px;font-weight:750;text-transform:uppercase}.project-item{width:100%;min-height:34px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);text-align:left}.project-empty{padding:14px 6px;color:var(--muted);text-align:center}.project-field{display:grid;gap:5px}.project-field label{color:var(--muted);font-size:11px;font-weight:650}.project-field select{width:100%;height:32px;padding:4px 8px;border:1px solid var(--line);border-radius:10px;background:var(--page);color:var(--ink)}.note-project-row{display:flex;align-items:center;gap:6px;padding:5px 12px;border-bottom:1px solid var(--line);background:var(--panel)}.note-project-row label{color:var(--muted);font-size:10.5px;font-weight:650}.note-project-row select{min-height:28px;max-width:190px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font-size:11px}.activity-project-select{min-height:24px;max-width:115px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--muted);font-size:9.5px}
 @media(max-width:759px){.project-panel{width:calc(100vw - 12px);max-height:90dvh}.project-card{grid-template-columns:1fr}.project-card-actions{justify-content:flex-end}.note-project-row{padding:5px 10px}.note-project-row select{flex:1;max-width:none}}
 
-/* FAST GTD Phase 1 desktop workspace, based on the validated Workspace layout */
+/* Controlled desktop change 1: Workspace footer only */
+.workspace-footer { display: none; }
 @media (min-width: 760px) {
-  .global-search-wrap, .shell { width: min(1480px, calc(100vw - 24px)); max-width: 1480px; }
-  .shell, .shell.left-collapsed, .shell.right-collapsed, .shell.left-collapsed.right-collapsed {
-    display: grid;
-    grid-template-columns: minmax(560px, 1.25fr) minmax(390px, .75fr);
-    grid-template-areas: "workspace planner";
-    align-items: start;
-    gap: 10px;
-  }
-  .shell > .sidebar { display: none !important; }
-  .shell > .app { grid-area: planner; display: block !important; min-width: 0; }
-  .notes-sidebar { grid-area: workspace; width: 100%; max-width: none; min-width: 0; min-height: calc(100vh - 92px); max-height: none; display: flex; flex-direction: column; }
-  .notes-sidebar > .sidebar { display: block; width: 100%; max-width: none; max-height: none; border: 0; border-radius: 0; box-shadow: none; }
-  .notes-sidebar > .sidebar[hidden] { display: none !important; }
-  .notes-sidebar > .sidebar .sidebar-head { display: none; }
-  .notes-sidebar > .sidebar .calendar-jump { max-width: 420px; padding: 10px 10px 0; }
-  .notes-sidebar > .sidebar .calendar-wrap { max-height: calc(100vh - 205px); padding: 10px; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:10px; overflow-y:auto; }
-  .notes-sidebar > .sidebar .month { margin:0; padding: 8px; border: 1px solid var(--line); border-radius: 12px; }
-  #workspaceCalendarTab { background:#ffffff; border-color:var(--line); color:var(--muted); box-shadow:none; }
-  #workspaceCalendarTab:hover, #workspaceCalendarTab:focus-visible { background:var(--soft); border-color:#cfd6cf; color:var(--ink); }
-  #workspaceCalendarTab.active { background: #eef3ff; border-color: #b9c8e8; color: #3e5278; }
-  .workspace-tabs { flex-wrap: wrap; }
-  #notesToggle { display:none !important; }
-  .notes-sidebar, .notes-sidebar.collapsed { width:100%; min-width:0; background:var(--page); border:1px solid var(--line); box-shadow:var(--shadow); overflow:hidden; }
-  .notes-sidebar.collapsed .notes-head { display:flex; min-height:var(--header-height); padding:var(--space-3) var(--space-4); border-bottom:1px solid var(--line); background:linear-gradient(180deg,#ffffff 0%,#f6f8f5 100%); }
-  .notes-sidebar.collapsed .notes-wrap, .notes-sidebar.collapsed .workspace-tabs, .notes-sidebar.collapsed .workspace-panel-host { display:block; }
-  .notes-sidebar.collapsed .workspace-tabs { display:inline-flex; }
-  .workspace-footer-copy { margin-top:auto; border-top:1px solid var(--line); padding:8px 10px; text-align:center; background:var(--panel); color:var(--muted); font-size:var(--font-xs); }
-  .workspace-footer-copy .footer-actions { justify-content:center; display:flex; }
-  .workspace-footer-copy .desktop-shortcut-hints { display:flex; justify-content:center; margin-top:5px; }
-  /* Avoid duplicated desktop footer controls; mobile retains the original Planner footer. */
-  .app > footer { display:none; }
-  /* Final Workspace Task and Activity first-row alignment. */
-  .workspace-panel-host .task-row, .workspace-panel-host .task-row.no-move {
-    grid-template-columns:24px 24px minmax(0,1fr) auto;
-    grid-template-rows:auto;
-    grid-template-areas:"check highlight content actions";
-    align-items:start !important;
-  }
-  .workspace-panel-host .task-status { grid-area:check; }
-  .workspace-panel-host .task-highlight { grid-area:highlight; }
-  .workspace-panel-host .task-content { grid-area:content; }
-  .workspace-panel-host .task-row-actions { grid-area:actions; }
-  .workspace-panel-host .task-status, .workspace-panel-host .task-highlight, .workspace-panel-host .task-content, .workspace-panel-host .task-row-actions { align-self:start !important; margin-top:0 !important; }
-  .workspace-panel-host .task-text { min-height:24px !important; padding:0 !important; line-height:24px !important; }
-  .workspace-panel-host .activity-row {
-    grid-template-columns:24px 24px minmax(0,1fr) 24px;
-    grid-template-rows:auto auto;
-    grid-template-areas:"status highlight text delete" ". . time .";
-    align-items:start !important;
-  }
-  .workspace-panel-host .activity-status, .workspace-panel-host .activity-highlight, .workspace-panel-host .activity-text, .workspace-panel-host .activity-delete { align-self:start !important; margin-top:0 !important; }
-  .workspace-panel-host .activity-text { min-height:24px !important; padding:0 !important; line-height:24px !important; }
-}
-@media (min-width:760px) and (max-width:1040px) {
-  .shell, .shell.left-collapsed, .shell.right-collapsed, .shell.left-collapsed.right-collapsed { grid-template-columns:minmax(465px,1.1fr) minmax(350px,.9fr); }
-  .notes-sidebar > .sidebar .calendar-wrap { grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); }
-}
-@media (max-width:759px) {
-  .workspace-footer-copy { display:none !important; }
-}
-
-/* Phase 1 correction: preserve the original desktop Planner and Timeblocks */
-@media (min-width: 760px) {
-  .shell,
-  .shell.left-collapsed,
-  .shell.right-collapsed,
-  .shell.left-collapsed.right-collapsed {
-    align-items: stretch;
-  }
-  .shell > .app {
-    grid-area: planner;
-    display: flex !important;
-    flex-direction: column;
-    width: 100%;
-    min-width: 0;
-    height: calc(100vh - 20px);
-    min-height: 560px;
-    max-height: calc(100vh - 20px);
-    overflow: hidden;
-  }
-  .shell > .app > header {
-    display: block;
+  .notes-sidebar { display: flex; flex-direction: column; }
+  .notes-sidebar > .notes-wrap,
+  .notes-sidebar > .workspace-panel-host { min-height: 0; }
+  .workspace-footer {
+    display: flex;
     flex: 0 0 auto;
+    padding: 6px 10px;
+    border-top: 1px solid var(--line);
+    background: var(--panel);
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
   }
-  .shell > .app > .timeline {
-    display: grid !important;
-    flex: 1 1 auto;
-    min-height: 0;
-    height: auto;
-    max-height: none;
-    overflow-y: auto;
-    overflow-x: hidden;
-    overscroll-behavior: contain;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-  .shell > .app > .timeline .time-pair-row,
-  .shell > .app > .timeline .slot,
-  .shell > .app > .timeline textarea[data-time] {
-    visibility: visible !important;
-  }
-  .shell > .app > .events-strip,
-  .shell > .app > .quote-block {
-    display: none;
-  }
-  .shell > .app > footer {
-    display: none;
-  }
+  .workspace-footer .footer-actions { justify-content: center; }
+  .workspace-footer .desktop-shortcut-hints { display: flex; justify-content: center; }
+  .app > footer { display: none; }
 }
 </style>
 </head>
@@ -5082,7 +4991,7 @@ select {
     </main>
 
     <aside class="notes-sidebar" id="notesSidebar" aria-label="Lined notepad sidebar">
-      <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Workspace sections"><button class="workspace-tab" id="workspaceCalendarTab" type="button" role="tab" aria-selected="false">Calendar</button><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button><button class="workspace-tab" id="workspaceEventsTab" type="button" role="tab" aria-selected="false">Events</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
+      <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Right sidebar panels"><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button><button class="workspace-tab" id="workspaceEventsTab" type="button" role="tab" aria-selected="false">Events</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
       <div class="notes-wrap" id="notesWorkspacePanel">
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
@@ -5092,11 +5001,11 @@ select {
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
       <div class="workspace-panel-host" id="workspacePanelHost"></div>
-      <div class="workspace-footer-copy">
+      <footer class="workspace-footer" id="workspaceFooter">
         <span class="footer-actions"><span>Saved locally on this device</span><span>·</span><button class="plain-btn backup-btn" id="workspaceExportBtn" type="button">Export</button><span>·</span><button class="plain-btn backup-btn" id="workspaceImportBtn" type="button">Import</button><span>·</span><button class="plain-btn backup-btn" id="workspaceHelpBtn" type="button">Help</button></span>
         <div class="last-import-status" data-last-import-status>Last import: Never</div>
         <div class="desktop-shortcut-hints" title="Press G, then the second key"><span>Shortcuts:</span><span><strong>GF</strong> Focus</span><span><strong>GT</strong> Today task</span><span><strong>GI</strong> Inbox</span><span><strong>GA</strong> Activity</span><span><strong>GN</strong> New note</span><span><strong>GS</strong> Search</span><span><strong>GL</strong> Labels</span><span><strong>GE</strong> Event</span><span><strong>Ctrl+;</strong> Date</span><span><strong>Ctrl+Shift+;</strong> Time</span><span><strong>Ctrl+Alt+;</strong> Timestamp</span></div>
-      </div>
+      </footer>
     </aside>
   </div>
 
@@ -5220,7 +5129,7 @@ select {
   </div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true">
-    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>Getting Started</h3><ol><li>Use Tasks for actions, Events for date-based commitments, Notes for reference, and Activity for a lightweight work log.</li><li>Use Today to plan work in 30-minute timeblocks.</li><li>Use the workspace tabs to switch between Calendar, Notes, Tasks, Activity, and Events.</li></ol><h3>Tasks</h3><ul><li>Create Tasks in Inbox, Today, This month, or Someday.</li><li>Use status, highlight, tags, next action, and optional date/time scheduling.</li><li>Link a Task to a new or existing Note.</li><li>Archive completed Tasks and restore them later if needed.</li></ul><h3>Events</h3><ul><li>Create one-time or recurring Events with an optional time, duration, tag, highlight, and next action.</li><li>Timed Events can appear in the Planner.</li><li>Create a Note or link an existing Note to an Event.</li></ul><h3>Notes</h3><ul><li>Select a compact Note row to open it. Use the star to pin or unpin it.</li><li>Use Labels to organise and filter Notes.</li><li>Use Link Note to connect Notes. Links appear under Related Notes.</li><li>Use Edit for writing and formatting, including bullets, numbering, checklists, and horizontal lines.</li></ul><h3>Voice Capture</h3><ul><li>On mobile, open More, then Voice Capture.</li><li>Use the keyboard microphone or type, then save as a Task, Event, Note, or Activity.</li></ul><h3>Planner</h3><ul><li>Select an empty timeblock to add a Task, Event, or Activity.</li><li>Use the status control to mark a block as Planned, In progress, or Done.</li></ul><h3>Backup &amp; Privacy</h3><ul><li>Export regularly to create a complete local backup. Use Import to restore it.</li><li>Data is stored locally on the current device. No account is required.</li></ul><div class="help-note">Install FAST GTD as a PWA for an app-like experience. Local data is specific to the browser or installed app, so keep regular exports.</div></div><div class="help-mobile-content"><h3>Quick Start</h3>
+    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>Getting Started</h3><ol><li>Use Tasks for actions, Events for date-based commitments, Notes for reference, and Activity for a lightweight work log.</li><li>Use Today to plan work in 30-minute timeblocks.</li><li>Use the workspace tabs to switch between Notes, Tasks, Activity, and Events.</li></ol><h3>Tasks</h3><ul><li>Create Tasks in Inbox, Today, This month, or Someday.</li><li>Use status, highlight, tags, next action, and optional date/time scheduling.</li><li>Link a Task to a new or existing Note.</li><li>Archive completed Tasks and restore them later if needed.</li></ul><h3>Events</h3><ul><li>Create one-time or recurring Events with an optional time, duration, tag, highlight, and next action.</li><li>Timed Events can appear in the Planner.</li><li>Create a Note or link an existing Note to an Event.</li></ul><h3>Notes</h3><ul><li>Select a compact Note row to open it. Use the star to pin or unpin it.</li><li>Use Labels to organise and filter Notes.</li><li>Use Link Note to connect Notes. Links appear under Related Notes.</li><li>Use Edit for writing and formatting, including bullets, numbering, checklists, and horizontal lines.</li></ul><h3>Voice Capture</h3><ul><li>On mobile, open More, then Voice Capture.</li><li>Use the keyboard microphone or type, then save as a Task, Event, Note, or Activity.</li></ul><h3>Planner</h3><ul><li>Select an empty timeblock to add a Task, Event, or Activity.</li><li>Use the status control to mark a block as Planned, In progress, or Done.</li></ul><h3>Backup &amp; Privacy</h3><ul><li>Export regularly to create a complete local backup. Use Import to restore it.</li><li>Data is stored locally on the current device. No account is required.</li></ul><div class="help-note">Install FAST GTD as a PWA for an app-like experience. Local data is specific to the browser or installed app, so keep regular exports.</div></div><div class="help-mobile-content"><h3>Quick Start</h3>
 <ul>
   <li>+ Task saves a new Task to Inbox.</li>
   <li>+ Note opens simple capture with Labels and Link Note visible.</li>
@@ -5349,7 +5258,6 @@ select {
         const notesSidebar = el("notesSidebar");
         const notesWorkspacePanel = el("notesWorkspacePanel");
         const workspacePanelHost = el("workspacePanelHost");
-        const workspaceCalendarTab = el("workspaceCalendarTab");
         const workspaceNotesTab = el("workspaceNotesTab");
         const workspaceTasksTab = el("workspaceTasksTab");
         const workspaceActivityTab = el("workspaceActivityTab");
@@ -8458,7 +8366,6 @@ ${body}` : title };
         }
         function updateWorkspaceTabs() {
             const tabs = [
-                [workspaceCalendarTab, "calendar"],
                 [workspaceNotesTab, "notes"],
                 [workspaceTasksTab, "tasks"],
                 [workspaceActivityTab, "activity"],
@@ -8496,10 +8403,7 @@ ${body}` : title };
                 applyNotesFocusView();
             }
             desktopWorkspacePanel = panel;
-            const calendarPanelActive = panel === "calendar";
             const notesPanelActive = panel === "notes" || panel === "labels";
-            if (calendarPanelActive && sidebar.parentElement !== notesSidebar) notesSidebar.insertBefore(sidebar, notesWorkspacePanel);
-            sidebar.hidden = !calendarPanelActive;
             if (panel === "labels") {
                 notesFocusAll = true;
                 notesLabelFilterValue = "";
@@ -9534,8 +9438,6 @@ ${body}` : title };
         });
         mobileCalendarBtn.addEventListener("click", () => {
             closeMobileMore();
-            if (sidebar.parentElement !== shell) shell.insertBefore(sidebar, document.querySelector(".app"));
-            sidebar.hidden = false;
             setMobileSection("calendar");
             alignMobileCalendarToCurrentMonth();
         });
@@ -9612,7 +9514,6 @@ ${body}` : title };
                 setTimeout(() => expandedBody.focus(), 0);
             }
         });
-        workspaceCalendarTab.addEventListener("click", () => showDesktopWorkspacePanel("calendar"));
         workspaceNotesTab.addEventListener("click", () => showDesktopWorkspacePanel("notes"));
         notesLabelsBtn.addEventListener("click", toggleNotesLabelsWorkspace);
         workspaceTasksTab.addEventListener("click", () => showDesktopWorkspacePanel("tasks"));
@@ -9735,6 +9636,12 @@ ${body}` : title };
             selectDate(today, true); });
         prevDayBtn.addEventListener("click", () => shiftSelectedDate(-1));
         nextDayBtn.addEventListener("click", () => shiftSelectedDate(1));
+        const workspaceExportBtn = el("workspaceExportBtn");
+        const workspaceImportBtn = el("workspaceImportBtn");
+        const workspaceHelpBtn = el("workspaceHelpBtn");
+        workspaceExportBtn.addEventListener("click", exportBackup);
+        workspaceImportBtn.addEventListener("click", () => importBackupBtn.click());
+        workspaceHelpBtn.addEventListener("click", openHelp);
         exportBackupBtn.addEventListener("click", exportBackup);
         importBackupBtn.addEventListener("click", () => { importBackupInput.value = ""; importBackupInput.click(); });
         importBackupInput.addEventListener("change", () => {
@@ -9769,10 +9676,6 @@ ${body}` : title };
             updateFocusViewButton();
         });
         window.addEventListener("resize", () => {
-            if (isMobileViewport() && sidebar.parentElement !== shell) {
-                shell.insertBefore(sidebar, document.querySelector(".app"));
-                sidebar.hidden = false;
-            }
             document.querySelectorAll("textarea[data-time]").forEach(autoGrow);
             document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
             if (!isMobileViewport() && !noteModal.classList.contains("open")) {
@@ -9940,9 +9843,6 @@ if (key === "e") {
 });
         if (document.readyState === "complete") {
             readShareTargetFromUrl();
-            const workspaceExportBtn = document.getElementById("workspaceExportBtn"); if (workspaceExportBtn) workspaceExportBtn.addEventListener("click", exportBackup);
-            const workspaceImportBtn = document.getElementById("workspaceImportBtn"); if (workspaceImportBtn) workspaceImportBtn.addEventListener("click", () => importBackupBtn.click());
-            const workspaceHelpBtn = document.getElementById("workspaceHelpBtn"); if (workspaceHelpBtn) workspaceHelpBtn.addEventListener("click", openHelp);
         } else {
             window.addEventListener("load", readShareTargetFromUrl, { once: true });
         }
