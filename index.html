@@ -4972,6 +4972,81 @@ select {
   #workspaceTodayTab:focus-visible { background: var(--soft); border-color: #cfd6cf; color: var(--ink); }
   #workspaceTodayTab.active { background: #eef3ff; border-color: #b9c8e8; color: #3e5278; }
 }
+
+/* Controlled Calendar redesign: desktop horizontal quarter timeline */
+@media (min-width: 760px) {
+  .workspace-panel-host > .sidebar .calendar-jump { display: none !important; }
+  .workspace-panel-host > .sidebar .calendar-wrap {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    overscroll-behavior-x: contain;
+    scrollbar-gutter: stable;
+  }
+  .calendar-quarter {
+    flex: 0 0 min(100%, 920px);
+    min-width: min(100%, 920px);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 8px;
+    padding: 9px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: var(--panel);
+    scroll-snap-align: start;
+  }
+  .calendar-quarter-title {
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 750;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .calendar-quarter-months {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+    align-items: start;
+  }
+  .workspace-panel-host > .sidebar .calendar-quarter .month {
+    min-width: 0;
+    height: fit-content;
+    margin: 0;
+    padding: 8px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: #fff;
+  }
+  .calendar-quarter-placeholder {
+    min-height: 238px;
+    border: 1px dashed var(--line);
+    border-radius: 11px;
+    background: #fff;
+  }
+}
+@media (min-width: 760px) and (max-width: 900px) {
+  .calendar-quarter { flex-basis: 100%; min-width: 100%; }
+  .calendar-quarter-months { gap: 6px; }
+  .workspace-panel-host > .sidebar .calendar-quarter .month { padding: 6px; }
+}
+
+/* Controlled desktop change: A4-width workspace */
+@media (min-width: 760px) {
+  .global-search-wrap,
+  .shell {
+    width: min(794px, calc(100vw - 24px)) !important;
+    max-width: 794px !important;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
 </style>
 </head>
 <body>
@@ -9218,6 +9293,10 @@ ${body}` : title };
         function updateSelectedCalendarDay() {
             const selectedKey = toKey(selectedDate);
             document.querySelectorAll(".day-btn.selected").forEach(button => button.classList.remove("selected"));
+            if (!isMobileViewport()) {
+                const quarter = calendarWrap.querySelector(`.calendar-quarter[data-year="${selectedDate.getFullYear()}"][data-quarter="${Math.floor(selectedDate.getMonth()/3)}"]`);
+                if (quarter) populateCalendarQuarter(quarter, toKey(getToday()));
+            }
             const button = document.querySelector(`.day-btn[data-date="${selectedKey}"]`);
             if (button) {
                 button.classList.add("selected");
@@ -9244,15 +9323,56 @@ ${body}` : title };
             return {start:start<START_DATE?new Date(START_DATE):start,end:end>END_DATE?new Date(END_DATE):end};
         }
         function jumpCalendarToMonth(){const match=/^(\d{4})-(\d{2})$/.exec(calendarMonthInput.value||"");if(!match)return;const target=new Date(Number(match[1]),Number(match[2])-1,1);if(!isWithinRange(target)){alert("Please select a month from January 1970 to December 2099.");return;}selectDate(target,true);buildCalendar();}
+        let calendarQuarterObserver = null;
+        function createCalendarMonthSection(year, monthIndex, todayKey) {
+            const month=document.createElement("section");month.className="month";
+            const cursor=new Date(year,monthIndex,1);
+            const heading=document.createElement("div");heading.className="month-name";heading.textContent=monthName(cursor);
+            const days=document.createElement("div");days.className="days";
+            const firstDay=new Date(year,monthIndex,1),day=new Date(year,monthIndex,1);
+            for(let index=0;index<mondayFirstIndex(firstDay);index+=1)addBlankDay(days);
+            while(day.getMonth()===monthIndex){
+                const key=toKey(day);const button=document.createElement("button");button.className="day-btn";button.type="button";button.textContent=day.getDate();button.dataset.date=key;
+                const eventCount=eventsForDate(key).length;button.classList.toggle("has-events",eventCount>0);button.title=`${displayDate(day)}${eventCount?` · ${eventCount} event${eventCount===1?"":"s"}`:""}`;
+                if(day.getDay()===0||day.getDay()===6)button.classList.add("weekend");if(hasSavedDataForDate(key))button.classList.add("has-data");if(key===todayKey)button.classList.add("today");if(key===toKey(selectedDate))button.classList.add("selected");
+                button.addEventListener("click",function(){const clickedDate=fromKey(this.dataset.date);if(clickedDate)selectDate(clickedDate,true);});days.appendChild(button);day.setDate(day.getDate()+1);
+            }
+            month.appendChild(heading);addWeekdayHeader(month);month.appendChild(days);return month;
+        }
+        function populateCalendarQuarter(quarter,todayKey){
+            if(!quarter||quarter.dataset.loaded==="true")return;
+            const year=Number(quarter.dataset.year),quarterIndex=Number(quarter.dataset.quarter);
+            const months=quarter.querySelector(".calendar-quarter-months");months.innerHTML="";
+            for(let offset=0;offset<3;offset+=1)months.appendChild(createCalendarMonthSection(year,quarterIndex*3+offset,todayKey));
+            quarter.dataset.loaded="true";
+        }
+        function buildDesktopQuarterCalendar(){
+            calendarWrap.innerHTML="";
+            if(calendarQuarterObserver){calendarQuarterObserver.disconnect();calendarQuarterObserver=null;}
+            const todayKey=toKey(getToday());
+            const selectedQuarter=Math.floor(selectedDate.getMonth()/3);
+            let selectedQuarterElement=null;
+            for(let year=START_DATE.getFullYear();year<=END_DATE.getFullYear();year+=1){
+                for(let quarterIndex=0;quarterIndex<4;quarterIndex+=1){
+                    const quarter=document.createElement("section");quarter.className="calendar-quarter";quarter.dataset.year=String(year);quarter.dataset.quarter=String(quarterIndex);quarter.dataset.loaded="false";
+                    const title=document.createElement("div");title.className="calendar-quarter-title";title.textContent=`Q${quarterIndex+1} ${year}`;
+                    const months=document.createElement("div");months.className="calendar-quarter-months";
+                    for(let i=0;i<3;i+=1){const placeholder=document.createElement("div");placeholder.className="calendar-quarter-placeholder";months.appendChild(placeholder);}
+                    quarter.append(title,months);calendarWrap.appendChild(quarter);
+                    if(year===selectedDate.getFullYear()&&quarterIndex===selectedQuarter)selectedQuarterElement=quarter;
+                }
+            }
+            if(selectedQuarterElement)populateCalendarQuarter(selectedQuarterElement,todayKey);
+            calendarQuarterObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting)populateCalendarQuarter(entry.target,todayKey);});},{root:calendarWrap,rootMargin:"0px 1200px",threshold:0.01});
+            calendarWrap.querySelectorAll(".calendar-quarter").forEach(quarter=>calendarQuarterObserver.observe(quarter));
+            requestAnimationFrame(()=>{if(selectedQuarterElement)selectedQuarterElement.scrollIntoView({behavior:"auto",block:"nearest",inline:"start"});updateSelectedCalendarDay();});
+        }
         function buildCalendar() {
+            if(!isMobileViewport()) { buildDesktopQuarterCalendar(); return; }
+            if(calendarQuarterObserver){calendarQuarterObserver.disconnect();calendarQuarterObserver=null;}
             calendarWrap.innerHTML = ""; const todayKey=toKey(getToday()); const bounds=calendarWindowBounds(); calendarMonthInput.min="1970-01";calendarMonthInput.max="2099-12";calendarMonthInput.value=`${selectedDate.getFullYear()}-${pad(selectedDate.getMonth()+1)}`;
             let cursor=new Date(bounds.start.getFullYear(),bounds.start.getMonth(),1); const finalMonth=new Date(bounds.end.getFullYear(),bounds.end.getMonth(),1);
-            while(cursor<=finalMonth){
-                const month=document.createElement("section");month.className="month";const heading=document.createElement("div");heading.className="month-name";heading.textContent=monthName(cursor);const days=document.createElement("div");days.className="days";const monthIndex=cursor.getMonth(),year=cursor.getFullYear(),firstDay=new Date(year,monthIndex,1),day=new Date(year,monthIndex,1);
-                for(let index=0;index<mondayFirstIndex(firstDay);index+=1)addBlankDay(days);
-                while(day.getMonth()===monthIndex){const key=toKey(day);const button=document.createElement("button");button.className="day-btn";button.type="button";button.textContent=day.getDate();button.dataset.date=key;const eventCount=eventsForDate(key).length;button.classList.toggle("has-events",eventCount>0);button.title=`${displayDate(day)}${eventCount?` · ${eventCount} event${eventCount===1?"":"s"}`:""}`;if(day.getDay()===0||day.getDay()===6)button.classList.add("weekend");if(hasSavedDataForDate(key))button.classList.add("has-data");if(key===todayKey)button.classList.add("today");if(key===toKey(selectedDate))button.classList.add("selected");button.addEventListener("click",function(){const clickedDate=fromKey(this.dataset.date);if(clickedDate)selectDate(clickedDate,true);});days.appendChild(button);day.setDate(day.getDate()+1);}
-                month.appendChild(heading);addWeekdayHeader(month);month.appendChild(days);calendarWrap.appendChild(month);cursor.setMonth(cursor.getMonth()+1);
-            }
+            while(cursor<=finalMonth){calendarWrap.appendChild(createCalendarMonthSection(cursor.getFullYear(),cursor.getMonth(),todayKey));cursor.setMonth(cursor.getMonth()+1);}
         }
         function addWeekdayHeader(month) {
             const weekdayRow = document.createElement("div");
