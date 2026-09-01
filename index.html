@@ -4977,8 +4977,7 @@ select {
 @media (min-width: 760px) {
   .workspace-panel-host > .sidebar .calendar-jump { display: none !important; }
   .workspace-panel-host > .sidebar .calendar-wrap {
-    display: flex;
-    flex-flow: row nowrap;
+    display:block;
     align-items: stretch;
     gap: 12px;
     width: 100%;
@@ -4991,8 +4990,8 @@ select {
     scrollbar-gutter: stable;
   }
   .calendar-quarter {
-    flex: 0 0 min(100%, 920px);
-    min-width: min(100%, 920px);
+    width:100%;
+    min-width:0;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     gap: 8px;
@@ -5000,7 +4999,7 @@ select {
     border: 1px solid var(--line);
     border-radius: 13px;
     background: var(--panel);
-    scroll-snap-align: start;
+    
   }
   .calendar-quarter-title {
     color: var(--ink);
@@ -5045,6 +5044,27 @@ select {
     max-width: 794px !important;
     margin-left: auto;
     margin-right: auto;
+  }
+}
+
+/* Calendar vertical quarter layout + darker background */
+@media (min-width:760px){
+  body{background:#c7cdc6 !important;}
+  .workspace-panel-host > .sidebar .calendar-wrap{
+    display:block !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    padding:10px;
+  }
+  .calendar-quarter{
+    width:100%;
+    min-width:0 !important;
+    margin-bottom:12px;
+  }
+  .calendar-quarter-months{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:9px;
   }
 }
 </style>
