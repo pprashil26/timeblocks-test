@@ -4923,6 +4923,55 @@ select {
   }
   .workspace-panel-host > .sidebar .calendar-wrap { grid-template-columns: repeat(auto-fit, minmax(205px, 1fr)); }
 }
+
+/* Controlled desktop change 3: Today's Plan inside the main Workspace */
+@media (min-width: 760px) {
+  .global-search-wrap,
+  .shell { width: calc(100vw - 24px); max-width: 1280px; }
+  .shell,
+  .shell.left-collapsed,
+  .shell.right-collapsed,
+  .shell.left-collapsed.right-collapsed {
+    display: block;
+    max-width: 1280px;
+  }
+  .notes-sidebar {
+    width: 100%;
+    max-width: none;
+    min-height: calc(100vh - 20px);
+    max-height: none;
+  }
+  .workspace-panel-host > .app {
+    display: flex;
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    height: calc(100vh - 112px);
+    max-height: calc(100vh - 112px);
+    flex-direction: column;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: var(--page);
+    overflow: hidden;
+  }
+  .workspace-panel-host > .app[hidden] { display: none !important; }
+  .workspace-panel-host > .app > header { flex: 0 0 auto; }
+  .workspace-panel-host > .app > .timeline {
+    display: grid;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .workspace-panel-host > .app > .events-strip,
+  .workspace-panel-host > .app > .quote-block,
+  .workspace-panel-host > .app > footer { display: none; }
+  #workspaceTodayTab { background: #fff; border-color: var(--line); color: var(--muted); box-shadow: none; }
+  #workspaceTodayTab:hover,
+  #workspaceTodayTab:focus-visible { background: var(--soft); border-color: #cfd6cf; color: var(--ink); }
+  #workspaceTodayTab.active { background: #eef3ff; border-color: #b9c8e8; color: #3e5278; }
+}
 </style>
 </head>
 <body>
@@ -5059,7 +5108,7 @@ select {
     </main>
 
     <aside class="notes-sidebar" id="notesSidebar" aria-label="Lined notepad sidebar">
-      <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Workspace sections"><button class="workspace-tab" id="workspaceCalendarTab" type="button" role="tab" aria-selected="false">Calendar</button><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button><button class="workspace-tab" id="workspaceEventsTab" type="button" role="tab" aria-selected="false">Events</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
+      <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Workspace sections"><button class="workspace-tab" id="workspaceCalendarTab" type="button" role="tab" aria-selected="false">Calendar</button><button class="workspace-tab" id="workspaceTodayTab" type="button" role="tab" aria-selected="false">Today</button><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button><button class="workspace-tab" id="workspaceEventsTab" type="button" role="tab" aria-selected="false">Events</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
       <div class="notes-wrap" id="notesWorkspacePanel">
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
@@ -5197,7 +5246,7 @@ select {
   </div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true">
-    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>Getting Started</h3><ol><li>Use Tasks for actions, Events for date-based commitments, Notes for reference, and Activity for a lightweight work log.</li><li>Use Today to plan work in 30-minute timeblocks.</li><li>Use the workspace tabs to switch between Calendar, Notes, Tasks, Activity, and Events.</li></ol><h3>Tasks</h3><ul><li>Create Tasks in Inbox, Today, This month, or Someday.</li><li>Use status, highlight, tags, next action, and optional date/time scheduling.</li><li>Link a Task to a new or existing Note.</li><li>Archive completed Tasks and restore them later if needed.</li></ul><h3>Events</h3><ul><li>Create one-time or recurring Events with an optional time, duration, tag, highlight, and next action.</li><li>Timed Events can appear in the Planner.</li><li>Create a Note or link an existing Note to an Event.</li></ul><h3>Notes</h3><ul><li>Select a compact Note row to open it. Use the star to pin or unpin it.</li><li>Use Labels to organise and filter Notes.</li><li>Use Link Note to connect Notes. Links appear under Related Notes.</li><li>Use Edit for writing and formatting, including bullets, numbering, checklists, and horizontal lines.</li></ul><h3>Voice Capture</h3><ul><li>On mobile, open More, then Voice Capture.</li><li>Use the keyboard microphone or type, then save as a Task, Event, Note, or Activity.</li></ul><h3>Planner</h3><ul><li>Select an empty timeblock to add a Task, Event, or Activity.</li><li>Use the status control to mark a block as Planned, In progress, or Done.</li></ul><h3>Backup &amp; Privacy</h3><ul><li>Export regularly to create a complete local backup. Use Import to restore it.</li><li>Data is stored locally on the current device. No account is required.</li></ul><div class="help-note">Install FAST GTD as a PWA for an app-like experience. Local data is specific to the browser or installed app, so keep regular exports.</div></div><div class="help-mobile-content"><h3>Quick Start</h3>
+    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>Getting Started</h3><ol><li>Use Tasks for actions, Events for date-based commitments, Notes for reference, and Activity for a lightweight work log.</li><li>Use the Today workspace tab to plan work in 30-minute timeblocks.</li><li>Use the workspace tabs to switch between Calendar, Notes, Tasks, Activity, and Events.</li></ol><h3>Tasks</h3><ul><li>Create Tasks in Inbox, Today, This month, or Someday.</li><li>Use status, highlight, tags, next action, and optional date/time scheduling.</li><li>Link a Task to a new or existing Note.</li><li>Archive completed Tasks and restore them later if needed.</li></ul><h3>Events</h3><ul><li>Create one-time or recurring Events with an optional time, duration, tag, highlight, and next action.</li><li>Timed Events can appear in the Planner.</li><li>Create a Note or link an existing Note to an Event.</li></ul><h3>Notes</h3><ul><li>Select a compact Note row to open it. Use the star to pin or unpin it.</li><li>Use Labels to organise and filter Notes.</li><li>Use Link Note to connect Notes. Links appear under Related Notes.</li><li>Use Edit for writing and formatting, including bullets, numbering, checklists, and horizontal lines.</li></ul><h3>Voice Capture</h3><ul><li>On mobile, open More, then Voice Capture.</li><li>Use the keyboard microphone or type, then save as a Task, Event, Note, or Activity.</li></ul><h3>Planner</h3><ul><li>Select an empty timeblock to add a Task, Event, or Activity.</li><li>Use the status control to mark a block as Planned, In progress, or Done.</li></ul><h3>Backup &amp; Privacy</h3><ul><li>Export regularly to create a complete local backup. Use Import to restore it.</li><li>Data is stored locally on the current device. No account is required.</li></ul><div class="help-note">Install FAST GTD as a PWA for an app-like experience. Local data is specific to the browser or installed app, so keep regular exports.</div></div><div class="help-mobile-content"><h3>Quick Start</h3>
 <ul>
   <li>+ Task saves a new Task to Inbox.</li>
   <li>+ Note opens simple capture with Labels and Link Note visible.</li>
@@ -5327,7 +5376,9 @@ select {
         const notesWorkspacePanel = el("notesWorkspacePanel");
         const workspacePanelHost = el("workspacePanelHost");
         const workspaceCalendarTab = el("workspaceCalendarTab");
+        const workspaceTodayTab = el("workspaceTodayTab");
         const workspaceNotesTab = el("workspaceNotesTab");
+        const plannerApp = document.querySelector("main.app");
         const workspaceTasksTab = el("workspaceTasksTab");
         const workspaceActivityTab = el("workspaceActivityTab");
         const workspaceEventsTab = el("workspaceEventsTab");
@@ -8428,6 +8479,15 @@ ${body}` : title };
             shell.insertBefore(sidebar, document.querySelector(".app"));
             sidebar.hidden = false;
         }
+        function placePlannerForDesktop() {
+            if (isMobileViewport()) return;
+            if (plannerApp.parentElement !== workspacePanelHost) workspacePanelHost.appendChild(plannerApp);
+        }
+        function restorePlannerForMobile() {
+            if (!isMobileViewport() || plannerApp.parentElement === shell) return;
+            shell.insertBefore(plannerApp, notesSidebar);
+            plannerApp.hidden = false;
+        }
         function moveWorkspacePanelsToSidebar() {
             if (globalTasksPanel.parentElement !== workspacePanelHost)
                 workspacePanelHost.appendChild(globalTasksPanel);
@@ -8447,6 +8507,7 @@ ${body}` : title };
         function updateWorkspaceTabs() {
             const tabs = [
                 [workspaceCalendarTab, "calendar"],
+                [workspaceTodayTab, "today"],
                 [workspaceNotesTab, "notes"],
                 [workspaceTasksTab, "tasks"],
                 [workspaceActivityTab, "activity"],
@@ -8485,9 +8546,12 @@ ${body}` : title };
             }
             desktopWorkspacePanel = panel;
             const calendarPanelActive = panel === "calendar";
+            const todayPanelActive = panel === "today";
             const notesPanelActive = panel === "notes" || panel === "labels";
             placeCalendarForDesktop();
+            placePlannerForDesktop();
             sidebar.hidden = !calendarPanelActive;
+            plannerApp.hidden = !todayPanelActive;
             if (panel === "labels") {
                 notesFocusAll = true;
                 notesLabelFilterValue = "";
@@ -8517,6 +8581,10 @@ ${body}` : title };
             if (calendarPanelActive) {
                 buildCalendar();
                 updateSelectedCalendarDay();
+            }
+            if (todayPanelActive) {
+                loadSelectedDate();
+                setTimeout(highlightCurrentTimeBlock, 0);
             }
             if (notesPanelActive)
                 renderNotes();
@@ -9519,6 +9587,7 @@ ${body}` : title };
         mobileMoreCloseBtn.addEventListener("click", closeMobileMore);
         mobileMoreBackdrop.addEventListener("click", event => { if (event.target === mobileMoreBackdrop) closeMobileMore(); });
         mobileTodayBtn.addEventListener("click", () => {
+            restorePlannerForMobile();
             const today = getToday();
             if (isWithinRange(today))
                 selectDate(today, true);
@@ -9604,6 +9673,7 @@ ${body}` : title };
             }
         });
         workspaceCalendarTab.addEventListener("click", () => showDesktopWorkspacePanel("calendar"));
+        workspaceTodayTab.addEventListener("click", () => showDesktopWorkspacePanel("today"));
         workspaceNotesTab.addEventListener("click", () => showDesktopWorkspacePanel("notes"));
         notesLabelsBtn.addEventListener("click", toggleNotesLabelsWorkspace);
         workspaceTasksTab.addEventListener("click", () => showDesktopWorkspacePanel("tasks"));
@@ -9723,7 +9793,7 @@ ${body}` : title };
         todayTasksBtn.addEventListener("click", openTodayTasksWorkspace);
         printTodayBtn.addEventListener("click", printTodayCard);
         todayBtn.addEventListener("click", () => { const today = getToday(); if (isWithinRange(today))
-            selectDate(today, true); });
+            selectDate(today, true); if (!isMobileViewport()) showDesktopWorkspacePanel("today"); });
         prevDayBtn.addEventListener("click", () => shiftSelectedDate(-1));
         nextDayBtn.addEventListener("click", () => shiftSelectedDate(1));
         const workspaceExportBtn = el("workspaceExportBtn");
@@ -9766,8 +9836,14 @@ ${body}` : title };
             updateFocusViewButton();
         });
         window.addEventListener("resize", () => {
-            if (isMobileViewport()) restoreCalendarForMobile();
-            else placeCalendarForDesktop();
+            if (isMobileViewport()) {
+                restoreCalendarForMobile();
+                restorePlannerForMobile();
+            }
+            else {
+                placeCalendarForDesktop();
+                placePlannerForDesktop();
+            }
             document.querySelectorAll("textarea[data-time]").forEach(autoGrow);
             document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
             if (!isMobileViewport() && !noteModal.classList.contains("open")) {
@@ -9796,6 +9872,7 @@ ${body}` : title };
         renderSelectedDateEvents();
         if (!isMobileViewport()) {
             placeCalendarForDesktop();
+            placePlannerForDesktop();
             desktopCalendarCollapsed = false;
             sidebar.hidden = true;
             activeTaskContext = "Today";
