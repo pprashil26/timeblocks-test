@@ -4897,6 +4897,55 @@ select {
 @media (max-width:759px) {
   .workspace-footer-copy { display:none !important; }
 }
+
+/* Phase 1 correction: preserve the original desktop Planner and Timeblocks */
+@media (min-width: 760px) {
+  .shell,
+  .shell.left-collapsed,
+  .shell.right-collapsed,
+  .shell.left-collapsed.right-collapsed {
+    align-items: stretch;
+  }
+  .shell > .app {
+    grid-area: planner;
+    display: flex !important;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    height: calc(100vh - 20px);
+    min-height: 560px;
+    max-height: calc(100vh - 20px);
+    overflow: hidden;
+  }
+  .shell > .app > header {
+    display: block;
+    flex: 0 0 auto;
+  }
+  .shell > .app > .timeline {
+    display: grid !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    max-height: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  .shell > .app > .timeline .time-pair-row,
+  .shell > .app > .timeline .slot,
+  .shell > .app > .timeline textarea[data-time] {
+    visibility: visible !important;
+  }
+  .shell > .app > .events-strip,
+  .shell > .app > .quote-block {
+    display: none;
+  }
+  .shell > .app > footer {
+    display: none;
+  }
+}
 </style>
 </head>
 <body>
